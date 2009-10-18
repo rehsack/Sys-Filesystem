@@ -20,6 +20,7 @@
 ############################################################
 
 package Sys::Filesystem::Cygwin;
+
 # vim:ts=4:sw=4:tw=78
 
 use strict;
@@ -29,35 +30,42 @@ use Carp qw(croak);
 use vars qw($VERSION);
 $VERSION = '1.07';
 
-sub new {
-	ref(my $class = shift) && croak 'Class name required';
-	my %args = @_;
-	my $self = { };
+sub new
+{
+    ref( my $class = shift ) && croak 'Class name required';
+    my %args = @_;
+    my $self = {};
 
-	local $/ = "\n";
-	my @keys = qw(fs_spec fs_file fs_vfstype fs_mntops);
-	my @special_fs = qw(swap proc devpts tmpfs);
+    local $/ = "\n";
+    my @keys       = qw(fs_spec fs_file fs_vfstype fs_mntops);
+    my @special_fs = qw(swap proc devpts tmpfs);
 
-	my $mtab = new FileHandle;
-	if ($mtab->open('mount|')) {
-		while (<$mtab>) {
-			next if (/^\s*#/ || /^\s*$/);
-			if (my @vals = $_ =~ /^\s*(.+?) on (\/.+?) type (\S+) \((\S+)\)\s*$/) {
-				$self->{$vals[1]}->{mounted} = 1;
-				$self->{$vals[1]}->{special} = 1 if grep(/^$vals[2]$/,@special_fs);
-				for (my $i = 0; $i < @keys; $i++) {
-					$self->{$vals[1]}->{$keys[$i]} = $vals[$i];
-				}
-			}
-		}
-		$mtab->close;
+    my $mtab = new FileHandle;
+    if ( $mtab->open('mount|') )
+    {
+        while (<$mtab>)
+        {
+            next if ( /^\s*#/ || /^\s*$/ );
+            if ( my @vals = $_ =~ /^\s*(.+?) on (\/.+?) type (\S+) \((\S+)\)\s*$/ )
+            {
+                $self->{ $vals[1] }->{mounted} = 1;
+                $self->{ $vals[1] }->{special} = 1 if grep( /^$vals[2]$/, @special_fs );
+                for ( my $i = 0; $i < @keys; $i++ )
+                {
+                    $self->{ $vals[1] }->{ $keys[$i] } = $vals[$i];
+                }
+            }
+        }
+        $mtab->close;
 
-	} else {
-		croak "Unable to open pipe handle for mount command: $!\n";
-	}
+    }
+    else
+    {
+        croak "Unable to open pipe handle for mount command: $!\n";
+    }
 
-	bless($self,$class);
-	return $self;
+    bless( $self, $class );
+    return $self;
 }
 
 1;

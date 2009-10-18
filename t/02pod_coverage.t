@@ -1,3 +1,5 @@
+use 5.006;
+
 use Test::More;
 eval "use Test::Pod::Coverage 1.00";
 plan skip_all => "Test::Pod::Coverage 1.00 required for testing POD Coverage" if $@;

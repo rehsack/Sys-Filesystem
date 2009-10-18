@@ -1,22 +1,26 @@
 ---
 name: Sys-Filesystem
-version: 1.23
+version: 1.24
 author:
-  - 'Nicola Worthington <nicolaw@cpan.org>'
+  - 'Jens Rehsack <rehsack@cpan.org>'
 abstract: Retrieve list of filesystems and their properties
-license: open_source
+license: apache
+resources:
+  license: http://apache.org/licenses/LICENSE-2.0
 requires:
   Carp: 0
-  FileHandle: 0
+  perl: 5.006
 recommends:
   Test: 0
   Test::More: 0
   Test::Pod: 0
   Test::Pod::Coverage: 0
+configure_requires:
+  Module::Build: 0.35
 provides:
   Sys::Filesystem:
     file: lib/Sys/Filesystem.pm
-    version: 1.23
+    version: 1.24
   Sys::Filesystem::Aix:
     file: lib/Sys/Filesystem/Aix.pm
     version: 1.05
@@ -32,19 +36,25 @@ provides:
   Sys::Filesystem::Freebsd:
     file: lib/Sys/Filesystem/Freebsd.pm
     version: 1.05
+  Sys::Filesystem::Hpux:
+    file: lib/Sys/Filesystem/Hpux.pm
+    version: 1.00
   Sys::Filesystem::Linux:
     file: lib/Sys/Filesystem/Linux.pm
     version: 1.13
   Sys::Filesystem::Mswin32:
     file: lib/Sys/Filesystem/Mswin32.pm
     version: 1.05
+  Sys::Filesystem::Netbsd:
+    file: lib/Sys/Filesystem/Netbsd.pm
+    version: 1.24
   Sys::Filesystem::Solaris:
     file: lib/Sys/Filesystem/Solaris.pm
     version: 1.13
   Sys::Filesystem::Unix:
     file: lib/Sys/Filesystem/Unix.pm
     version: 1.05
-generated_by: Module::Build version 0.3
+generated_by: Module::Build version 0.35
 meta-spec:
-  url: http://module-build.sourceforge.net/META-spec-v1.2.html
-  version: 1.2
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4

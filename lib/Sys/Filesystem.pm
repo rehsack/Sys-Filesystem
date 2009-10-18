@@ -4,6 +4,7 @@
 #   Sys::Filesystem - Retrieve list of filesystems and their properties
 #
 #   Copyright 2004,2005,2006 Nicola Worthington
+#   Copyright 2008,2009 Jens Rehsack
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -20,187 +21,223 @@
 ############################################################
 
 package Sys::Filesystem;
+
 # vim:ts=4:sw=4:tw=78
+
+use 5.006;
 
 use strict;
 use FileHandle;
 use Carp qw(croak cluck confess);
 
 use constant DEBUG => $ENV{SYS_FILESYSTEM_DEBUG} ? 1 : 0;
-use constant SPECIAL => ('darwin' eq $^O) ? 0 : undef;
+use constant SPECIAL => ( 'darwin' eq $^O ) ? 0 : undef;
 use vars qw($VERSION $AUTOLOAD);
-$VERSION = '1.23';
+$VERSION = '1.24';
 
-sub new {
-	# Check we're being called correctly with a class name
-	ref(my $class = shift) && croak 'Class name required';
+sub new
+{
 
-	# Check we've got something sane passed
-	croak 'Odd number of elements passed when even number was expected' if @_ % 2;
-	my %args = @_;
+    # Check we're being called correctly with a class name
+    ref( my $class = shift ) && croak 'Class name required';
 
-	# Double check the key pairs for stuff we recognise
-	while (my ($k,$v) = each %args) {
-		unless (grep(/^$k$/i, qw(fstab mtab xtab))) {
-			croak "Unrecognised paramater '$k' passed to module $class";
-		}
-	}
+    # Check we've got something sane passed
+    croak 'Odd number of elements passed when even number was expected' if @_ % 2;
+    my %args = @_;
 
-	# How to query
-	my $self = { %args };
-	$self->{osname} = $^O;
-	my @query_order = (ucfirst($self->{osname}));
-	push @query_order, $self->{osname} =~ /Win32/i ? 'Win32' : 'Unix';
-	push @query_order, 'Dummy';
+    # Double check the key pairs for stuff we recognise
+    while ( my ( $k, $v ) = each %args )
+    {
+        unless ( grep( /^$k$/i, qw(fstab mtab xtab) ) )
+        {
+            croak "Unrecognised paramater '$k' passed to module $class";
+        }
+    }
 
-	# Try and query
-	for (@query_order) {
-		my $obj = undef;
-		my $code = sprintf('require %s::%s; $obj = %s::%s->new(%%args);',
-						__PACKAGE__, $_, __PACKAGE__, $_);
-		eval { eval($code); };
-		if (defined $obj && ref($obj) && !$@) {
-			$self->{filesystems} = $obj;
-			last;
-		}
-	}
+    # How to query
+    my $self = {%args};
+    $self->{osname} = $^O;
+    my @query_order = ( ucfirst( $self->{osname} ) );
+    push @query_order, $self->{osname} =~ /Win32/i ? 'Win32' : 'Unix';
+    push @query_order, 'Dummy';
 
-	# Filesystem property aliases
-	$self->{aliases} = {
-			device          => [ qw(fs_spec dev) ],
-			filesystem      => [ qw(fs_file mount_point) ],
-			mount_point     => [ qw(fs_file filesystem) ],
-			type            => [ qw(fs_vfstype vfs) ],
-			format          => [ qw(fs_vfstype vfs vfstype) ],
-			options         => [ qw(fs_mntops) ],
-			check_frequency => [ qw(fs_freq) ],
-			check_order     => [ qw(fs_passno) ],
-			boot_order      => [ qw(fs_mntno) ],
-			volume          => [ qw(fs_volume fs_vol vol) ],
-			label           => [ qw(fs_label) ],
-		};
+    # Try and query
+    for (@query_order)
+    {
+        my $obj = undef;
+        my $code = sprintf( 'require %s::%s; $obj = %s::%s->new(%%args);', __PACKAGE__, $_, __PACKAGE__, $_ );
+        eval { eval($code); };
+        if ( defined $obj && ref($obj) && !$@ )
+        {
+            $self->{filesystems} = $obj;
+            last;
+        }
+    }
 
-	# Debug
-	DUMP('$self',$self);
+    # Filesystem property aliases
+    $self->{aliases} = {
+                         device          => [qw(fs_spec dev)],
+                         filesystem      => [qw(fs_file mount_point)],
+                         mount_point     => [qw(fs_file filesystem)],
+                         type            => [qw(fs_vfstype vfs)],
+                         format          => [qw(fs_vfstype vfs vfstype)],
+                         options         => [qw(fs_mntops)],
+                         check_frequency => [qw(fs_freq)],
+                         check_order     => [qw(fs_passno)],
+                         boot_order      => [qw(fs_mntno)],
+                         volume          => [qw(fs_volume fs_vol vol)],
+                         label           => [qw(fs_label)],
+                       };
 
-	# Maybe upchuck a little
-	croak "Unable to create object for OS type '$self->{osname}'" unless $self->{filesystems};
+    # Debug
+    DUMP( '$self', $self );
 
-	# Bless and return
-	bless($self,$class);
-	return $self;
+    # Maybe upchuck a little
+    croak "Unable to create object for OS type '$self->{osname}'" unless $self->{filesystems};
+
+    # Bless and return
+    bless( $self, $class );
+    return $self;
 }
 
-sub filesystems {
-	my $self = shift;
-	unless(ref $self eq __PACKAGE__ || UNIVERSAL::isa($self, __PACKAGE__)) {
-		unshift @_, $self;
-		$self = new __PACKAGE__;
-	}
+sub filesystems
+{
+    my $self = shift;
+    unless ( ref $self eq __PACKAGE__ || UNIVERSAL::isa( $self, __PACKAGE__ ) )
+    {
+        unshift @_, $self;
+        $self = new __PACKAGE__;
+    }
 
-	# Check we've got something sane passed
-	croak 'Odd number of elements passed when even number was expected' if @_ % 2;
-	my $params = { @_ };
-	for my $param (keys %{$params}) {
-		croak "Illegal paramater '$param' passed to filesystems() method"
-			unless grep(/^$param$/, qw(mounted unmounted special device regular));
-	}
+    # Check we've got something sane passed
+    croak 'Odd number of elements passed when even number was expected' if @_ % 2;
+    my $params = {@_};
+    for my $param ( keys %{$params} )
+    {
+        croak "Illegal paramater '$param' passed to filesystems() method"
+          unless grep( /^$param$/, qw(mounted unmounted special device regular) );
+    }
 
-	# Invert logic for regular
-	if (exists $params->{regular}) {
-		delete $params->{regular};
-		$params->{special} = SPECIAL;
-	}
+    # Invert logic for regular
+    if ( exists $params->{regular} )
+    {
+        delete $params->{regular};
+        $params->{special} = SPECIAL;
+    }
 
-	my @filesystems = ();
+    my @filesystems = ();
 
-	# Return list of all filesystems
-	unless (keys %{$params}) {
-		@filesystems = sort(keys(%{$self->{filesystems}}));
+    # Return list of all filesystems
+    unless ( keys %{$params} )
+    {
+        @filesystems = sort( keys( %{ $self->{filesystems} } ) );
 
-	# Return list of specific filesystems
-	} else {
-		for my $fs (sort(keys(%{$self->{filesystems}}))) {
-			for my $requirement (keys %{$params}) {
-				if ((defined $params->{$requirement} && exists $self->{filesystems}->{$fs}->{$requirement}) &&
-				    $self->{filesystems}->{$fs}->{$requirement} eq $params->{$requirement} ||
-				    (!defined $params->{$requirement} && !exists $self->{filesystems}->{$fs}->{$requirement})) {
-					push @filesystems, $fs;
-					last;
-				}
-			}
-		}
-	}
+        # Return list of specific filesystems
+    }
+    else
+    {
+        for my $fs ( sort( keys( %{ $self->{filesystems} } ) ) )
+        {
+            for my $requirement ( keys %{$params} )
+            {
+                if ( ( defined $params->{$requirement} && exists $self->{filesystems}->{$fs}->{$requirement} )
+                     && $self->{filesystems}->{$fs}->{$requirement} eq $params->{$requirement}
+                     || ( !defined $params->{$requirement} && !exists $self->{filesystems}->{$fs}->{$requirement} ) )
+                {
+                    push @filesystems, $fs;
+                    last;
+                }
+            }
+        }
+    }
 
-	# Return
-	return @filesystems;
+    # Return
+    return @filesystems;
 }
 
-sub mounted_filesystems {
-	my $self = shift;
-	return $self->filesystems(mounted => 1);
+sub mounted_filesystems
+{
+    my $self = shift;
+    return $self->filesystems( mounted => 1 );
 }
 
-sub unmounted_filesystems {
-	my $self = shift;
-	return $self->filesystems(unmounted => 1);
+sub unmounted_filesystems
+{
+    my $self = shift;
+    return $self->filesystems( unmounted => 1 );
 }
 
-sub special_filesystems {
-	my $self = shift;
-	return $self->filesystems(special => 1);
+sub special_filesystems
+{
+    my $self = shift;
+    return $self->filesystems( special => 1 );
 }
 
-sub regular_filesystems {
-	my $self = shift;
-	return $self->filesystems(special => SPECIAL);
+sub regular_filesystems
+{
+    my $self = shift;
+    return $self->filesystems( special => SPECIAL );
 }
 
-sub DESTROY {}
+sub DESTROY { }
 
-sub AUTOLOAD {
-	my $self = shift;
-	my $type = ref($self) || croak "$self is not an object";
+sub AUTOLOAD
+{
+    my $self = shift;
+    my $type = ref($self) || croak "$self is not an object";
 
-	my $fs = shift;
-	croak "No filesystem passed where expected" unless $fs;
+    my $fs = shift;
+    croak "No filesystem passed where expected" unless $fs;
 
-	(my $name = $AUTOLOAD) =~ s/.*://;
+    ( my $name = $AUTOLOAD ) =~ s/.*://;
 
-	# No such filesystem
-	unless (exists $self->{filesystems}->{$fs}) {
-		croak "No such filesystem";
+    # No such filesystem
+    unless ( exists $self->{filesystems}->{$fs} )
+    {
+        croak "No such filesystem";
 
-	# Look for the property
-	} else {
-		# Found the property
-		if (exists $self->{filesystems}->{$fs}->{$name}) {
-			return $self->{filesystems}->{$fs}->{$name};
+        # Look for the property
+    }
+    else
+    {
 
-		# Didn't find the property, but check any aliases
-		} elsif (exists $self->{aliases}->{$name}) {
-			for my $alias (@{$self->{aliases}->{$name}}) {
-				# Found the Alias
-				if (exists $self->{filesystems}->{$fs}->{$alias}) {
-					return $self->{filesystems}->{$fs}->{$alias};
-				}
-			}
-		}
-	}
+        # Found the property
+        if ( exists $self->{filesystems}->{$fs}->{$name} )
+        {
+            return $self->{filesystems}->{$fs}->{$name};
 
-	return undef;
+            # Didn't find the property, but check any aliases
+        }
+        elsif ( exists $self->{aliases}->{$name} )
+        {
+            for my $alias ( @{ $self->{aliases}->{$name} } )
+            {
+
+                # Found the Alias
+                if ( exists $self->{filesystems}->{$fs}->{$alias} )
+                {
+                    return $self->{filesystems}->{$fs}->{$alias};
+                }
+            }
+        }
+    }
+
+    return undef;
 }
 
-sub TRACE {
-	return unless DEBUG;
-	warn(shift());
+sub TRACE
+{
+    return unless DEBUG;
+    warn( shift() );
 }
-sub DUMP {
-	return unless DEBUG;
-	eval {
-		require Data::Dumper;
-		warn(shift().': '.Data::Dumper::Dumper(shift()));
-	}
+
+sub DUMP
+{
+    return unless DEBUG;
+    eval {
+        require Data::Dumper;
+        warn( shift() . ': ' . Data::Dumper::Dumper( shift() ) );
+    };
 }
 
 1;
@@ -443,11 +480,11 @@ This module requires additional work to improve it's guestimation abilities.
 
 =head2 Darwin
 
-Frist written by Christian Renz <crenz@web42.com>.
+First written by Christian Renz <crenz@web42.com>.
 
 =head2 Win32
 
-This isn't written yet. It's on the top of the (very slow) TODO list.
+Provides C<mount_point> and C<device> of mounted filesystems on Windows.
 
 =head2 AIX
 
@@ -459,7 +496,7 @@ be more reliable accross different platforms.
 
 =head2 Other
 
-Linux, Solaris, Cygwin, FreeBSD.
+Linux, Solaris, Cygwin, FreeBSD, NetBSD, HP-UX.
 
 =head2 OS Identifiers
 
@@ -467,6 +504,10 @@ The following list is taken from L<perlport>. Please refer to the original
 source for the most up to date version. This information should help anyone
 who wishes to write a helper module for a new platform. Modules should have
 the same name as ^O in title caps. Thus 'openbsd' becomes 'Openbsd.pm'.
+
+=head1 REQUIREMENTS
+
+Sys::Filesystem requires Perl >= 5.6 to run.
 
 =head1 TODO
 
@@ -479,13 +520,21 @@ L<perlport>, L<Solaris::DeviceTree>, L<Win32::DriveInfo>
 
 =head1 VERSION
 
-$Id$
+Sys::Filesystem 1.24
 
 =head1 AUTHOR
 
-Nicola Worthington <nicolaw@cpan.org>
+=over 4
+
+=item Nicola Worthington <nicolaw@cpan.org>
 
 L<http://perlgirl.org.uk>
+
+=item Jens Rehsack <rehsack@cpan.org>
+
+L<http://www.rehsack.de/>
+
+=back
 
 =head1 ACKNOWLEDGEMENTS
 
@@ -494,6 +543,7 @@ See CREDITS in the distribution tarball.
 =head1 COPYRIGHT
 
 Copyright 2004,2005,2006 Nicola Worthington.
+Copyright 2008,2009 Jens Rehsack.
 
 This software is licensed under The Apache Software License, Version 2.0.
 

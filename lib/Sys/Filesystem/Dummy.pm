@@ -20,6 +20,7 @@
 ############################################################
 
 package Sys::Filesystem::Dummy;
+
 # vim:ts=4:sw=4:tw=78
 
 use strict;
@@ -29,13 +30,14 @@ use Carp qw(croak);
 use vars qw($VERSION);
 $VERSION = '1.06';
 
-sub new {
-	ref(my $class = shift) && croak 'Class name required';
-	my %args = @_;
-	my $self = { };
+sub new
+{
+    ref( my $class = shift ) && croak 'Class name required';
+    my %args = @_;
+    my $self = {};
 
-	bless($self,$class);
-	return $self;
+    bless( $self, $class );
+    return $self;
 }
 
 1;
@@ -69,5 +71,4 @@ This software is licensed under The Apache Software License, Version 2.0.
 L<http://www.apache.org/licenses/LICENSE-2.0>
 
 =cut
-
 

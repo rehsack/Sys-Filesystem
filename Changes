@@ -1,8 +1,14 @@
+1.24
+        Added support for NetBSD (Jens Rehsack)
+        Added support for HP-UX (H.Merijn Brand)
+        Fixed POD a little
+        Add a simple test to see whether it's working or not
+	Increased required perl version (suggested by H.Merijn Brand)
 1.23
-    Fixed Aix.pm (RT #34577), patches from LEMBARK, REHSACK
-    Fixed failing on OS X (RT #7958, RT #43681), patch from Dirk Langer
-    Taking Co-Maintainership (Jens Rehsack, CPAN Id: REHSACK)
-    Changing debug environment flag from DEBUG to SYS_FILESYSTEM_DEBUG
+        Fixed Aix.pm (RT #34577), patches from LEMBARK, REHSACK
+        Fixed failing on OS X (RT #7958, RT #43681), patch from Dirk Langer
+        Taking Co-Maintainership (Jens Rehsack, CPAN Id: REHSACK)
+        Changing debug environment flag from DEBUG to SYS_FILESYSTEM_DEBUG
 1.22
 	Added CREDITS.
 	Fixed logic in Filesystem.pm:filesystems() where the inversion of

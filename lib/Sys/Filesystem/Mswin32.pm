@@ -20,6 +20,7 @@
 ############################################################
 
 package Sys::Filesystem::Mswin32;
+
 # vim:ts=4:sw=4:tw=78
 
 use strict;
@@ -30,28 +31,27 @@ use Carp qw(croak);
 use vars qw($VERSION);
 $VERSION = '1.05';
 
-sub new {
-	ref(my $class = shift) && croak 'Class name required';
-	my %args = @_;
-	my $self = { };
+sub new
+{
+    ref( my $class = shift ) && croak 'Class name required';
+    my %args = @_;
+    my $self = {};
 
-	my @volumes = Win32::DriveInfo::DrivesInUse();
+    my @volumes = Win32::DriveInfo::DrivesInUse();
 
-	for my $volume (@volumes) {
-		my $type = Win32::DriveInfo::DriveType($volume);
-		my ($VolumeName,
-			$VolumeSerialNumber,
-			$MaximumComponentLength,
-			$FileSystemName,
-			@attr) = Win32::DriveInfo::VolumeInfo($volume);
+    for my $volume (@volumes)
+    {
+        my $type = Win32::DriveInfo::DriveType($volume);
+        my ( $VolumeName, $VolumeSerialNumber, $MaximumComponentLength, $FileSystemName, @attr ) =
+          Win32::DriveInfo::VolumeInfo($volume);
 
-		$self->{$VolumeName}->{mount_point} = $VolumeName;
-		$self->{$VolumeName}->{device} = $FileSystemName;
-		$self->{$VolumeName}->{mounted} = 1;
-	}
+        $self->{$VolumeName}->{mount_point} = $VolumeName;
+        $self->{$VolumeName}->{device}      = $FileSystemName;
+        $self->{$VolumeName}->{mounted}     = 1;
+    }
 
-	bless($self,$class);
-	return $self;
+    bless( $self, $class );
+    return $self;
 }
 
 1;
@@ -85,6 +85,4 @@ This software is licensed under The Apache Software License, Version 2.0.
 L<http://www.apache.org/licenses/LICENSE-2.0>
 
 =cut
-
-
 

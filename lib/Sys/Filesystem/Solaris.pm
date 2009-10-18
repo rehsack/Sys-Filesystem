@@ -20,6 +20,7 @@
 ############################################################
 
 package Sys::Filesystem::Solaris;
+
 # vim:ts=4:sw=4:tw=78
 
 use strict;
@@ -30,65 +31,79 @@ use Carp qw(croak);
 use vars qw($VERSION);
 $VERSION = '1.13';
 
-sub new {
-	ref(my $class = shift) && croak 'Class name required';
-	my %args = @_;
-	my $self = { };
+sub new
+{
+    ref( my $class = shift ) && croak 'Class name required';
+    my %args = @_;
+    my $self = {};
 
-	$args{fstab} ||= '/etc/vfstab';
-	$args{mtab} ||= '/etc/mnttab';
-	#$args{xtab} ||= '/etc/lib/nfs/xtab';
+    $args{fstab} ||= '/etc/vfstab';
+    $args{mtab}  ||= '/etc/mnttab';
 
-	my @fstab_keys = qw(device device_to_fsck mount_point fs_vfstype fs_freq mount_at_boot fs_mntops);
-	my @mtab_keys = qw(device mount_point fs_vfstype fs_mntops time);
+    #$args{xtab} ||= '/etc/lib/nfs/xtab';
 
-	my @special_fs = qw(swap proc procfs tmpfs nfs mntfs autofs lofs fd ctfs devfs objfs cachefs);
-	local $/ = "\n";
+    my @fstab_keys = qw(device device_to_fsck mount_point fs_vfstype fs_freq mount_at_boot fs_mntops);
+    my @mtab_keys  = qw(device mount_point fs_vfstype fs_mntops time);
 
-	# Read the fstab
-	my $fstab = new FileHandle;
-	if ($fstab->open($args{fstab})) {
-		while (<$fstab>) {
-			next if (/^\s*#/ || /^\s*$/);
-			my @vals = split(/\s+/, $_);
-			next if "-" eq $vals[2];
+    my @special_fs = qw(swap proc procfs tmpfs nfs mntfs autofs lofs fd ctfs devfs objfs cachefs);
+    local $/ = "\n";
 
-			for (my $i = 0; $i < @fstab_keys; $i++) {
-				$vals[$i] = '' unless defined $vals[$i];
-			}
-			$self->{$vals[2]}->{unmounted} = 1;
-			$self->{$vals[2]}->{special} = 1 if grep(/^$vals[3]$/,@special_fs);
-			for (my $i = 0; $i < @fstab_keys; $i++) {
-				$self->{$vals[2]}->{$fstab_keys[$i]} = $vals[$i];
-			}
-		}
-		$fstab->close;
-	} else {
-		croak "Unable to open fstab file ($args{fstab})\n";
-	}
+    # Read the fstab
+    my $fstab = new FileHandle;
+    if ( $fstab->open( $args{fstab} ) )
+    {
+        while (<$fstab>)
+        {
+            next if ( /^\s*#/ || /^\s*$/ );
+            my @vals = split( /\s+/, $_ );
+            next if "-" eq $vals[2];
 
-	# Read the mtab
-	my $mtab = new FileHandle;
-	#if ($mtab->open($args{mtab})) {
-	if ($mtab->open($args{mtab}) && flock $mtab, LOCK_SH | LOCK_NB) {
-		while (<$mtab>) {
-			next if /^\s*#/;
-			next if /^\s*$/;
-			my @vals = split(/\s+/, $_);
-			delete $self->{$vals[1]}->{unmounted} if exists $self->{$vals[1]}->{unmounted};
-			$self->{$vals[1]}->{mounted} = 1;
-			$self->{$vals[1]}->{special} = 1 if grep(/^$vals[2]$/,@special_fs);
-			for (my $i = 0; $i < @mtab_keys; $i++) {
-				$self->{$vals[1]}->{$mtab_keys[$i]} = $vals[$i];
-			}
-		}
-		$mtab->close;
-	} else {
-		croak "Unable to open mtab file ($args{mtab})\n";
-	}
+            for ( my $i = 0; $i < @fstab_keys; $i++ )
+            {
+                $vals[$i] = '' unless defined $vals[$i];
+            }
+            $self->{ $vals[2] }->{unmounted} = 1;
+            $self->{ $vals[2] }->{special} = 1 if grep( /^$vals[3]$/, @special_fs );
+            for ( my $i = 0; $i < @fstab_keys; $i++ )
+            {
+                $self->{ $vals[2] }->{ $fstab_keys[$i] } = $vals[$i];
+            }
+        }
+        $fstab->close;
+    }
+    else
+    {
+        croak "Unable to open fstab file ($args{fstab})\n";
+    }
 
-	bless($self,$class);
-	return $self;
+    # Read the mtab
+    my $mtab = new FileHandle;
+
+    #if ($mtab->open($args{mtab})) {
+    if ( $mtab->open( $args{mtab} ) && flock $mtab, LOCK_SH | LOCK_NB )
+    {
+        while (<$mtab>)
+        {
+            next if /^\s*#/;
+            next if /^\s*$/;
+            my @vals = split( /\s+/, $_ );
+            delete $self->{ $vals[1] }->{unmounted} if exists $self->{ $vals[1] }->{unmounted};
+            $self->{ $vals[1] }->{mounted} = 1;
+            $self->{ $vals[1] }->{special} = 1 if grep( /^$vals[2]$/, @special_fs );
+            for ( my $i = 0; $i < @mtab_keys; $i++ )
+            {
+                $self->{ $vals[1] }->{ $mtab_keys[$i] } = $vals[$i];
+            }
+        }
+        $mtab->close;
+    }
+    else
+    {
+        croak "Unable to open mtab file ($args{mtab})\n";
+    }
+
+    bless( $self, $class );
+    return $self;
 }
 
 1;

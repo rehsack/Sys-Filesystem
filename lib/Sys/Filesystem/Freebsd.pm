@@ -20,6 +20,7 @@
 ############################################################
 
 package Sys::Filesystem::Freebsd;
+
 # vim:ts=4:sw=4:tw=78
 
 use strict;
@@ -29,64 +30,74 @@ use Carp qw(croak);
 use vars qw($VERSION);
 $VERSION = '1.05';
 
-sub new {
-	ref(my $class = shift) && croak 'Class name required';
-	my %args = @_;
-	my $self = { };
+sub new
+{
+    ref( my $class = shift ) && croak 'Class name required';
+    my %args = @_;
+    my $self = {};
 
-	$args{fstab} ||= '/etc/fstab';
-	$args{mtab} ||= '/etc/mtab';
-	$args{xtab} ||= '/etc/lib/nfs/xtab';
+    $args{fstab} ||= '/etc/fstab';
+    $args{mtab}  ||= '/etc/mtab';
+    $args{xtab}  ||= '/etc/lib/nfs/xtab';
 
-	my @keys = qw(fs_spec fs_file fs_vfstype fs_mntops fs_freq fs_passno);
-	my @special_fs = qw(swap proc devpts tmpfs);
+    my @keys       = qw(fs_spec fs_file fs_vfstype fs_mntops fs_freq fs_passno);
+    my @special_fs = qw(swap proc devpts tmpfs);
 
-	# Read the fstab
-	my $fstab = new FileHandle;
-	if ($fstab->open($args{fstab})) {
-		while (<$fstab>) {
-			next if (/^\s*#/ || /^\s*$/);
-			my @vals = split(/\s+/, $_);
-			$self->{$vals[1]}->{mount_point} = $vals[1];
-			$self->{$vals[1]}->{device} = $vals[0];
-			$self->{$vals[1]}->{unmounted} = 1;
-			$self->{$vals[1]}->{special} = 1 if grep(/^$vals[2]$/,@special_fs);
-			for (my $i = 0; $i < @keys; $i++) {
-				$self->{$vals[1]}->{$keys[$i]} = $vals[$i];
-			}
-		}
-		$fstab->close;
-	} else {
-		croak "Unable to open fstab file ($args{fstab})\n";
-	}
+    # Read the fstab
+    my $fstab = new FileHandle;
+    if ( $fstab->open( $args{fstab} ) )
+    {
+        while (<$fstab>)
+        {
+            next if ( /^\s*#/ || /^\s*$/ );
+            my @vals = split( /\s+/, $_ );
+            $self->{ $vals[1] }->{mount_point} = $vals[1];
+            $self->{ $vals[1] }->{device}      = $vals[0];
+            $self->{ $vals[1] }->{unmounted}   = 1;
+            $self->{ $vals[1] }->{special}     = 1 if grep( /^$vals[2]$/, @special_fs );
+            for ( my $i = 0; $i < @keys; $i++ )
+            {
+                $self->{ $vals[1] }->{ $keys[$i] } = $vals[$i];
+            }
+        }
+        $fstab->close;
+    }
+    else
+    {
+        croak "Unable to open fstab file ($args{fstab})\n";
+    }
 
-	# Read the mtab
-	my $mtab = new FileHandle;
-	if ($mtab->open($args{mtab})) {
-		while (<$mtab>) {
-			next if (/^\s*#/ || /^\s*$/);
-			my @vals = split(/\s+/, $_);
-			delete $self->{$vals[1]}->{unmounted} if exists $self->{$vals[1]}->{unmounted};
-			$self->{$vals[1]}->{mounted} = 1;
-			$self->{$vals[1]}->{mount_point} = $vals[1];
-			$self->{$vals[1]}->{device} = $vals[0];
-			$self->{$vals[1]}->{special} = 1 if grep(/^$vals[2]$/,qw(swap proc devpts tmpfs));
-			for (my $i = 0; $i < @keys; $i++) {
-				$self->{$vals[1]}->{$keys[$i]} = $vals[$i];
-			}
-		}
-		$mtab->close;
-	} else {
-		croak "Unable to open mtab file ($args{mtab})\n";
-	}
+    # Read the mtab
+    my $mtab = new FileHandle;
+    if ( $mtab->open( $args{mtab} ) )
+    {
+        while (<$mtab>)
+        {
+            next if ( /^\s*#/ || /^\s*$/ );
+            my @vals = split( /\s+/, $_ );
+            delete $self->{ $vals[1] }->{unmounted} if exists $self->{ $vals[1] }->{unmounted};
+            $self->{ $vals[1] }->{mounted}     = 1;
+            $self->{ $vals[1] }->{mount_point} = $vals[1];
+            $self->{ $vals[1] }->{device}      = $vals[0];
+            $self->{ $vals[1] }->{special}     = 1 if grep( /^$vals[2]$/, qw(swap proc devpts tmpfs) );
+            for ( my $i = 0; $i < @keys; $i++ )
+            {
+                $self->{ $vals[1] }->{ $keys[$i] } = $vals[$i];
+            }
+        }
+        $mtab->close;
+    }
+    else
+    {
+        croak "Unable to open mtab file ($args{mtab})\n";
+    }
 
-	# Bless and return
-	bless($self,$class);
-	return $self;
+    # Bless and return
+    bless( $self, $class );
+    return $self;
 }
 
 1;
-
 
 # See the fstab(5) manual page for important information on automatic mounts
 # of network filesystems before modifying this file.
@@ -102,9 +113,6 @@ sub new {
 #/var/tmp                /tmp            null    rw              0       0
 #proc                    /proc           procfs  rw              0       0
 #/etc/portal.conf        /p              portal  rw              0       0
-
-
-
 
 ###############################################################################
 # POD
@@ -179,5 +187,4 @@ This software is licensed under The Apache Software License, Version 2.0.
 L<http://www.apache.org/licenses/LICENSE-2.0>
 
 =cut
-
 

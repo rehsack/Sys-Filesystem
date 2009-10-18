@@ -20,6 +20,7 @@
 ############################################################
 
 package Sys::Filesystem::Aix;
+
 # vim:ts=4:sw=4:tw=78
 
 use strict;
@@ -29,137 +30,140 @@ use Carp qw(croak);
 use vars qw($VERSION);
 $VERSION = '1.05';
 
-sub new {
-	ref(my $class = shift) && croak 'Class name required';
-	my %args = @_;
-	my $self = { };
+sub new
+{
+    ref( my $class = shift ) && croak 'Class name required';
+    my %args = @_;
+    my $self = {};
 
-	$args{fstab} ||= '/etc/filesystems';
+    $args{fstab} ||= '/etc/filesystems';
 
-	my @fstab_keys = qw(account boot check dev mount nodename size type vfs vol log);
-	my @special_fs = qw(swap procfs proc tmpfs nfs mntfs autofs);
+    my @fstab_keys = qw(account boot check dev mount nodename size type vfs vol log);
+    my @special_fs = qw(swap procfs proc tmpfs nfs mntfs autofs);
 
-	my %curr_mountz = map {
-		my $path = $_ =~ m/^\s/ ? ( split )[1] : ( split )[2];
-		( $path => 1 );
-	}
-	qx( /usr/sbin/mount );
+    my %curr_mountz = map {
+        my $path = $_ =~ m/^\s/ ? (split)[1] : (split)[2];
+        ( $path => 1 );
+    } qx( /usr/sbin/mount );
 
-	my %fs_info	= map
-	{
-		my ( $path, $device, $vfs, $nodename, $type, $size, $options, $mount, $account ) = split( m/:/, $_ );
+    my %fs_info = map {
+        my ( $path, $device, $vfs, $nodename, $type, $size, $options, $mount, $account ) = split( m/:/, $_ );
 
-		( $path => [ $device, $vfs, $nodename, $type, $size, $options, $mount, $account ] )
-	}
-	grep { m/^#/ }
-	qx( /usr/sbin/lsfs -c );
+        ( $path => [ $device, $vfs, $nodename, $type, $size, $options, $mount, $account ] )
+      }
+      grep { m/^#/ } qx( /usr/sbin/lsfs -c );
 
-	foreach my $current_filesystem (keys %fs_info)
-	{
-		$self->{$current_filesystem}->{filesystem} = $current_filesystem;
+    foreach my $current_filesystem ( keys %fs_info )
+    {
+        $self->{$current_filesystem}->{filesystem} = $current_filesystem;
 
-		my ( $device, $vfs, $nodename, $type, $size, $options, $mount, $account ) =
-			@{ $fs_info{$current_filesystem} };
+        my ( $device, $vfs, $nodename, $type, $size, $options, $mount, $account ) = @{ $fs_info{$current_filesystem} };
 
-		$self->{ $current_filesystem }{ dev }      = $device;
-		$self->{ $current_filesystem }{ vfs }      = $vfs;
-		$self->{ $current_filesystem }{ options }  = $options;
-		$self->{ $current_filesystem }{ nodename } = $nodename;
-		$self->{ $current_filesystem }{ type }     = $type;
-		$self->{ $current_filesystem }{ size }     = $size;
-		$self->{ $current_filesystem }{ mount }    = $mount;
-		$self->{ $current_filesystem }{ account }  = $account;
-		if (defined($vfs) && grep(/^$vfs$/, @special_fs))
-		{
-			$self->{$current_filesystem}->{special} = 1;
-		}
+        $self->{$current_filesystem}{dev}      = $device;
+        $self->{$current_filesystem}{vfs}      = $vfs;
+        $self->{$current_filesystem}{options}  = $options;
+        $self->{$current_filesystem}{nodename} = $nodename;
+        $self->{$current_filesystem}{type}     = $type;
+        $self->{$current_filesystem}{size}     = $size;
+        $self->{$current_filesystem}{mount}    = $mount;
+        $self->{$current_filesystem}{account}  = $account;
+        if ( defined($vfs) && grep( /^$vfs$/, @special_fs ) )
+        {
+            $self->{$current_filesystem}->{special} = 1;
+        }
 
-		# the filesystem is either currently mounted or is not,
-		# this does not need to be checked for each individual 
-		# attribute.
+        # the filesystem is either currently mounted or is not,
+        # this does not need to be checked for each individual
+        # attribute.
 
-		my $state = defined($curr_mountz{$current_filesystem}) ? 'mounted' : 'unmounted';
-		$self->{ $current_filesystem }{ $state }  = 1;
-	}
+        my $state = defined( $curr_mountz{$current_filesystem} ) ? 'mounted' : 'unmounted';
+        $self->{$current_filesystem}{$state} = 1;
+    }
 
-	%fs_info = map
-	{
-		my ( $lvname, $type, $lps, $pps, $pvs, $lvstate, $path ) = split( m/\s+/, $_ );
+    %fs_info = map {
+        my ( $lvname, $type, $lps, $pps, $pvs, $lvstate, $path ) = split( m/\s+/, $_ );
 
-		( $path => [ $lvname, $type, $lps, $pps, $pvs, $lvstate ] )
-	}
-	grep { $_ !~ m/^\w+:$/ }
-	grep { $_ !~ m/^LV\sNAME\s+/ }
-	grep { $_ !~ m(N/A$) }
-	qx( /usr/sbin/lsvg -Ll `/usr/sbin/lsvg -Lo` );
+        ( $path => [ $lvname, $type, $lps, $pps, $pvs, $lvstate ] )
+      }
+      grep { $_ !~ m/^\w+:$/ }
+      grep { $_ !~ m/^LV\sNAME\s+/ }
+      grep { $_ !~ m(N/A$) } qx( /usr/sbin/lsvg -Ll `/usr/sbin/lsvg -Lo` );
 
-	foreach my $current_filesystem (keys %fs_info)
-	{
-		$self->{$current_filesystem}->{filesystem} = $current_filesystem;
+    foreach my $current_filesystem ( keys %fs_info )
+    {
+        $self->{$current_filesystem}->{filesystem} = $current_filesystem;
 
-		my ( $lvname, $type, $lps, $pps, $pvs, $lvstate ) =
-			@{ $fs_info{$current_filesystem} };
+        my ( $lvname, $type, $lps, $pps, $pvs, $lvstate ) = @{ $fs_info{$current_filesystem} };
 
-		$self->{ $current_filesystem }{ dev }      = $lvname;
-		$self->{ $current_filesystem }{ vfs }      = $type;
-		$self->{ $current_filesystem }{ LPs }      = $lps;
-		$self->{ $current_filesystem }{ PPs }      = $pps;
-		$self->{ $current_filesystem }{ PVs }      = $pvs;
-		$self->{ $current_filesystem }{ lvstate }  = $lvstate;
-		if (defined($type) && grep(/^$type$/, @special_fs))
-		{
-			$self->{$current_filesystem}->{special} = 1;
-		}
+        $self->{$current_filesystem}{dev}     = $lvname;
+        $self->{$current_filesystem}{vfs}     = $type;
+        $self->{$current_filesystem}{LPs}     = $lps;
+        $self->{$current_filesystem}{PPs}     = $pps;
+        $self->{$current_filesystem}{PVs}     = $pvs;
+        $self->{$current_filesystem}{lvstate} = $lvstate;
+        if ( defined($type) && grep( /^$type$/, @special_fs ) )
+        {
+            $self->{$current_filesystem}->{special} = 1;
+        }
 
-		# the filesystem is either currently mounted or is not,
-		# this does not need to be checked for each individual 
-		# attribute.
+        # the filesystem is either currently mounted or is not,
+        # this does not need to be checked for each individual
+        # attribute.
 
-		my $state = defined($curr_mountz{$current_filesystem}) ? 'mounted' : 'unmounted';
-		$self->{ $current_filesystem }{ $state }  = 1;
-	}
+        my $state = defined( $curr_mountz{$current_filesystem} ) ? 'mounted' : 'unmounted';
+        $self->{$current_filesystem}{$state} = 1;
+    }
 
-	# Read the fstab
-	my $fstab = new FileHandle;
-	if ($fstab->open($args{fstab})) {
-		my $current_filesystem = '*UNDEFINED*';
-		while (<$fstab>)
-		{
-			# skip comments and blank lines.
+    # Read the fstab
+    my $fstab = new FileHandle;
+    if ( $fstab->open( $args{fstab} ) )
+    {
+        my $current_filesystem = '*UNDEFINED*';
+        while (<$fstab>)
+        {
 
-			next if m{^ [*] }x || m{^ \s* $}x;
+            # skip comments and blank lines.
 
-			# Found a new filesystem group
-			if (/^\s*(.+?):\s*$/) {
-				$current_filesystem = $1;
-				$self->{$current_filesystem}->{filesystem} = $1;
+            next if m{^ [*] }x || m{^ \s* $}x;
 
-				# the filesystem is either currently mounted or is not,
-				# this does not need to be checked for each individual 
-				# attribute.
+            # Found a new filesystem group
+            if (/^\s*(.+?):\s*$/)
+            {
+                $current_filesystem = $1;
+                $self->{$current_filesystem}->{filesystem} = $1;
 
-				my $state = defined($curr_mountz{$current_filesystem}) ? 'mounted' : 'unmounted';
-				$self->{ $current_filesystem }{ $state }  = 1;
+                # the filesystem is either currently mounted or is not,
+                # this does not need to be checked for each individual
+                # attribute.
 
-			# This matches a filesystem attribute
-			} elsif (my ($key,$value) = $_ =~ /^\s*([a-z]{3,8})\s+=\s+"?(.+)"?\s*$/) {
-				unless( defined( $self->{$current_filesystem}->{$key} ) )
-				{
-					# do not overwrite already known data
-					$self->{$current_filesystem}->{$key} = $value;
-					if (($key eq 'vfs') && grep( /^$value$/, @special_fs ) ) {
-						$self->{$current_filesystem}->{special} = 1;
-					}
-				}
-			}
-		}
-		$fstab->close;
-	} else {
-		croak "Unable to open fstab file ($args{fstab})\n";
-	}
+                my $state = defined( $curr_mountz{$current_filesystem} ) ? 'mounted' : 'unmounted';
+                $self->{$current_filesystem}{$state} = 1;
 
-	bless($self,$class);
-	return $self;
+                # This matches a filesystem attribute
+            }
+            elsif ( my ( $key, $value ) = $_ =~ /^\s*([a-z]{3,8})\s+=\s+"?(.+)"?\s*$/ )
+            {
+                unless ( defined( $self->{$current_filesystem}->{$key} ) )
+                {
+
+                    # do not overwrite already known data
+                    $self->{$current_filesystem}->{$key} = $value;
+                    if ( ( $key eq 'vfs' ) && grep( /^$value$/, @special_fs ) )
+                    {
+                        $self->{$current_filesystem}->{special} = 1;
+                    }
+                }
+            }
+        }
+        $fstab->close;
+    }
+    else
+    {
+        croak "Unable to open fstab file ($args{fstab})\n";
+    }
+
+    bless( $self, $class );
+    return $self;
 }
 
 1;
@@ -309,7 +313,7 @@ L<perlgirl.org.uk>
 
 =head1 SEE ALSO
 
-=over4
+=over 4
 
 =item filesystems(4)
 
@@ -327,5 +331,4 @@ This software is licensed under The Apache Software License, Version 2.0.
 L<http://www.apache.org/licenses/LICENSE-2.0>
 
 =cut
-
 
