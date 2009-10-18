@@ -1,0 +1,76 @@
+1.23
+    Fixed Aix.pm (RT #34577), patches from LEMBARK, REHSACK
+    Fixed failing on OS X (RT #7958, RT #43681), patch from Dirk Langer
+    Taking Co-Maintainership (Jens Rehsack, CPAN Id: REHSACK)
+    Changing debug environment flag from DEBUG to SYS_FILESYSTEM_DEBUG
+1.22
+	Added CREDITS.
+	Fixed logic in Filesystem.pm:filesystems() where the inversion of
+	the 'regaular' and 'special' paramaters was not being handled
+	correctly, causing an incorrect selection of filesystems to be
+	returned sometimes.
+	Added fd ctfs devfs objfs and procfs as special filesystem types
+	in Solaris.pm.
+	Added procfs as a special filesyetem type to Aix.pm.
+	Changed Aix.pm to extract the filesystem type from the vfs
+	field in /etc/filesystems.
+	Added note in main POD warning people not to confuse "type" and
+	"vfs" when querying values under AIX.
+	Altered unit tests to be more reliable over different setups.
+
+1.21
+	Typo in Build.PL. Changed "build_requires" to
+	be "recommends".
+
+1.20
+	Fixed POD to reflect functionality that existed but
+	wasn't documented, or that was documented incorrectly.
+
+1.19
+	Changed license to Apache 2.0
+	http://www.apache.org/licenses/LICENSE-2.0
+	Fixed a couple of module file names.
+	Added additional unit tests.
+	Fixed loading of failover modules.
+	A few small bug fixes in parsing of some tab files.
+
+1.18
+	Modified Makefile.PL to submit information to perlgirl.org.uk
+	if the user agrees. Tweaked the POD slightly.
+
+1.16
+	Modified POD
+
+1.15
+	Updated for revision number and email address
+
+1.14
+	Added some new filesystem property aliases and reference to AIX
+	helper module
+
+1.13
+	Added extra documentation and the device option for the
+	filesystems method.
+
+1.12
+	Updated POD
+
+1.10
+	Fix from Win32 to MSWin32
+
+1.09
+	Updated Linux.pm to properly detect some more special fs types
+
+1.08
+	Added regular_filesystems() method
+	Added autofs and mntfs as special filesystems for Solaris
+
+1.07
+	Added solaris mnttab support
+	Fixed an AUTOLOAD and DESTROY issue
+
+1.06
+	Added alias support and more POD docs
+
+1.04
+	Initial release to get the code out there
