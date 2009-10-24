@@ -37,7 +37,7 @@ sub new
 {
     ref( my $class = shift ) && croak 'Class name required';
     my %args = @_;
-    my $self = {};
+    my $self = bless( {}, $class );
 
     # Defaults
     $args{fstab} ||= '/etc/fstab';
@@ -49,7 +49,7 @@ sub new
     my $mount_rx = qr|^([/:\w]+)\s+on\s+([/\w]+)\s+type\s+(\w+)|;
     my $swap_rx  = qr|^(/[/\w]+)\s+|;
 
-    my @mounts = qx( /sbin/mount -p );
+    my @mounts = qx( /sbin/mount );
     $self->get_mounts( $mount_rx, [ 0, 1, 2 ], [qw(fs_spec fs_file fs_vfstype)], \@special_fs, @mounts );
     $self->get_swap( $swap_rx, qx( /sbin/swapctl -l ) );
 
@@ -65,21 +65,9 @@ sub new
             my @vals = split( /\s+/, $_ );
             $self->{ $vals[1] }->{mount_point} = $vals[1];
             $self->{ $vals[1] }->{device}      = $vals[0];
-            if ( defined( $curr_mountz{ $vals[1] } ) )
-            {
-                $self->{ $vals[1] }->{mounted}    = 1;
-                $self->{ $vals[1] }->{device}     = $curr_mountz{ $vals[1] }->[0];
-                $self->{ $vals[1] }->{fs_vfstype} = $curr_mountz{ $vals[1] }->[1];
-            }
-            elsif ( defined( $curr_swapz{ $vals[0] } ) )
-            {
-                $self->{ $vals[1] }->{mounted} = 1;
-            }
-            else
-            {
-                $self->{ $vals[1] }->{unmounted} = 1;
-            }
-            $self->{ $vals[1] }->{special} = 1 if grep( /^$vals[2]$/, @special_fs );
+            $self->{ $vals[1] }->{unmounted}   = 1 unless ( defined( $self->{ $vals[1] }->{mounted} ) );
+            my $vfs_type = $self->{ $vals[1] }->{fs_vfstype} || $vals[2];
+            $self->{ $vals[1] }->{special} = 1 if grep( /^$vfs_type$/, @special_fs );
             for ( my $i = 0; $i < @keys; $i++ )
             {
                 $self->{ $vals[1] }->{ $keys[$i] } ||= $vals[$i];
@@ -88,7 +76,6 @@ sub new
         $fstab->close;
     }
 
-    bless( $self, $class );
     return $self;
 }
 
