@@ -24,8 +24,6 @@ package Sys::Filesystem::bsd;
 # vim:ts=4:sw=4:tw=78
 
 use strict;
-use FileHandle;
-use Carp qw(croak);
 
 use vars qw($VERSION);
 $VERSION = '1.25';
@@ -72,3 +70,90 @@ sub get_swap
 }
 
 1;
+
+=pod
+
+=head1 NAME
+
+Sys::Filesystem::bsd - parses the mounted file systems and swap devices for BSD operating systems
+
+=head1 SYNOPSIS
+
+See L<Sys::Filesystem>.
+
+=head1 VERSION
+
+$Id$
+
+=head1 METHODS
+
+=over 4
+
+=item get_mounts
+
+This method is called to parse the information got from C<mount> system command.
+It expects following arguments:
+
+=over 8
+
+=item mount_rx
+
+Regular expression to extract the information from each mount line.
+
+=item pridx
+
+Array reference containing the index for primary keys of interest in match
+in following order: device, mount_point, type.
+
+=item keys
+
+Array reference of the columns of the match - in order of paranteses in
+regular expression.
+
+=item special
+
+Array reference containing the names of the special file system types.
+
+=item lines
+
+Array containing the lines to parse.
+
+=back
+
+=item get_swap
+
+This method is called to parse the information from the swap status.
+It expects following arguments:
+
+=over 8
+
+=item swap_rx
+
+Regular expression to extract the information from each swap status line.
+This regular expression should have exact one pair of parantheses to
+identify the swap device.
+
+=item lines
+
+Array containing the lines to parse.
+
+=back
+
+=back
+
+=head1 AUTHOR
+
+Jens Rehsack <rehsack@cpan.org>
+
+L<http://www.rehsack.de/>
+
+=head1 COPYRIGHT
+
+Copyright 2009 Jens Rehsack.
+
+This software is licensed under The Apache Software License, Version 2.0.
+
+L<http://www.apache.org/licenses/LICENSE-2.0>
+
+=cut
+
