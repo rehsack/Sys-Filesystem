@@ -1,6 +1,6 @@
 ############################################################
 #
-#   $Id: Mswin32.pm 368 2006-03-23 17:38:56Z nicolaw $
+#   $Id$
 #   Sys::Filesystem - Retrieve list of filesystems and their properties
 #
 #   Copyright 2004,2005,2006 Nicola Worthington
@@ -68,7 +68,7 @@ See L<Sys::Filesystem>.
 
 =head1 VERSION
 
-$Id: Mswin32.pm 368 2006-03-23 17:38:56Z nicolaw $
+$Id$
 
 =head1 AUTHOR
 

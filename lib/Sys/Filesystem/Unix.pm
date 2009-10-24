@@ -1,6 +1,6 @@
 ############################################################
 #
-#   $Id: Unix.pm 364 2006-03-23 15:22:19Z nicolaw $
+#   $Id$
 #   Sys::Filesystem - Retrieve list of filesystems and their properties
 #
 #   Copyright 2004,2005,2006 Nicola Worthington
@@ -106,7 +106,7 @@ See L<Sys::Filesystem>.
 
 =head1 VERSION
 
-$Id: Unix.pm 364 2006-03-23 15:22:19Z nicolaw $
+$Id$
 
 =head1 AUTHOR
 

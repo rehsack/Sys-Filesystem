@@ -1,6 +1,6 @@
 ############################################################
 #
-#   $Id: Aix.pm 572 2006-06-01 18:57:59Z nicolaw $
+#   $Id$
 #   Sys::Filesystem - Retrieve list of filesystems and their properties
 #
 #   Copyright 2004,2005,2006 Nicola Worthington
@@ -254,7 +254,7 @@ L<Sys::Filesystem>
 
 =head1 VERSION
 
-$Id: Aix.pm 572 2006-06-01 18:57:59Z nicolaw $
+$Id$
 
 =head1 AUTHOR
 

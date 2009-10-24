@@ -1,6 +1,6 @@
 ############################################################
 #
-#   $Id: Solaris.pm 562 2006-06-01 11:14:15Z nicolaw $
+#   $Id$
 #   Sys::Filesystem - Retrieve list of filesystems and their properties
 #
 #   Copyright 2004,2005,2006 Nicola Worthington
@@ -166,7 +166,7 @@ L<Solaris::DeviceTree>
 
 =head1 VERSION
 
-$Id: Solaris.pm 562 2006-06-01 11:14:15Z nicolaw $
+$Id$
 
 =head1 AUTHOR
 

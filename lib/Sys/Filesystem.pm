@@ -29,6 +29,7 @@ use 5.006;
 use strict;
 use FileHandle;
 use Carp qw(croak cluck confess);
+use Params::Util qw(_INSTANCE);
 
 use constant DEBUG => $ENV{SYS_FILESYSTEM_DEBUG} ? 1 : 0;
 use constant SPECIAL => ( 'darwin' eq $^O ) ? 0 : undef;
@@ -103,10 +104,10 @@ sub new
 sub filesystems
 {
     my $self = shift;
-    unless ( ref $self eq __PACKAGE__ || UNIVERSAL::isa( $self, __PACKAGE__ ) )
+    unless ( defined( _INSTANCE( $self, __PACKAGE__ ) ) )
     {
-        unshift @_, $self;
-        $self = new __PACKAGE__;
+        unshift @_, $self unless ( 0 == ( scalar(@_) % 2 ) );
+        $self = __PACKAGE__->new();
     }
 
     # Check we've got something sane passed
@@ -327,8 +328,11 @@ therefore this option may be ignored on some systems.
 =item filesystems()
 
 Returns a list of all filesystem. May accept an optional list of key pair
-values in order to filter/restrict the results which are returned. Valid
-values are as follows:
+values in order to filter/restrict the results which are returned. The
+restrictions are evaluated to match as much as possible, so asking for
+regular and special file system, you'll get all.
+
+Valid values are as follows:
 
 =over 4
 

@@ -1,6 +1,6 @@
 ############################################################
 #
-#   $Id: Freebsd.pm 364 2006-03-23 15:22:19Z nicolaw $
+#   $Id$
 #   Sys::Filesystem - Retrieve list of filesystems and their properties
 #
 #   Copyright 2004,2005,2006 Nicola Worthington
@@ -153,7 +153,7 @@ L<Sys::Filesystem>, L<Sys::Filesystem::Unix>, L<fstab(5)>
 
 =head1 VERSION
 
-$Id: Freebsd.pm 364 2006-03-23 15:22:19Z nicolaw $
+$Id$
 
 =head1 AUTHOR
 
