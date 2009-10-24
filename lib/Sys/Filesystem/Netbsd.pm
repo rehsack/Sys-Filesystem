@@ -24,11 +24,14 @@ package Sys::Filesystem::Netbsd;
 # vim:ts=4:sw=4:tw=78
 
 use strict;
+use vars qw(@ISA $VERSION);
+
+require Sys::Filesystem::bsd;
 use FileHandle;
 use Carp qw(croak);
 
-use vars qw($VERSION);
-$VERSION = '1.24';
+$VERSION = '1.25';
+@ISA     = qw(Sys::Filesystem::bsd);
 
 sub new
 {
@@ -43,16 +46,12 @@ sub new
     my @keys       = qw(fs_spec fs_file fs_vfstype fs_mntops fs_freq fs_passno);
     my @special_fs = qw(swap procfs kernfs ptyfs tmpfs);
 
-    my %curr_mountz = map {
-        my ( $dev, $path ) = ( $_ =~ m|^([/\w]+)\s+on\s+([/\w]+)| ) && ( $1, $2 );
-        ( $path => $dev )
-    } qx( /sbin/mount );
+    my $mount_rx = qr|^([/:\w]+)\s+on\s+([/\w]+)\s+type\s+(\w+)|;
+    my $swap_rx  = qr|^(/[/\w]+)\s+|;
 
-    my %curr_swapz;
-    foreach my $swap (qx(/sbin/swapctl -l))
-    {
-        $curr_swapz{$1} = 1 if ( $swap =~ m|^(/[/\w]+)\s+| );
-    }
+    my @mounts = qx( /sbin/mount -p );
+    $self->get_mounts( $mount_rx, [ 0, 1, 2 ], [qw(fs_spec fs_file fs_vfstype)], \@special_fs, @mounts );
+    $self->get_swap( $swap_rx, qx( /sbin/swapctl -l ) );
 
     # Read the fstab
     my $fstab = FileHandle->new();
@@ -68,8 +67,9 @@ sub new
             $self->{ $vals[1] }->{device}      = $vals[0];
             if ( defined( $curr_mountz{ $vals[1] } ) )
             {
-                $self->{ $vals[1] }->{mounted} = 1;
-                $self->{ $vals[1] }->{device}  = $curr_mountz{ $vals[1] };
+                $self->{ $vals[1] }->{mounted}    = 1;
+                $self->{ $vals[1] }->{device}     = $curr_mountz{ $vals[1] }->[0];
+                $self->{ $vals[1] }->{fs_vfstype} = $curr_mountz{ $vals[1] }->[1];
             }
             elsif ( defined( $curr_swapz{ $vals[0] } ) )
             {
@@ -82,7 +82,7 @@ sub new
             $self->{ $vals[1] }->{special} = 1 if grep( /^$vals[2]$/, @special_fs );
             for ( my $i = 0; $i < @keys; $i++ )
             {
-                $self->{ $vals[1] }->{ $keys[$i] } = $vals[$i];
+                $self->{ $vals[1] }->{ $keys[$i] } ||= $vals[$i];
             }
         }
         $fstab->close;

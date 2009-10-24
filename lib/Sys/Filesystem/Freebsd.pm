@@ -4,6 +4,7 @@
 #   Sys::Filesystem - Retrieve list of filesystems and their properties
 #
 #   Copyright 2004,2005,2006 Nicola Worthington
+#   Copyright 2009           Jens Rehsack
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -24,37 +25,46 @@ package Sys::Filesystem::Freebsd;
 # vim:ts=4:sw=4:tw=78
 
 use strict;
+use vars qw(@ISA $VERSION);
+
+require Sys::Filesystem::bsd;
 use FileHandle;
 use Carp qw(croak);
 
-use vars qw($VERSION);
-$VERSION = '1.05';
+$VERSION = '1.25';
+@ISA     = qw(Sys::Filesystem::bsd);
 
 sub new
 {
     ref( my $class = shift ) && croak 'Class name required';
     my %args = @_;
-    my $self = {};
+    my $self = bless( {}, $class );
 
-    $args{fstab} ||= '/etc/fstab';
-    $args{mtab}  ||= '/etc/mtab';
-    $args{xtab}  ||= '/etc/lib/nfs/xtab';
+    $args{fstab} ||= $ENV{PATH_FSTAB} || '/etc/fstab';
 
     my @keys       = qw(fs_spec fs_file fs_vfstype fs_mntops fs_freq fs_passno);
     my @special_fs = qw(swap proc devpts tmpfs);
 
+    my $mount_rx = qr|^([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)|;
+    my $swap_rx  = qr|^(/[/\w]+)\s+|;
+
+    my @mounts = map { $_ =~ s/[\cI]+/ /g; chomp; $_ } qx( /sbin/mount -p );
+    $self->get_mounts( $mount_rx, [ 0, 1, 2 ], \@keys, \@special_fs, @mounts );
+    $self->get_swap( $swap_rx, qx( /sbin/swapctl -l ) );
+
     # Read the fstab
-    my $fstab = new FileHandle;
+    my $fstab = FileHandle->new();
     if ( $fstab->open( $args{fstab} ) )
     {
         while (<$fstab>)
         {
-            next if ( /^\s*#/ || /^\s*$/ );
+            next if ( m/^\s*#/ || /^\s*$/ );
             my @vals = split( /\s+/, $_ );
             $self->{ $vals[1] }->{mount_point} = $vals[1];
             $self->{ $vals[1] }->{device}      = $vals[0];
-            $self->{ $vals[1] }->{unmounted}   = 1;
-            $self->{ $vals[1] }->{special}     = 1 if grep( /^$vals[2]$/, @special_fs );
+            $self->{ $vals[1] }->{unmounted}   = 1 unless ( defined( $self->{ $vals[1] }->{mounted} ) );
+            my $vfs_type = $self->{ $vals[1] }->{fs_vfstype} || $vals[2];
+            $self->{ $vals[1] }->{special} = 1 if grep( /^$vfs_type$/, @special_fs );
             for ( my $i = 0; $i < @keys; $i++ )
             {
                 $self->{ $vals[1] }->{ $keys[$i] } = $vals[$i];
@@ -67,34 +77,7 @@ sub new
         croak "Unable to open fstab file ($args{fstab})\n";
     }
 
-    # Read the mtab
-    my $mtab = new FileHandle;
-    if ( $mtab->open( $args{mtab} ) )
-    {
-        while (<$mtab>)
-        {
-            next if ( /^\s*#/ || /^\s*$/ );
-            my @vals = split( /\s+/, $_ );
-            delete $self->{ $vals[1] }->{unmounted} if exists $self->{ $vals[1] }->{unmounted};
-            $self->{ $vals[1] }->{mounted}     = 1;
-            $self->{ $vals[1] }->{mount_point} = $vals[1];
-            $self->{ $vals[1] }->{device}      = $vals[0];
-            $self->{ $vals[1] }->{special}     = 1 if grep( /^$vals[2]$/, qw(swap proc devpts tmpfs) );
-            for ( my $i = 0; $i < @keys; $i++ )
-            {
-                $self->{ $vals[1] }->{ $keys[$i] } = $vals[$i];
-            }
-        }
-        $mtab->close;
-    }
-    else
-    {
-        croak "Unable to open mtab file ($args{mtab})\n";
-    }
-
-    # Bless and return
-    bless( $self, $class );
-    return $self;
+    $self;
 }
 
 1;

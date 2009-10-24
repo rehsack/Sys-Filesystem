@@ -33,7 +33,7 @@ use Carp qw(croak cluck confess);
 use constant DEBUG => $ENV{SYS_FILESYSTEM_DEBUG} ? 1 : 0;
 use constant SPECIAL => ( 'darwin' eq $^O ) ? 0 : undef;
 use vars qw($VERSION $AUTOLOAD);
-$VERSION = '1.24';
+$VERSION = '1.25';
 
 sub new
 {
@@ -254,9 +254,10 @@ Sys::Filesystem - Retrieve list of filesystems and their properties
     use Sys::Filesystem ();
     
     # Method 1
-    my $fs = new Sys::Filesystem;
+    my $fs = Sys::Filesystem->new();
     my @filesystems = $fs->filesystems();
-    for (@filesystems) {
+    for (@filesystems)
+    {
         printf("%s is a %s filesystem mounted on %s\n",
                           $fs->mount_point($_),
                           $fs->format($_),
@@ -266,9 +267,9 @@ Sys::Filesystem - Retrieve list of filesystems and their properties
     
     # Method 2
     my $weird_fs = Sys::Filesystem->new(
-                          fstab => "/etc/weird/vfstab.conf",
-                          mtab => "/etc/active_mounts",
-                          xtab => "/etc/nfs/mounts"
+                          fstab => '/etc/weird/vfstab.conf',
+                          mtab  => '/etc/active_mounts',
+                          xtab  => '/etc/nfs/mounts'
                     );
     my @weird_filesystems = $weird_fs->filesystems();
     
