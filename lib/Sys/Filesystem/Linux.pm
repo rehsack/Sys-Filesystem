@@ -41,7 +41,12 @@ sub version()
 
 # Default fstab and mtab layout
 my @keys = qw(fs_spec fs_file fs_vfstype fs_mntops fs_freq fs_passno);
-my %special_fs = (swap => 1, proc => 1, devpts => 1, tmpfs => 1,);
+my %special_fs = (
+                   swap   => 1,
+                   proc   => 1,
+                   devpts => 1,
+                   tmpfs  => 1,
+                 );
 
 sub new
 {
@@ -52,6 +57,7 @@ sub new
     # Defaults
     $args{fstab} ||= '/etc/fstab';
     $args{mtab}  ||= '/etc/mtab';
+
     #$args{xtab}  ||= '/etc/lib/nfs/xtab';
 
     local $/ = "\n";
@@ -70,7 +76,7 @@ sub new
             $self->{ $vals[1] }->{mount_point} = $vals[1];
             $self->{ $vals[1] }->{device}      = $vals[0];
             $self->{ $vals[1] }->{unmounted}   = 1;
-            $self->{ $vals[1] }->{special}     = 1 if( defined( $special_fs{$vals[2]} ) );
+            $self->{ $vals[1] }->{special}     = 1 if ( defined( $special_fs{ $vals[2] } ) );
             for ( my $i = 0; $i < @keys; ++$i )
             {
                 $self->{ $vals[1] }->{ $keys[$i] } = $vals[$i];
@@ -84,7 +90,7 @@ sub new
     }
 
     # Read the mtab
-    unless( $self->readMntTab( $args{mtab}, \@keys, [ 0, 1, 2], \%special_fs ) )
+    unless ( $self->readMntTab( $args{mtab}, \@keys, [ 0, 1, 2 ], \%special_fs ) )
     {
         croak "Unable to open fstab file ($args{mtab})\n";
     }

@@ -41,7 +41,21 @@ sub version()
 
 my @fstab_keys = qw(device device_to_fsck mount_point fs_vfstype fs_freq mount_at_boot fs_mntops);
 my @mtab_keys  = qw(device mount_point fs_vfstype fs_mntops time);
-my %special_fs = (swap => 1, proc => 1, procfs => 1, tmpfs => 1, mntfs => 1, autofs => 1, lofs => 1, fd => 1, ctfs => 1, devfs => 1, dev => 1, objfs => 1, cachefs => 1,);
+my %special_fs = (
+                   swap    => 1,
+                   proc    => 1,
+                   procfs  => 1,
+                   tmpfs   => 1,
+                   mntfs   => 1,
+                   autofs  => 1,
+                   lofs    => 1,
+                   fd      => 1,
+                   ctfs    => 1,
+                   devfs   => 1,
+                   dev     => 1,
+                   objfs   => 1,
+                   cachefs => 1,
+                 );
 
 sub new
 {
@@ -52,12 +66,12 @@ sub new
     $args{fstab} ||= '/etc/vfstab';
     $args{mtab}  ||= '/etc/mnttab';
 
-    unless( $self->readFsTab( $args{fstab}, \@fstab_keys, [ 0, 2, 3 ], \%special_fs ) )
+    unless ( $self->readFsTab( $args{fstab}, \@fstab_keys, [ 0, 2, 3 ], \%special_fs ) )
     {
         croak "Unable to open fstab file ($args{fstab})\n";
     }
 
-    unless( $self->readMntTab( $args{mtab}, \@mtab_keys, [ 0, 1, 2 ], \%special_fs ) )
+    unless ( $self->readMntTab( $args{mtab}, \@mtab_keys, [ 0, 1, 2 ], \%special_fs ) )
     {
         croak "Unable to open mtab file ($args{mtab})\n";
     }

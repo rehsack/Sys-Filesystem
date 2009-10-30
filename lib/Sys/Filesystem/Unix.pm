@@ -38,8 +38,11 @@ sub version()
 }
 
 # Default fstab and mtab layout
-my @keys       = qw(fs_spec fs_file fs_vfstype fs_mntops fs_freq fs_passno);
-my %special_fs = (swap => 1, proc => 1 );
+my @keys = qw(fs_spec fs_file fs_vfstype fs_mntops fs_freq fs_passno);
+my %special_fs = (
+                   swap => 1,
+                   proc => 1
+                 );
 
 sub new
 {
@@ -50,6 +53,7 @@ sub new
     # Defaults
     $args{fstab} ||= '/etc/fstab';
     $args{mtab}  ||= '/etc/mtab';
+
     # $args{xtab}  ||= '/etc/lib/nfs/xtab';
 
     $self->readFsTab( $args{fstab}, \@keys, \%special_fs );
@@ -69,36 +73,39 @@ sub readFsTab($\@\@\%)
         while (<$fstab>)
         {
             next if ( /^\s*#/ || /^\s*$/ );
-	    # $_ =~ s/#.*$//;
+
+            # $_ =~ s/#.*$//;
             # next if( /^\s*$/ );
 
             my @vals = split( /\s+/, $_ );
             $self->{ $vals[ $pridx->[1] ] }->{mount_point} = $vals[ $pridx->[1] ];
             $self->{ $vals[ $pridx->[1] ] }->{device}      = $vals[ $pridx->[0] ];
-            $self->{ $vals[ $pridx->[1] ] }->{unmounted}   = 1 unless( defined( $self->{ $vals[ $pridx->[1] ] }->{mounted} ) );
+            $self->{ $vals[ $pridx->[1] ] }->{unmounted}   = 1
+              unless ( defined( $self->{ $vals[ $pridx->[1] ] }->{mounted} ) );
 
-            if( defined( $pridx->[2] ) )
-	    {
+            if ( defined( $pridx->[2] ) )
+            {
                 my $vfs_type;
                 $vfs_type = $self->{ $vals[ $pridx->[1] ] }->{fs_vfstype} = $vals[ $pridx->[2] ];
-                $self->{ $vals[ $pridx->[1] ] }->{special} = 1 if( defined( $special_fs->{vfs_types} ) );
+                $self->{ $vals[ $pridx->[1] ] }->{special} = 1 if ( defined( $special_fs->{vfs_types} ) );
             }
-	    else
-	    {
-	        $self->{ $vals[ $pridx->[1] ] }->{special} = 0 unless( defined($self->{ $vals[ $pridx->[1] ] }->{special}) );
-	    }
-	    
+            else
+            {
+                $self->{ $vals[ $pridx->[1] ] }->{special} = 0
+                  unless ( defined( $self->{ $vals[ $pridx->[1] ] }->{special} ) );
+            }
+
             for ( my $i = 0; $i < @{$fstabKeys}; ++$i )
             {
                 $self->{ $vals[ $pridx->[1] ] }->{ $fstabKeys->[$i] } = $vals[$i];
             }
         }
         $fstab->close();
-	1;
+        1;
     }
     else
     {
-	0;
+        0;
     }
 }
 
@@ -114,25 +121,28 @@ sub readMntTab($\@\@\%)
         while (<$mtab>)
         {
             next if ( /^\s*#/ || /^\s*$/ );
-	    # $_ =~ s/#.*$//;
+
+            # $_ =~ s/#.*$//;
             # next if( /^\s*$/ );
 
             my @vals = split( /\s+/, $_ );
-            delete $self->{ $vals[ $pridx->[1] ] }->{unmounted} if( exists( $self->{ $vals[ $pridx->[1] ] }->{unmounted} ) );
+            delete $self->{ $vals[ $pridx->[1] ] }->{unmounted}
+              if ( exists( $self->{ $vals[ $pridx->[1] ] }->{unmounted} ) );
             $self->{ $vals[ $pridx->[1] ] }->{mounted}     = 1;
             $self->{ $vals[ $pridx->[1] ] }->{mount_point} = $vals[ $pridx->[1] ];
             $self->{ $vals[ $pridx->[1] ] }->{device}      = $vals[ $pridx->[0] ];
 
-            if( defined( $pridx->[2] ) )
-	    {
+            if ( defined( $pridx->[2] ) )
+            {
                 my $vfs_type;
                 $vfs_type = $self->{ $vals[ $pridx->[1] ] }->{fs_vfstype} = $vals[ $pridx->[2] ];
-                $self->{ $vals[ $pridx->[1] ] }->{special} = 1 if( defined( $special_fs->{vfs_types} ) );
+                $self->{ $vals[ $pridx->[1] ] }->{special} = 1 if ( defined( $special_fs->{vfs_types} ) );
             }
-	    else
-	    {
-	        $self->{ $vals[ $pridx->[1] ] }->{special} = 0 unless( defined($self->{ $vals[ $pridx->[1] ] }->{special}) );
-	    }
+            else
+            {
+                $self->{ $vals[ $pridx->[1] ] }->{special} = 0
+                  unless ( defined( $self->{ $vals[ $pridx->[1] ] }->{special} ) );
+            }
 
             for ( my $i = 0; $i < @{$mnttabKeys}; ++$i )
             {
@@ -140,7 +150,7 @@ sub readMntTab($\@\@\%)
             }
         }
         $mtab->close();
-	1;
+        1;
     }
     else
     {
@@ -158,19 +168,21 @@ sub readMounts
         {
             $self->{ $vals[ $pridx->[1] ] }->{mount_point} = $vals[ $pridx->[1] ];
             $self->{ $vals[ $pridx->[1] ] }->{device}      = $vals[ $pridx->[0] ];
-            $self->{ $vals[ $pridx->[1] ] }->{mounted} = 1;
-            delete $self->{ $vals[ $pridx->[1] ] }->{unmounted} if( exists( $self->{ $vals[ $pridx->[1] ] }->{unmounted} ) );
+            $self->{ $vals[ $pridx->[1] ] }->{mounted}     = 1;
+            delete $self->{ $vals[ $pridx->[1] ] }->{unmounted}
+              if ( exists( $self->{ $vals[ $pridx->[1] ] }->{unmounted} ) );
 
-            if( defined( $pridx->[2] ) )
-	    {
+            if ( defined( $pridx->[2] ) )
+            {
                 my $vfs_type;
                 $vfs_type = $self->{ $vals[ $pridx->[1] ] }->{fs_vfstype} = $vals[ $pridx->[2] ];
-                $self->{ $vals[ $pridx->[1] ] }->{special} = 1 if( defined( $special->{vfs_types} ) );
+                $self->{ $vals[ $pridx->[1] ] }->{special} = 1 if ( defined( $special->{vfs_types} ) );
             }
-	    else
-	    {
-	        $self->{ $vals[ $pridx->[1] ] }->{special} = 0 unless( defined($self->{ $vals[ $pridx->[1] ] }->{special}) );
-	    }
+            else
+            {
+                $self->{ $vals[ $pridx->[1] ] }->{special} = 0
+                  unless ( defined( $self->{ $vals[ $pridx->[1] ] }->{special} ) );
+            }
 
             for ( my $i = 0; $i < @{$keys}; ++$i )
             {

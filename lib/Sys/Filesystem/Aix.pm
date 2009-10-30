@@ -39,7 +39,14 @@ sub version()
 }
 
 my @fstab_keys = qw(account boot check dev mount nodename size type vfs vol log);
-my %special_fs = (swap => 1, procfs => 1, proc => 1, tmpfs => 1, mntfs => 1, autofs => 1, );
+my %special_fs = (
+                   swap   => 1,
+                   procfs => 1,
+                   proc   => 1,
+                   tmpfs  => 1,
+                   mntfs  => 1,
+                   autofs => 1,
+                 );
 
 sub new
 {
@@ -76,7 +83,7 @@ sub new
         $self->{$current_filesystem}->{size}     = $size;
         $self->{$current_filesystem}->{mount}    = $mount;
         $self->{$current_filesystem}->{account}  = $account;
-        $self->{$current_filesystem}->{special} = 1 if ( defined($vfs) && defined( $special_fs{$vfs} ) );
+        $self->{$current_filesystem}->{special}  = 1 if ( defined($vfs) && defined( $special_fs{$vfs} ) );
 
         # the filesystem is either currently mounted or is not,
         # this does not need to be checked for each individual
@@ -121,6 +128,7 @@ sub new
         my $current_filesystem = '*UNDEFINED*';
         while (<$fstab>)
         {
+
             # skip comments and blank lines.
             next if m{^ [*] }x || m{^ \s* $}x;
 
@@ -142,6 +150,7 @@ sub new
             {
                 unless ( defined( $self->{$current_filesystem}->{$key} ) )
                 {
+
                     # do not overwrite already known data
                     $self->{$current_filesystem}->{$key} = $value;
                     if ( ( $key eq 'vfs' ) && defined( $special_fs{$value} ) )

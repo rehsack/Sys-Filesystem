@@ -39,8 +39,13 @@ sub version()
     return $VERSION;
 }
 
-my @keys       = qw(fs_spec fs_file fs_vfstype fs_mntops fs_freq fs_passno);
-my %special_fs = (swap => 1, proc=> 1, devpts=> 1, tmpfs=> 1, );
+my @keys = qw(fs_spec fs_file fs_vfstype fs_mntops fs_freq fs_passno);
+my %special_fs = (
+                   swap   => 1,
+                   proc   => 1,
+                   devpts => 1,
+                   tmpfs  => 1,
+                 );
 
 my $mount_rx = qr|^([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)|;
 my $swap_rx  = qr|^(/[/\w]+)\s+|;
@@ -56,7 +61,7 @@ sub new
     my @mounts = map { $_ =~ s/[\cI]+/ /g; chomp; $_ } qx( /sbin/mount -p );
     $self->readMounts( $mount_rx, [ 0, 1, 2 ], \@keys, \%special_fs, @mounts );
     $self->readSwap( $swap_rx, qx( /sbin/swapctl -l ) );
-    unless( $self->readFsTab( $args{fstab}, \@keys, [0, 1, 2], \%special_fs ) )
+    unless ( $self->readFsTab( $args{fstab}, \@keys, [ 0, 1, 2 ], \%special_fs ) )
     {
         croak "Unable to open fstab file ($args{fstab})\n";
     }

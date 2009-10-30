@@ -75,7 +75,9 @@ sub new
         }
     }
 
-    $self->{supported} = ( ref($self->{filesystems}) ne 'Sys::Filesystem::Unix' ) && ( ref($self->{filesystems}) ne 'Sys::Filesystem::Dummy' );
+    $self->{supported} =
+         ( ref( $self->{filesystems} ) ne 'Sys::Filesystem::Unix' )
+      && ( ref( $self->{filesystems} ) ne 'Sys::Filesystem::Dummy' );
 
     # Filesystem property aliases
     $self->{aliases} = {
@@ -144,11 +146,12 @@ sub filesystems
             for my $requirement ( keys( %{$params} ) )
             {
                 my $fsreqname = $requirement;
-                if( !exists($self->{filesystems}->{$fs}->{$requirement}) && exists($self->{aliases}->{$requirement}) )
+                if (   !exists( $self->{filesystems}->{$fs}->{$requirement} )
+                     && exists( $self->{aliases}->{$requirement} ) )
                 {
-                    foreach my $fsreqdef (@{$self->{aliases}->{$requirement}})
+                    foreach my $fsreqdef ( @{ $self->{aliases}->{$requirement} } )
                     {
-                        if( exists($self->{filesystems}->{$fs}->{$fsreqdef}) )
+                        if ( exists( $self->{filesystems}->{$fs}->{$fsreqdef} ) )
                         {
                             $fsreqname = $fsreqdef;
                             last;
@@ -199,7 +202,7 @@ sub DESTROY { }
 
 sub AUTOLOAD
 {
-    my ($self, $fs) = @_;
+    my ( $self, $fs ) = @_;
     my $type = ref($self) || croak "$self is not an object";
 
     croak "No filesystem passed where expected" unless $fs;

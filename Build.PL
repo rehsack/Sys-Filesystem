@@ -20,7 +20,7 @@ $build = Module::Build->new(
                   'perl'         => '5.006',
                   'Carp'         => 0,
                   'Params::Util' => '1.00',
-		  'IO'           => 0,
+                  'IO'           => 0,
                   ( $^O eq /Win32/i ? ( 'Win32::DriveInfo' => 0, ) : () ),
                 },
 

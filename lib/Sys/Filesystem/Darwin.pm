@@ -42,7 +42,7 @@ sub version()
     return $VERSION;
 }
 
-my @dt_keys = qw(fs_spec fs_file fs_vfstype fs_name);
+my @dt_keys    = qw(fs_spec fs_file fs_vfstype fs_name);
 my @mount_keys = qw(fs_spec fs_file fs_mntops);
 my %special_fs = qw();
 
@@ -69,6 +69,7 @@ sub new
     close($m_fh);
 
     $self->readMounts( $dt_rx, [ 0, 1, 2 ], \@dt_keys, \%special_fs, @fslist );
+
     #foreach (@fslist)
     #{
     #    # For mounted FTP servers, fsType and volName are empty on Mac OS X 10.3
@@ -86,6 +87,7 @@ sub new
     #}
 
     $self->readMounts( $mount_rx, [ 0, 1 ], \@mount_keys, \%special_fs, @mntlist );
+
     # set the mount options
     #foreach (@mntlist)
     #{

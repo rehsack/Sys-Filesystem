@@ -31,7 +31,7 @@ require Sys::Filesystem::Unix;
 use Carp qw(croak);
 
 $VERSION = '1.25';
-@ISA = qw(Sys::Filesystem::Unix);
+@ISA     = qw(Sys::Filesystem::Unix);
 
 sub version()
 {
@@ -41,7 +41,10 @@ sub version()
 # Default fstab and mtab layout
 my @fstabkeys  = qw(fs_spec fs_file fs_vfstype fs_mntops fs_freq fs_passno);
 my @mnttabkeys = qw(fs_spec fs_file fs_vfstype fs_mntops fs_freq fs_passno mount_time);
-my %special_fs = (swap => 1, proc => 1);
+my %special_fs = (
+                   swap => 1,
+                   proc => 1
+                 );
 
 sub new
 {
@@ -54,12 +57,12 @@ sub new
     $args{fstab} ||= '/etc/fstab';
     $args{mtab}  ||= '/etc/mnttab';
 
-    unless( $self->readFsTab( $args{fstab}, \@fstabkeys, [ 0, 1, 2], \%special_fs ) )
+    unless ( $self->readFsTab( $args{fstab}, \@fstabkeys, [ 0, 1, 2 ], \%special_fs ) )
     {
         croak "Unable to open fstab file ($args{fstab})\n";
     }
 
-    unless( $self->readMntTab( $args{mtab}, \@mnttabkeys, [ 0, 1, 2], \%special_fs ) )
+    unless ( $self->readMntTab( $args{mtab}, \@mnttabkeys, [ 0, 1, 2 ], \%special_fs ) )
     {
         croak "Unable to open fstab file ($args{mtab})\n";
     }
