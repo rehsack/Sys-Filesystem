@@ -139,11 +139,23 @@ sub filesystems
     {
         for my $fs ( sort( keys( %{ $self->{filesystems} } ) ) )
         {
-            for my $requirement ( keys %{$params} )
+            for my $requirement ( keys( %{$params} ) )
             {
-                if ( ( defined $params->{$requirement} && exists $self->{filesystems}->{$fs}->{$requirement} )
-                     && $self->{filesystems}->{$fs}->{$requirement} eq $params->{$requirement}
-                     || ( !defined $params->{$requirement} && !exists $self->{filesystems}->{$fs}->{$requirement} ) )
+                my $fsreqname = $requirement;
+                if( !exists($self->{filesystems}->{$fs}->{$requirement}) && exists($self->{aliases}->{$requirement}) )
+                {
+                    foreach my $fsreqdef (@{$self->{aliases}->{$requirement}})
+                    {
+                        if( exists($self->{filesystems}->{$fs}->{$fsreqdef}) )
+                        {
+                            $fsreqname = $fsreqdef;
+                            last;
+                        }
+                    }
+                }
+                if ( ( defined $params->{$requirement} && exists $self->{filesystems}->{$fs}->{$fsreqname} )
+                     && $self->{filesystems}->{$fs}->{$fsreqname} eq $params->{$requirement}
+                     || ( !defined $params->{$requirement} && !exists $self->{filesystems}->{$fs}->{$fsreqname} ) )
                 {
                     push @filesystems, $fs;
                     last;
@@ -184,10 +196,9 @@ sub DESTROY { }
 
 sub AUTOLOAD
 {
-    my $self = shift;
+    my ($self, $fs) = @_;
     my $type = ref($self) || croak "$self is not an object";
 
-    my $fs = shift;
     croak "No filesystem passed where expected" unless $fs;
 
     ( my $name = $AUTOLOAD ) =~ s/.*://;
@@ -229,7 +240,7 @@ sub AUTOLOAD
 sub TRACE
 {
     return unless DEBUG;
-    warn( shift() );
+    warn( $_[0] );
 }
 
 sub DUMP
@@ -285,6 +296,11 @@ Solaris and Win32 modules available on CPAN to perform this kind of operation.
 This module hopes to provide a consistant API to list all, mounted, unmounted
 and special filesystems on a system, and query as many properties as possible
 with common aliases wherever possible.
+
+=head1 INHERITANCE
+
+  Sys::Filesystem
+  ISA UNIVERSAL
 
 =head1 METHODS
 
@@ -525,21 +541,13 @@ L<perlport>, L<Solaris::DeviceTree>, L<Win32::DriveInfo>
 
 =head1 VERSION
 
-Sys::Filesystem 1.24
+$Id$
 
 =head1 AUTHOR
 
-=over 4
+Nicola Worthington <nicolaw@cpan.org> - L<http://perlgirl.org.uk>
 
-=item Nicola Worthington <nicolaw@cpan.org>
-
-L<http://perlgirl.org.uk>
-
-=item Jens Rehsack <rehsack@cpan.org>
-
-L<http://www.rehsack.de/>
-
-=back
+Jens Rehsack <rehsack@cpan.org> - L<http://www.rehsack.de/>
 
 =head1 ACKNOWLEDGEMENTS
 
@@ -548,6 +556,7 @@ See CREDITS in the distribution tarball.
 =head1 COPYRIGHT
 
 Copyright 2004,2005,2006 Nicola Worthington.
+
 Copyright 2008,2009 Jens Rehsack.
 
 This software is licensed under The Apache Software License, Version 2.0.

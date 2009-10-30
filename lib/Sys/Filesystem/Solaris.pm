@@ -4,6 +4,7 @@
 #   Sys::Filesystem - Retrieve list of filesystems and their properties
 #
 #   Copyright 2004,2005,2006 Nicola Worthington
+#   Copyright 2009           Jens Rehsack
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -24,86 +25,44 @@ package Sys::Filesystem::Solaris;
 # vim:ts=4:sw=4:tw=78
 
 use strict;
-use FileHandle;
-use Fcntl qw(:flock);
-use Carp qw(croak);
+use warnings;
+use vars qw($VERSION @ISA);
 
-use vars qw($VERSION);
-$VERSION = '1.13';
+use Carp qw(croak);
+require Sys::Filesystem::Unix;
+
+$VERSION = '1.25';
+@ISA     = qw(Sys::Filesystem::Unix);
+
+sub version()
+{
+    return $VERSION;
+}
+
+my @fstab_keys = qw(device device_to_fsck mount_point fs_vfstype fs_freq mount_at_boot fs_mntops);
+my @mtab_keys  = qw(device mount_point fs_vfstype fs_mntops time);
+my %special_fs = (swap => 1, proc => 1, procfs => 1, tmpfs => 1, mntfs => 1, autofs => 1, lofs => 1, fd => 1, ctfs => 1, devfs => 1, dev => 1, objfs => 1, cachefs => 1,);
 
 sub new
 {
     ref( my $class = shift ) && croak 'Class name required';
     my %args = @_;
-    my $self = {};
+    my $self = bless( {}, $class );
 
     $args{fstab} ||= '/etc/vfstab';
     $args{mtab}  ||= '/etc/mnttab';
 
-    #$args{xtab} ||= '/etc/lib/nfs/xtab';
-
-    my @fstab_keys = qw(device device_to_fsck mount_point fs_vfstype fs_freq mount_at_boot fs_mntops);
-    my @mtab_keys  = qw(device mount_point fs_vfstype fs_mntops time);
-
-    my @special_fs = qw(swap proc procfs tmpfs nfs mntfs autofs lofs fd ctfs devfs objfs cachefs);
-    local $/ = "\n";
-
-    # Read the fstab
-    my $fstab = new FileHandle;
-    if ( $fstab->open( $args{fstab} ) )
-    {
-        while (<$fstab>)
-        {
-            next if ( /^\s*#/ || /^\s*$/ );
-            my @vals = split( /\s+/, $_ );
-            next if "-" eq $vals[2];
-
-            for ( my $i = 0; $i < @fstab_keys; $i++ )
-            {
-                $vals[$i] = '' unless defined $vals[$i];
-            }
-            $self->{ $vals[2] }->{unmounted} = 1;
-            $self->{ $vals[2] }->{special} = 1 if grep( /^$vals[3]$/, @special_fs );
-            for ( my $i = 0; $i < @fstab_keys; $i++ )
-            {
-                $self->{ $vals[2] }->{ $fstab_keys[$i] } = $vals[$i];
-            }
-        }
-        $fstab->close;
-    }
-    else
+    unless( $self->readFsTab( $args{fstab}, \@fstab_keys, [ 0, 2, 3 ], \%special_fs ) )
     {
         croak "Unable to open fstab file ($args{fstab})\n";
     }
 
-    # Read the mtab
-    my $mtab = new FileHandle;
-
-    #if ($mtab->open($args{mtab})) {
-    if ( $mtab->open( $args{mtab} ) && flock $mtab, LOCK_SH | LOCK_NB )
-    {
-        while (<$mtab>)
-        {
-            next if /^\s*#/;
-            next if /^\s*$/;
-            my @vals = split( /\s+/, $_ );
-            delete $self->{ $vals[1] }->{unmounted} if exists $self->{ $vals[1] }->{unmounted};
-            $self->{ $vals[1] }->{mounted} = 1;
-            $self->{ $vals[1] }->{special} = 1 if grep( /^$vals[2]$/, @special_fs );
-            for ( my $i = 0; $i < @mtab_keys; $i++ )
-            {
-                $self->{ $vals[1] }->{ $mtab_keys[$i] } = $vals[$i];
-            }
-        }
-        $mtab->close;
-    }
-    else
+    unless( $self->readMntTab( $args{mtab}, \@mtab_keys, [ 0, 1, 2 ], \%special_fs ) )
     {
         croak "Unable to open mtab file ($args{mtab})\n";
     }
 
-    bless( $self, $class );
-    return $self;
+    $self;
 }
 
 1;
@@ -118,7 +77,23 @@ Sys::Filesystem::Solaris - Return Solaris filesystem information to Sys::Filesys
 
 See L<Sys::Filesystem>.
 
+=head1 INHERITANCE
+
+  Sys::Filesystem::Solaris
+  ISA Sys::Filesystem::Unix
+    ISA UNIVERSAL
+
 =head1 METHODS
+
+=over 4
+
+=item version ()
+
+Return the version of the (sub)module.
+
+=back
+
+=head1 ATTRIBUTES
 
 The following is a list of filesystem properties which may
 be queried as methods through the parent L<Sys::Filesystem> object.
@@ -170,13 +145,14 @@ $Id$
 
 =head1 AUTHOR
 
-Nicola Worthington <nicolaworthington@msn.com>
+Nicola Worthington <nicolaw@cpan.org> - L<http://perlgirl.org.uk>
 
-L<http://perlgirl.org.uk>
+Jens Rehsack <rehsack@cpan.org> - L<http://www.rehsack.de/>
 
 =head1 COPYRIGHT
 
 Copyright 2004,2005,2006 Nicola Worthington.
+Copyright 2009 Jens Rehsack.
 
 This software is licensed under The Apache Software License, Version 2.0.
 

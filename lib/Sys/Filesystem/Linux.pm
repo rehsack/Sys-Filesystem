@@ -24,29 +24,40 @@ package Sys::Filesystem::Linux;
 # vim:ts=4:sw=4:tw=78
 
 use strict;
-use FileHandle;
-use Carp qw(croak);
+use warnings;
+use vars qw($VERSION @ISA);
 
-use vars qw($VERSION);
-$VERSION = '1.13';
+use Carp qw(croak);
+require IO::File;
+require Sys::Filesystem::Unix;
+
+$VERSION = '1.25';
+@ISA     = qw(Sys::Filesystem::Unix);
+
+sub version()
+{
+    return $VERSION;
+}
+
+# Default fstab and mtab layout
+my @keys = qw(fs_spec fs_file fs_vfstype fs_mntops fs_freq fs_passno);
+my %special_fs = (swap => 1, proc => 1, devpts => 1, tmpfs => 1,);
 
 sub new
 {
     ref( my $class = shift ) && croak 'Class name required';
     my %args = @_;
-    my $self = {};
+    my $self = bless( {}, $class );
 
     # Defaults
     $args{fstab} ||= '/etc/fstab';
     $args{mtab}  ||= '/etc/mtab';
-    $args{xtab}  ||= '/etc/lib/nfs/xtab';
+    #$args{xtab}  ||= '/etc/lib/nfs/xtab';
 
-    # Default fstab and mtab layout
-    my @keys = qw(fs_spec fs_file fs_vfstype fs_mntops fs_freq fs_passno);
+    local $/ = "\n";
 
     # Read the fstab
-    my $fstab = new FileHandle;
-    if ( $fstab->open( $args{fstab} ) )
+    if ( my $fstab = IO::File->new( $args{fstab}, 'r' ) )
     {
         while (<$fstab>)
         {
@@ -59,13 +70,13 @@ sub new
             $self->{ $vals[1] }->{mount_point} = $vals[1];
             $self->{ $vals[1] }->{device}      = $vals[0];
             $self->{ $vals[1] }->{unmounted}   = 1;
-            $self->{ $vals[1] }->{special}     = 1 if grep( /^$vals[2]$/, qw(swap proc devpts tmpfs) );
-            for ( my $i = 0; $i < @keys; $i++ )
+            $self->{ $vals[1] }->{special}     = 1 if( defined( $special_fs{$vals[2]} ) );
+            for ( my $i = 0; $i < @keys; ++$i )
             {
                 $self->{ $vals[1] }->{ $keys[$i] } = $vals[$i];
             }
         }
-        $fstab->close;
+        $fstab->close();
     }
     else
     {
@@ -73,35 +84,12 @@ sub new
     }
 
     # Read the mtab
-    my $mtab = new FileHandle;
-    if ( $mtab->open( $args{mtab} ) )
+    unless( $self->readMntTab( $args{mtab}, \@keys, [ 0, 1, 2], \%special_fs ) )
     {
-        while (<$mtab>)
-        {
-            next if /^\s*\#/;
-            next if /^\s*$/;
-            my @vals = split( /\s+/, $_ );
-            delete $self->{ $vals[1] }->{unmounted} if exists $self->{ $vals[1] }->{unmounted};
-            $self->{ $vals[1] }->{mounted}     = 1;
-            $self->{ $vals[1] }->{mount_point} = $vals[1];
-            $self->{ $vals[1] }->{device}      = $vals[0];
-            $self->{ $vals[1] }->{special}     = 1 if grep( /^$vals[2]$/, qw(swap proc devpts tmpfs) );
-
-            for ( my $i = 0; $i < @keys; $i++ )
-            {
-                $self->{ $vals[1] }->{ $keys[$i] } = $vals[$i];
-            }
-        }
-        $mtab->close;
-    }
-    else
-    {
-        croak "Unable to open mtab file ($args{mtab})\n";
+        croak "Unable to open fstab file ($args{mtab})\n";
     }
 
-    # Bless and return
-    bless( $self, $class );
-    return $self;
+    $self;
 }
 
 1;
@@ -116,7 +104,23 @@ Sys::Filesystem::Linux - Return Linux filesystem information to Sys::Filesystem
 
 See L<Sys::Filesystem>.
 
+=head1 INHERITANCE
+
+  Sys::Filesystem::Linux
+  ISA Sys::Filesystem::Unix
+    ISA UNIVERSAL
+
 =head1 METHODS
+
+=over 4
+
+=item version ()
+
+Return the version of the (sub)module.
+
+=back
+
+=head1 ATTRIBUTES
 
 The following is a list of filesystem properties which may
 be queried as methods through the parent L<Sys::Filesystem> object.
@@ -138,7 +142,6 @@ L<e2label(8)> or  L<xfs_admin(8)>),  writing  LABEL=<label>  or  UUID=<uuid>,
 e.g.,   ‘LABEL=Boot’   or  ‘UUID=3e6be9de-8139-11d1-9106-a43f08d823a6’.
 This will make the system more robust: adding or removing a  SCSI  disk
 changes the disk device name but not the filesystem volume label.
-
 
 =item fs_file
 
@@ -205,13 +208,15 @@ $Id$
 
 =head1 AUTHOR
 
-Nicola Worthington <nicolaw@cpan.org>
+Nicola Worthington <nicolaw@cpan.org> - L<http://perlgirl.org.uk>
 
-L<http://perlgirl.org.uk>
+Jens Rehsack <rehsack@cpan.org> - L<http://www.rehsack.de/>
 
 =head1 COPYRIGHT
 
 Copyright 2004,2005,2006 Nicola Worthington.
+
+Copyright 2009 Jens Rehsack.
 
 This software is licensed under The Apache Software License, Version 2.0.
 

@@ -26,12 +26,23 @@ package Sys::Filesystem::Netbsd;
 use strict;
 use vars qw(@ISA $VERSION);
 
-require Sys::Filesystem::bsd;
-use FileHandle;
+require Sys::Filesystem::Unix;
 use Carp qw(croak);
 
 $VERSION = '1.25';
-@ISA     = qw(Sys::Filesystem::bsd);
+@ISA     = qw(Sys::Filesystem::Unix);
+
+sub version()
+{
+    return $VERSION;
+}
+
+# Default fstab and mtab layout
+my @keys       = qw(fs_spec fs_file fs_vfstype fs_mntops fs_freq fs_passno);
+my %special_fs = (swap => 1, procfs => 1, kernfs => 1, ptyfs => 1, tmpfs => 1,);
+
+my $mount_rx = qr|^([/:\w]+)\s+on\s+([/\w]+)\s+type\s+(\w+)|;
+my $swap_rx  = qr|^(/[/\w]+)\s+|;
 
 sub new
 {
@@ -42,38 +53,12 @@ sub new
     # Defaults
     $args{fstab} ||= '/etc/fstab';
 
-    # Default fstab and mtab layout
-    my @keys       = qw(fs_spec fs_file fs_vfstype fs_mntops fs_freq fs_passno);
-    my @special_fs = qw(swap procfs kernfs ptyfs tmpfs);
-
-    my $mount_rx = qr|^([/:\w]+)\s+on\s+([/\w]+)\s+type\s+(\w+)|;
-    my $swap_rx  = qr|^(/[/\w]+)\s+|;
-
     my @mounts = qx( /sbin/mount );
-    $self->get_mounts( $mount_rx, [ 0, 1, 2 ], [qw(fs_spec fs_file fs_vfstype)], \@special_fs, @mounts );
-    $self->get_swap( $swap_rx, qx( /sbin/swapctl -l ) );
-
-    # Read the fstab
-    my $fstab = FileHandle->new();
-    if ( $fstab->open( $args{fstab} ) )
+    $self->readMounts( $mount_rx, [ 0, 1, 2 ], [qw(fs_spec fs_file fs_vfstype)], \%special_fs, @mounts );
+    $self->readSwap( $swap_rx, qx( /sbin/swapctl -l ) );
+    unless( $self->readFsTab( $args{fstab}, \@keys, [ 0, 1, 2 ], \%special_fs ) )
     {
-        while (<$fstab>)
-        {
-            next if /^\s*#/;
-            next if /^\s*$/;
-
-            my @vals = split( /\s+/, $_ );
-            $self->{ $vals[1] }->{mount_point} = $vals[1];
-            $self->{ $vals[1] }->{device}      = $vals[0];
-            $self->{ $vals[1] }->{unmounted}   = 1 unless ( defined( $self->{ $vals[1] }->{mounted} ) );
-            my $vfs_type = $self->{ $vals[1] }->{fs_vfstype} || $vals[2];
-            $self->{ $vals[1] }->{special} = 1 if grep( /^$vfs_type$/, @special_fs );
-            for ( my $i = 0; $i < @keys; $i++ )
-            {
-                $self->{ $vals[1] }->{ $keys[$i] } ||= $vals[$i];
-            }
-        }
-        $fstab->close;
+        croak "Unable to open fstab file ($args{fstab})\n";
     }
 
     return $self;
@@ -91,15 +76,66 @@ Sys::Filesystem::Netbsd - Return NetBSD filesystem information to Sys::Filesyste
 
 See L<Sys::Filesystem>.
 
+=head1 INHERITANCE
+
+  Sys::Filesystem::Netbsd
+  ISA Sys::Filesystem::Unix
+    ISA UNIVERSAL
+
+=head1 METHODS
+
+=over 4
+
+=item version ()
+
+Return the version of the (sub)module.
+
+=back
+
+=head1 ATTRIBUTES
+
+The following is a list of filesystem properties which may
+be queried as methods through the parent L<Sys::Filesystem> object.
+
+=over 4
+
+=item fs_spec
+
+Describes the block special device or remote filesystem to be mounted.
+
+=item fs_file
+
+Describes the mount point for the filesystem. For swap partitions,
+this field should be specified as none. If the name of the mount
+point contains spaces these can be escaped as \040.
+
+=item fs_vfstype
+
+Dscribes the type  of  the  filesystem.
+
+=item fs_mntops
+
+Describes the mount options associated with the filesystem.
+
+=item fs_freq
+
+Used  for  these filesystems by the
+L<dump(8)> command to determine which filesystems need to be  dumped.
+
+=item fs_passno
+
+Used by the L<fsck(8)> program to  determine the order in which filesystem
+checks are done at reboot time. 
+
+=back
+
 =head1 VERSION
 
 $Id$
 
 =head1 AUTHOR
 
-Jens Rehsack <rehsack@cpan.org>
-
-L<http://www.rehsack.de/>
+Jens Rehsack <rehsack@cpan.org> - L<http://www.rehsack.de/>
 
 =head1 COPYRIGHT
 

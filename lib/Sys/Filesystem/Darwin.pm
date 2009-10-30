@@ -4,7 +4,7 @@
 #   Sys::Filesystem - Retrieve list of filesystems and their properties
 #
 #   Copyright 2004,2005,2006 Nicola Worthington
-#   Copyright 2008           Jens Rehsack
+#   Copyright 2008,2009      Jens Rehsack
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -28,17 +28,32 @@ use 5.006;
 
 use strict;
 use warnings;
+use vars qw(@ISA $VERSION);
+
+require Sys::Filesystem::Unix;
 
 use Carp qw(croak);
 
-use vars qw($VERSION);
-$VERSION = '0.22';
+$VERSION = '1.25';
+@ISA     = qw(Sys::Filesystem::Unix);
+
+sub version()
+{
+    return $VERSION;
+}
+
+my @dt_keys = qw(fs_spec fs_file fs_vfstype fs_name);
+my @mount_keys = qw(fs_spec fs_file fs_mntops);
+my %special_fs = qw();
+
+my $dt_rx = qr/Disk Appeared \('([^']+)',Mountpoint = '([^']+)', fsType = '([^']*)', volName = '([^']*)'\)/;
+my $mount_rx = qr/(.*) on (.*) \((.*)\)/;    # /dev/disk on / (hfs,...)
 
 sub new
 {
     my $class = shift;
     my %args  = @_;
-    my $self  = {};
+    my $self  = bless( {}, $class );
 
     $args{disktool} ||= '/usr/sbin/disktool';
     $args{mount}    ||= '/sbin/mount';
@@ -53,37 +68,36 @@ sub new
     @mntlist = <$m_fh>;
     close($m_fh);
 
-    foreach (@fslist)
-    {
+    $self->readMounts( $dt_rx, [ 0, 1, 2 ], \@dt_keys, \%special_fs, @fslist );
+    #foreach (@fslist)
+    #{
+    #    # For mounted FTP servers, fsType and volName are empty on Mac OS X 10.3
+    #    # However, Mountpoint should not be empty.
+    #    next unless (/Disk Appeared \('([^']+)',Mountpoint = '([^']+)', fsType = '([^']*)', volName = '([^']*)'\)/);
+    #    my ( $device, $mount_point, $fstype, $name ) = ( $1, $2, $3, $4 );
 
-        # For mounted FTP servers, fsType and volName are empty on Mac OS X 10.3
-        # However, Mountpoint should not be empty.
-        next unless (/Disk Appeared \('([^']+)',Mountpoint = '([^']+)', fsType = '([^']*)', volName = '([^']*)'\)/);
-        my ( $device, $mount_point, $fstype, $name ) = ( $1, $2, $3, $4 );
+    #    $self->{$mount_point}->{mounted}     = 1;
+    #    $self->{$mount_point}->{special}     = 0;
+    #    $self->{$mount_point}->{device}      = $device;
+    #    $self->{$mount_point}->{mount_point} = $mount_point;
+    #    $self->{$mount_point}->{fs_vfstype}  = $fstype;
+    #    $self->{$mount_point}->{fs_mntops}   = '';
+    #    $self->{$mount_point}->{label}       = $name;
+    #}
 
-        $self->{$mount_point}->{mounted}     = 1;
-        $self->{$mount_point}->{special}     = 0;
-        $self->{$mount_point}->{device}      = $device;
-        $self->{$mount_point}->{mount_point} = $mount_point;
-        $self->{$mount_point}->{fs_vfstype}  = $fstype;
-        $self->{$mount_point}->{fs_mntops}   = '';
-        $self->{$mount_point}->{label}       = $name;
-    }
-
+    $self->readMounts( $mount_rx, [ 0, 1 ], \@mount_keys, \%special_fs, @mntlist );
     # set the mount options
-    foreach (@mntlist)
-    {
-        next unless (/(.*) on (.*) \((.*)\)/);    # /dev/disk on / (hfs,...)
-        my ( $device, $mount_point, $mntopts ) = ( $1, $2, $3 );
-        if ( exists( $self->{$mount_point} ) )
-        {
-            $self->{$mount_point}->{fs_mntops} = $mntopts;
-        }
+    #foreach (@mntlist)
+    #{
+    #    next unless (/(.*) on (.*) \((.*)\)/);    # /dev/disk on / (hfs,...)
+    #    my ( $device, $mount_point, $mntopts ) = ( $1, $2, $3 );
+    #    if ( exists( $self->{$mount_point} ) )
+    #    {
+    #        $self->{$mount_point}->{fs_mntops} = $mntopts;
+    #    }
+    #}
 
-    }
-
-    bless( $self, $class );
-    return $self;
+    $self;
 }
 
 1;
@@ -101,7 +115,23 @@ See L<Sys::Filesystem>.
 The filesystem information is taken from diskutil, the system utility
 supplied on Mac OS X.
 
+=head1 INHERITANCE
+
+  Sys::Filesystem::Darwin
+  ISA Sys::Filesystem::Unix
+    ISA UNIVERSAL
+
 =head1 METHODS
+
+=over 4
+
+=item version ()
+
+Return the version of the (sub)module.
+
+=back
+
+=head1 ATTRIBUTES
 
 The following is a list of filesystem properties which may
 be queried as methods through the parent L<Sys::Filesystem> object.
@@ -171,9 +201,12 @@ $Id$
 
 Christian Renz <crenz@web42.com>
 
+Jens Rehsack <rehsack@cpan.org> - L<http://www.rehsack.de/>
+
 =head1 COPYRIGHT
 
 Copyright 2004,2005,2006 Nicola Worthington.
+Copyright 2009 Jens Rehsack.
 
 This software is licensed under The Apache Software License, Version 2.0.
 

@@ -35,9 +35,9 @@ for my $filesystem (@filesystems)
 
     ok( my $device  = $fs->device($filesystem),  "Get device for $filesystem" );
     ok( my $options = $fs->options($filesystem), "Get options for $filesystem" );
-    ok( my $type    = $fs->type($filesystem),    "Get type for $filesystem" );
-    ok( my $volume = $fs->volume($filesystem) || 1, "Get volume type for $filesystem" );
-    ok( my $label  = $fs->label($filesystem)  || 1, "Get label for $filesystem" );
+    ok( my $format  = $fs->format($filesystem),    "Get format for $filesystem" );
+    ok( my $volume  = $fs->volume($filesystem) || 1, "Get volume type for $filesystem" );
+    ok( my $label   = $fs->label($filesystem)  || 1, "Get label for $filesystem" );
 }
 
 my $filesystem = $filesystems[0];

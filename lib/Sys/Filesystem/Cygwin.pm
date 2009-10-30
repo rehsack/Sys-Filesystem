@@ -24,48 +24,35 @@ package Sys::Filesystem::Cygwin;
 # vim:ts=4:sw=4:tw=78
 
 use strict;
-use FileHandle;
-use Carp qw(croak);
+use warnings;
+use vars qw($VERSION @ISA);
 
-use vars qw($VERSION);
-$VERSION = '1.07';
+use Carp qw(croak);
+require Sys::Filesystem::Unix;
+
+$VERSION = '1.25';
+@ISA = qw(Sys::Filesystem::Unix);
+
+sub version()
+{
+    return $VERSION;
+}
+
+my @keys       = qw(fs_spec fs_file fs_vfstype fs_mntops);
+my %special_fs = (swap => 1, proc => 1, devpts => 1, tmpfs => 1,);
+my $mount_rx   = qr/^\s*(.+?)\s+on\s+(\/.+?)\s+type\s+(\S+)\s+\((\S+)\)\s*$/;
 
 sub new
 {
     ref( my $class = shift ) && croak 'Class name required';
     my %args = @_;
-    my $self = {};
+    my $self = bless( {}, $class );
 
     local $/ = "\n";
-    my @keys       = qw(fs_spec fs_file fs_vfstype fs_mntops);
-    my @special_fs = qw(swap proc devpts tmpfs);
+    my @mounts = qx( mount );
+    $self->readMounts( $mount_rx, [ 0, 1, 2 ], \@keys, \%special_fs, @mounts );
 
-    my $mtab = new FileHandle;
-    if ( $mtab->open('mount|') )
-    {
-        while (<$mtab>)
-        {
-            next if ( /^\s*#/ || /^\s*$/ );
-            if ( my @vals = $_ =~ /^\s*(.+?) on (\/.+?) type (\S+) \((\S+)\)\s*$/ )
-            {
-                $self->{ $vals[1] }->{mounted} = 1;
-                $self->{ $vals[1] }->{special} = 1 if grep( /^$vals[2]$/, @special_fs );
-                for ( my $i = 0; $i < @keys; $i++ )
-                {
-                    $self->{ $vals[1] }->{ $keys[$i] } = $vals[$i];
-                }
-            }
-        }
-        $mtab->close;
-
-    }
-    else
-    {
-        croak "Unable to open pipe handle for mount command: $!\n";
-    }
-
-    bless( $self, $class );
-    return $self;
+    $self;
 }
 
 1;
@@ -94,7 +81,23 @@ Sys::Filesystem::Cygwin - Return Cygwin filesystem information to Sys::Filesyste
 
 See L<Sys::Filesystem>.
 
+=head1 INHERITANCE
+
+  Sys::Filesystem::Cygwin
+  ISA Sys::Filesystem::Unix
+    ISA UNIVERSAL
+
 =head1 METHODS
+
+=over 4
+
+=item version()
+
+Return the version of the (sub)module.
+
+=back
+
+=head1 ATTRIBUTES
 
 The following is a list of filesystem properties which may
 be queried as methods through the parent L<Sys::Filesystem> object.
@@ -129,13 +132,15 @@ $Id$
 
 =head1 AUTHOR
 
-Nicola Worthington <nicolaw@cpan.org>
+Nicola Worthington <nicolaw@cpan.org> - L<http://perlgirl.org.uk>
 
-L<http://perlgirl.org.uk>
+Jens Rehsack <rehsack@cpan.org> - L<http://www.rehsack.de/>
 
 =head1 COPYRIGHT
 
 Copyright 2004,2005,2006 Nicola Worthington.
+
+Copyright 2008,2009 Jens Rehsack.
 
 This software is licensed under The Apache Software License, Version 2.0.
 
