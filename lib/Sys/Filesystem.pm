@@ -75,6 +75,8 @@ sub new
         }
     }
 
+    $self->{supported} = ( ref($self->{filesystems}) ne 'Sys::Filesystem::Unix' ) && ( ref($self->{filesystems}) ne 'Sys::Filesystem::Dummy' );
+
     # Filesystem property aliases
     $self->{aliases} = {
                          device          => [qw(fs_spec dev)],
@@ -168,28 +170,29 @@ sub filesystems
     return @filesystems;
 }
 
+sub supported()
+{
+    return $_[0]->{supported};
+}
+
 sub mounted_filesystems
 {
-    my $self = shift;
-    return $self->filesystems( mounted => 1 );
+    return $_[0]->filesystems( mounted => 1 );
 }
 
 sub unmounted_filesystems
 {
-    my $self = shift;
-    return $self->filesystems( unmounted => 1 );
+    return $_[0]->filesystems( unmounted => 1 );
 }
 
 sub special_filesystems
 {
-    my $self = shift;
-    return $self->filesystems( special => 1 );
+    return $_[0]->filesystems( special => 1 );
 }
 
 sub regular_filesystems
 {
-    my $self = shift;
-    return $self->filesystems( special => SPECIAL );
+    return $_[0]->filesystems( special => SPECIAL );
 }
 
 sub DESTROY { }
@@ -306,7 +309,7 @@ with common aliases wherever possible.
 
 =over 4
 
-=item new()
+=item new
 
 Creates a new Sys::Filesystem object. new() accepts 3 optional key pair values
 to help or force where mount information is gathered from. These values are
@@ -334,6 +337,13 @@ Not all helper modules will query NFS mounts as a seperate exercise, and
 therefore this option may be ignored on some systems.
 
 =back
+
+=item supported
+
+Returns true if the operating system is supported by Sys::Filesystem.
+Unsupported operating systems may get less information, e.g. the mount
+state couldn't determined or which file system type is special ins't
+known.
 
 =back
 
