@@ -46,13 +46,15 @@ my @dt_keys    = qw(fs_spec fs_file fs_vfstype fs_name);
 my @mount_keys = qw(fs_spec fs_file fs_mntops);
 my %special_fs = qw();
 
-my $dt_rx = qr/Disk Appeared \('([^']+)',Mountpoint = '([^']+)', fsType = '([^']*)', volName = '([^']*)'\)/;
+my $dt_rx = qr/Disk\sAppeared\s+\('([^']+)',\s*
+               Mountpoint\s*=\s*'([^']+)',\s*
+               fsType\s*=\s*'([^']*)',\s*
+               volName\s*=\s*'([^']*)'\)/x
 my $mount_rx = qr/(.*) on (.*) \((.*)\)/;    # /dev/disk on / (hfs,...)
 
 sub new
 {
-    my $class = shift;
-    my %args  = @_;
+    my ($class, %args ) = @_;
     my $self  = bless( {}, $class );
 
     $args{disktool} ||= '/usr/sbin/disktool';

@@ -41,8 +41,7 @@ INHERITANCE
       ISA UNIVERSAL
 
 METHODS
-    new()
-        Creates a new Sys::Filesystem object. new() accepts 3 optional key
+    new Creates a new Sys::Filesystem object. new() accepts 3 optional key
         pair values to help or force where mount information is gathered
         from. These values are not otherwise defaulted by the main
         Sys::Filesystem object, but left to the platform specific helper
@@ -63,6 +62,12 @@ METHODS
             Unix bases systems. Not all helper modules will query NFS mounts
             as a seperate exercise, and therefore this option may be ignored
             on some systems.
+
+    supported
+        Returns true if the operating system is supported by
+        Sys::Filesystem. Unsupported operating systems may get less
+        information, e.g. the mount state couldn't determined or which file
+        system type is special ins't known.
 
   Listing Filesystems
 
@@ -239,7 +244,7 @@ SEE ALSO
     perlport, Solaris::DeviceTree, Win32::DriveInfo
 
 VERSION
-    $Id$
+    $Id: Filesystem.pm 43 2009-10-30 20:00:31Z trevor $
 
 AUTHOR
     Nicola Worthington <nicolaw@cpan.org> - http://perlgirl.org.uk

@@ -29,52 +29,54 @@ use 5.006;
 use strict;
 use FileHandle;
 use Carp qw(croak cluck confess);
+use Module::Pluggable
+  require     => 1,
+  only        => [ map { __PACKAGE__ . '::' . $_ } ucfirst($^O), $^O =~ m/Win32/i ? 'Win32' : 'Unix', 'Dummy' ],
+  inner       => 0,
+  search_path => ['Sys::Filesystem'];
 use Params::Util qw(_INSTANCE);
+use Scalar::Util qw(blessed);
 
 use constant DEBUG => $ENV{SYS_FILESYSTEM_DEBUG} ? 1 : 0;
 use constant SPECIAL => ( 'darwin' eq $^O ) ? 0 : undef;
 use vars qw($VERSION $AUTOLOAD);
-$VERSION = '1.25';
+$VERSION = '1.26';
+
+my ( $FsPlugin, $Supported );
+
+BEGIN
+{
+    my @query_order = Sys::Filesystem->plugins();
+
+    foreach my $qo (@query_order)
+    {
+        next unless ( UNIVERSAL::isa( $qo, $qo ) );
+        $FsPlugin = $qo;
+        last;
+    }
+
+    $Supported = ( $FsPlugin ne 'Sys::Filesystem::Unix' ) && ( $FsPlugin ne 'Sys::Filesystem::Dummy' );
+}
 
 sub new
 {
-
     # Check we're being called correctly with a class name
     ref( my $class = shift ) && croak 'Class name required';
 
     # Check we've got something sane passed
-    croak 'Odd number of elements passed when even number was expected' if @_ % 2;
+    croak 'Odd number of elements passed when even number was expected' if ( @_ % 2 );
     my %args = @_;
 
     # Double check the key pairs for stuff we recognise
-    while ( my ( $k, $v ) = each %args )
+    while ( my ( $k, $v ) = each(%args) )
     {
         unless ( grep( /^$k$/i, qw(fstab mtab xtab) ) )
         {
-            croak "Unrecognised paramater '$k' passed to module $class";
+            croak("Unrecognised paramater '$k' passed to module $class");
         }
     }
 
-    # How to query
     my $self = {%args};
-    $self->{osname} = $^O;
-    my @query_order = ( ucfirst( $self->{osname} ) );
-    push @query_order, $self->{osname} =~ /Win32/i ? 'Win32' : 'Unix';
-    push @query_order, 'Dummy';
-
-    # Try and query
-    for (@query_order)
-    {
-        my $obj = undef;
-        my $code = sprintf( 'require %s::%s; $obj = %s::%s->new(%%args);', __PACKAGE__, $_, __PACKAGE__, $_ );
-        eval { eval($code); };
-        if ( defined $obj && ref($obj) && !$@ )
-        {
-            $self->{filesystems} = $obj;
-            last;
-        }
-    }
-
     $self->{supported} =
          ( ref( $self->{filesystems} ) ne 'Sys::Filesystem::Unix' )
       && ( ref( $self->{filesystems} ) ne 'Sys::Filesystem::Dummy' );
@@ -95,10 +97,12 @@ sub new
                        };
 
     # Debug
-    DUMP( '$self', $self );
+    DUMP( '$self', $self ) if(DEBUG);
+
+    $self->{filesystems} = $FsPlugin->new(%args);
 
     # Maybe upchuck a little
-    croak "Unable to create object for OS type '$self->{osname}'" unless $self->{filesystems};
+    croak "Unable to create object for OS type '$self->{osname}'" unless ( $self->{filesystems} );
 
     # Bless and return
     bless( $self, $class );
@@ -175,7 +179,7 @@ sub filesystems
 
 sub supported()
 {
-    return $_[0]->{supported};
+    return $Supported;
 }
 
 sub mounted_filesystems
@@ -203,9 +207,9 @@ sub DESTROY { }
 sub AUTOLOAD
 {
     my ( $self, $fs ) = @_;
-    my $type = ref($self) || croak "$self is not an object";
 
-    croak "No filesystem passed where expected" unless $fs;
+    croak "$self is not an object" unless ( blessed($self) );
+    croak "No filesystem passed where expected" unless ($fs);
 
     ( my $name = $AUTOLOAD ) =~ s/.*://;
 
@@ -213,27 +217,20 @@ sub AUTOLOAD
     unless ( exists $self->{filesystems}->{$fs} )
     {
         croak "No such filesystem";
-
-        # Look for the property
     }
     else
     {
-
         # Found the property
         if ( exists $self->{filesystems}->{$fs}->{$name} )
         {
             return $self->{filesystems}->{$fs}->{$name};
-
-            # Didn't find the property, but check any aliases
         }
         elsif ( exists $self->{aliases}->{$name} )
-        {
+        {    # Didn't find the property, but check any aliases
             for my $alias ( @{ $self->{aliases}->{$name} } )
             {
-
-                # Found the Alias
                 if ( exists $self->{filesystems}->{$fs}->{$alias} )
-                {
+                {    # Found the Alias
                     return $self->{filesystems}->{$fs}->{$alias};
                 }
             }
