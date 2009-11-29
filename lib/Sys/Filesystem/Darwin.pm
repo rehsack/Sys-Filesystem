@@ -49,7 +49,7 @@ my %special_fs = qw();
 my $dt_rx = qr/Disk\sAppeared\s+\('([^']+)',\s*
                Mountpoint\s*=\s*'([^']+)',\s*
                fsType\s*=\s*'([^']*)',\s*
-               volName\s*=\s*'([^']*)'\)/x
+               volName\s*=\s*'([^']*)'\)/x;
 my $mount_rx = qr/(.*) on (.*) \((.*)\)/;    # /dev/disk on / (hfs,...)
 
 sub new
