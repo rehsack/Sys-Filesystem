@@ -10,6 +10,7 @@ if ( $^O ne 'VMS' )
     $RealPerl .= $Config{_exe}
       unless $RealPerl =~ m/$Config{_exe}$/i;
 }
+$RealTest = ucfirst($RealTest) if( $^O =~ m/Win32/ );
 
 my $sfs = Sys::Filesystem->new();
 ok( ref($sfs) eq 'Sys::Filesystem', 'Create new Sys::Filesystem object' );
