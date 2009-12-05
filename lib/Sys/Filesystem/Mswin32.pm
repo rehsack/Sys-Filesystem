@@ -24,11 +24,13 @@ package Sys::Filesystem::Mswin32;
 # vim:ts=4:sw=4:tw=78
 
 use strict;
+use warnings;
+use Params::Util qw(_STRING);
 use Win32::DriveInfo;
 use Carp qw(croak);
 
 use vars qw($VERSION);
-$VERSION = '1.25';
+$VERSION = '1.26';
 
 sub version()
 {
@@ -48,9 +50,15 @@ sub new
         my $type = Win32::DriveInfo::DriveType($volume);
         my ( $VolumeName, $VolumeSerialNumber, $MaximumComponentLength, $FileSystemName, @attr ) =
           Win32::DriveInfo::VolumeInfo($volume);
+        next unless( defined( $VolumeName ) );
 
+        $VolumeName = $volume unless( defined( _STRING($VolumeName) ) );
+        $VolumeName =~ s/\\/\//g;
+        $VolumeName = ucfirst($VolumeName);
         $self->{$VolumeName}->{mount_point} = $VolumeName;
-        $self->{$VolumeName}->{device}      = $FileSystemName;
+        $self->{$VolumeName}->{device}      = $FileSystemName; # XXX Win32::DriveInfo gives no details here ...
+        $self->{$VolumeName}->{format}      = $FileSystemName; # XXX Win32::DriveInfo gives wrong information here
+        $self->{$VolumeName}->{options}     = join(',',@attr);
         $self->{$VolumeName}->{mounted}     = 1;
     }
 
