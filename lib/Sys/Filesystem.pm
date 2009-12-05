@@ -26,12 +26,15 @@ package Sys::Filesystem;
 
 use 5.006;
 
+my @query_order;
+
 use strict;
-use FileHandle;
+use warnings;
+use vars qw($VERSION $AUTOLOAD);
 use Carp qw(croak cluck confess);
 use Module::Pluggable
   require     => 1,
-  only        => [ map { __PACKAGE__ . '::' . $_ } ucfirst($^O), $^O =~ m/Win32/i ? 'Win32' : 'Unix', 'Dummy' ],
+  only        => [ @query_order = map { __PACKAGE__ . '::' . $_ } ucfirst($^O), $^O =~ m/Win32/i ? 'Win32' : 'Unix', 'Dummy' ],
   inner       => 0,
   search_path => ['Sys::Filesystem'];
 use Params::Util qw(_INSTANCE);
@@ -39,14 +42,14 @@ use Scalar::Util qw(blessed);
 
 use constant DEBUG => $ENV{SYS_FILESYSTEM_DEBUG} ? 1 : 0;
 use constant SPECIAL => ( 'darwin' eq $^O ) ? 0 : undef;
-use vars qw($VERSION $AUTOLOAD);
+
 $VERSION = '1.26';
 
 my ( $FsPlugin, $Supported );
 
 BEGIN
 {
-    my @query_order = Sys::Filesystem->plugins();
+    Sys::Filesystem->plugins();
 
     foreach my $qo (@query_order)
     {
@@ -77,9 +80,6 @@ sub new
     }
 
     my $self = {%args};
-    $self->{supported} =
-         ( ref( $self->{filesystems} ) ne 'Sys::Filesystem::Unix' )
-      && ( ref( $self->{filesystems} ) ne 'Sys::Filesystem::Dummy' );
 
     # Filesystem property aliases
     $self->{aliases} = {
