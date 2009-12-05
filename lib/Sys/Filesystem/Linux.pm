@@ -31,7 +31,7 @@ use Carp qw(croak);
 require IO::File;
 require Sys::Filesystem::Unix;
 
-$VERSION = '1.25';
+$VERSION = '1.26';
 @ISA     = qw(Sys::Filesystem::Unix);
 
 sub version()
@@ -56,8 +56,7 @@ sub new
 
     # Defaults
     $args{fstab} ||= '/etc/fstab';
-    $args{mtab}  ||= '/etc/mtab';
-
+    $args{mtab}  ||= -r '/proc/mounts' ? '/proc/mounts' : '/etc/mtab';
     #$args{xtab}  ||= '/etc/lib/nfs/xtab';
 
     local $/ = "\n";
