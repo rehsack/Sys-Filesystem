@@ -19,7 +19,7 @@ SKIP:
 {
     unless (@regular_filesystems)
     {
-        skip('Badly poor supported OS');
+        skip('Badly poor supported OS or no file systems found.');
     }
     else
     {
