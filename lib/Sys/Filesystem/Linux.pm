@@ -47,6 +47,10 @@ my %special_fs = (
                    devpts => 1,
                    tmpfs  => 1,
                    sysfs  => 1,
+		   procbususb => 1,
+		   udev => 1,
+		   devpts => 1,
+		   nfsd => 1,
                  );
 
 sub new
