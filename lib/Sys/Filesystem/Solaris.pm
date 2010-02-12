@@ -29,9 +29,10 @@ use warnings;
 use vars qw($VERSION @ISA);
 
 use Carp qw(croak);
+use Data::Dumper;
 require Sys::Filesystem::Unix;
 
-$VERSION = '1.25';
+$VERSION = '1.26';
 @ISA     = qw(Sys::Filesystem::Unix);
 
 sub version()
@@ -70,11 +71,13 @@ sub new
     {
         croak "Unable to open fstab file ($args{fstab})\n";
     }
+    print( STDERR Dumper( \$self ) );
 
     unless ( $self->readMntTab( $args{mtab}, \@mtab_keys, [ 0, 1, 2 ], \%special_fs ) )
     {
         croak "Unable to open mtab file ($args{mtab})\n";
     }
+    print( STDERR Dumper( \$self ) );
 
     $self;
 }

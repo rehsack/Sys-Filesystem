@@ -34,7 +34,7 @@ require Sys::Filesystem::Unix;
 
 use Carp qw(croak);
 
-$VERSION = '1.25';
+$VERSION = '1.26';
 @ISA     = qw(Sys::Filesystem::Unix);
 
 sub version()
@@ -54,8 +54,8 @@ my $mount_rx = qr/(.*) on (.*) \((.*)\)/;    # /dev/disk on / (hfs,...)
 
 sub new
 {
-    my ($class, %args ) = @_;
-    my $self  = bless( {}, $class );
+    my ( $class, %args ) = @_;
+    my $self = bless( {}, $class );
 
     $args{disktool} ||= '/usr/sbin/disktool';
     $args{mount}    ||= '/sbin/mount';

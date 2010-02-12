@@ -42,15 +42,15 @@ sub version()
 # Default fstab and mtab layout
 my @keys = qw(fs_spec fs_file fs_vfstype fs_mntops fs_freq fs_passno);
 my %special_fs = (
-                   swap   => 1,
-                   proc   => 1,
-                   devpts => 1,
-                   tmpfs  => 1,
-                   sysfs  => 1,
-		   procbususb => 1,
-		   udev => 1,
-		   devpts => 1,
-		   nfsd => 1,
+                   swap       => 1,
+                   proc       => 1,
+                   devpts     => 1,
+                   tmpfs      => 1,
+                   sysfs      => 1,
+                   procbususb => 1,
+                   udev       => 1,
+                   devpts     => 1,
+                   nfsd       => 1,
                  );
 
 sub new

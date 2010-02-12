@@ -33,8 +33,9 @@ use warnings;
 use vars qw($VERSION $AUTOLOAD);
 use Carp qw(croak cluck confess);
 use Module::Pluggable
-  require     => 1,
-  only        => [ @query_order = map { __PACKAGE__ . '::' . $_ } ucfirst(lc($^O)), $^O =~ m/Win32/i ? 'Win32' : 'Unix', 'Dummy' ],
+  require => 1,
+  only =>
+  [ @query_order = map { __PACKAGE__ . '::' . $_ } ucfirst( lc($^O) ), $^O =~ m/Win32/i ? 'Win32' : 'Unix', 'Dummy' ],
   inner       => 0,
   search_path => ['Sys::Filesystem'];
 use Params::Util qw(_INSTANCE);
@@ -97,7 +98,7 @@ sub new
                        };
 
     # Debug
-    DUMP( '$self', $self ) if(DEBUG);
+    DUMP( '$self', $self ) if (DEBUG);
 
     $self->{filesystems} = $FsPlugin->new(%args);
 

@@ -50,16 +50,16 @@ sub new
         my $type = Win32::DriveInfo::DriveType($volume);
         my ( $VolumeName, $VolumeSerialNumber, $MaximumComponentLength, $FileSystemName, @attr ) =
           Win32::DriveInfo::VolumeInfo($volume);
-        next unless( defined( $VolumeName ) );
+        next unless ( defined($VolumeName) );
 
-        $VolumeName = $volume unless( defined( _STRING($VolumeName) ) );
+        $VolumeName = $volume unless ( defined( _STRING($VolumeName) ) );
         $VolumeName =~ s/\\/\//g;
-        $VolumeName = ucfirst($VolumeName);
+        $VolumeName                         = ucfirst($VolumeName);
         $self->{$VolumeName}->{mount_point} = $VolumeName;
-        $self->{$VolumeName}->{device}      = $FileSystemName; # XXX Win32::DriveInfo gives no details here ...
-        $self->{$VolumeName}->{format}      = $FileSystemName; # XXX Win32::DriveInfo gives wrong information here
-        $self->{$VolumeName}->{options}     = join(',',@attr);
-        $self->{$VolumeName}->{mounted}     = 1;
+        $self->{$VolumeName}->{device}      = $FileSystemName;       # XXX Win32::DriveInfo gives no details here ...
+        $self->{$VolumeName}->{format}      = $FileSystemName;       # XXX Win32::DriveInfo gives wrong information here
+        $self->{$VolumeName}->{options} = join( ',', @attr );
+        $self->{$VolumeName}->{mounted} = 1;
     }
 
     bless( $self, $class );
