@@ -1,3 +1,10 @@
+1.26
+	Adding more special file systems for Linux
+	Prefer /proc/self/mounts over /etc/mtab (when available), fixes
+	  RT #51151 (Thanks Tyler MacDonald)
+	Fix some tests to skip when no regular file systems could be found
+	Some Win32 fixes
+	Switch to Module::Pluggable to load OS-plugins
 1.25
 	Fixed support for FreeBSD and generalize BSD support
 	Fixed support for AIX
