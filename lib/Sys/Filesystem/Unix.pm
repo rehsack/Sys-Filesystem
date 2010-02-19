@@ -56,8 +56,8 @@ sub new
 
     # $args{xtab}  ||= '/etc/lib/nfs/xtab';
 
-    $self->readFsTab( $args{fstab}, \@keys, \%special_fs );
-    $self->readMntTab( $args{mtab}, \@keys, \%special_fs );
+    $self->readFsTab( $args{fstab}, \@keys, [ 0, 1, 2 ], \%special_fs );
+    $self->readMntTab( $args{mtab}, \@keys, [ 0, 1, 2 ], \%special_fs );
 
     $self;
 }
