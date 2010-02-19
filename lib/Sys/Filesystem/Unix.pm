@@ -30,7 +30,7 @@ use Fcntl qw(:flock);
 use IO::File;
 
 use vars qw($VERSION);
-$VERSION = '1.26';
+$VERSION = '1.27';
 
 sub version()
 {
@@ -176,12 +176,11 @@ sub readMounts
             {
                 my $vfs_type;
                 $vfs_type = $self->{ $vals[ $pridx->[1] ] }->{fs_vfstype} = $vals[ $pridx->[2] ];
-                $self->{ $vals[ $pridx->[1] ] }->{special} = 1 if ( defined( $special->{vfs_types} ) );
+                $self->{ $vals[ $pridx->[1] ] }->{special} = 1 if ( defined( $special->{$vfs_type} ) );
             }
-            else
+            elsif( !defined( $self->{ $vals[ $pridx->[1] ] }->{special} ) )
             {
-                $self->{ $vals[ $pridx->[1] ] }->{special} = 0
-                  unless ( defined( $self->{ $vals[ $pridx->[1] ] }->{special} ) );
+                $self->{ $vals[ $pridx->[1] ] }->{special} = 0;
             }
 
             for ( my $i = 0; $i < @{$keys}; ++$i )
