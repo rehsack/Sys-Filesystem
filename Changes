@@ -1,3 +1,9 @@
+1.27
+	Fixing RT#54406 (patch from Robert Bohne with some modifications)
+	Fixing RT#54599 (patch from Jonathan Yu)
+	Fixing wrong dependencies detection on Windows
+	Fixing generic fstab/mnttab reading
+
 1.26
 	Adding more special file systems for Linux
 	Prefer /proc/self/mounts over /etc/mtab (when available), fixes
