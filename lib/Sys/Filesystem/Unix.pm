@@ -97,7 +97,7 @@ sub readFsTab($\@\@\%)
 
             for ( my $i = 0; $i < @{$fstabKeys}; ++$i )
             {
-                $self->{ $vals[ $pridx->[1] ] }->{ $fstabKeys->[$i] } = $vals[$i];
+                $self->{ $vals[ $pridx->[1] ] }->{ $fstabKeys->[$i] } = defined( $vals[$i] ) ? $vals[$i] : '';
             }
         }
         $fstab->close();
@@ -146,7 +146,7 @@ sub readMntTab($\@\@\%)
 
             for ( my $i = 0; $i < @{$mnttabKeys}; ++$i )
             {
-                $self->{ $vals[ $pridx->[1] ] }->{ $mnttabKeys->[$i] } = $vals[$i];
+                $self->{ $vals[ $pridx->[1] ] }->{ $mnttabKeys->[$i] } = defined( $vals[$i] ) ? $vals[$i] : '';
             }
         }
         $mtab->close();
@@ -185,7 +185,7 @@ sub readMounts
 
             for ( my $i = 0; $i < @{$keys}; ++$i )
             {
-                $self->{ $vals[ $pridx->[1] ] }->{ $keys->[$i] } = $vals[$i];
+                $self->{ $vals[ $pridx->[1] ] }->{ $keys->[$i] } = defined( $vals[$i] ) ? $vals[$i] : '';
             }
         }
     }

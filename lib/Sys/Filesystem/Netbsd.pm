@@ -60,7 +60,7 @@ sub new
     $args{fstab} ||= '/etc/fstab';
 
     my @mounts = qx( /sbin/mount );
-    $self->readMounts( $mount_rx, [ 0, 1, 2 ], [qw(fs_spec fs_file fs_vfstype)], \%special_fs, @mounts );
+    $self->readMounts( $mount_rx, [ 0, 1, 2 ], [qw(fs_spec fs_file fs_vfstype fs_mntops)], \%special_fs, @mounts );
     $self->readSwap( $swap_rx, qx( /sbin/swapctl -l ) );
     unless ( $self->readFsTab( $args{fstab}, \@keys, [ 0, 1, 2 ], \%special_fs ) )
     {
