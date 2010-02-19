@@ -335,7 +335,7 @@ ignored on some systems.
 
 Specify the full path and filename of the mounted NFS filesystem table
 (or xtab for short). This is usually only pertinant to Unix bases systems.
-Not all helper modules will query NFS mounts as a seperate exercise, and
+Not all helper modules will query NFS mounts as a separate exercise, and
 therefore this option may be ignored on some systems.
 
 =back
@@ -485,12 +485,12 @@ Returns the order in which this filesystem should be mounted on boot.
 
 =item check_order()
 
-Returns the order in which this filesystem should be consistancy checked
+Returns the order in which this filesystem should be consistency checked
 on boot.
 
 =item check_frequency()
 
-Returns how often this filesystem is checked for consistancy.
+Returns how often this filesystem is checked for consistency.
 
 =back
 
@@ -500,7 +500,7 @@ Returns how often this filesystem is checked for consistancy.
 
 The Dummy module is there to provide a default failover result to the main
 Sys::Filesystem module if no suitable platform specific module can be found
-or sucessfully loaded. This is the last module to be tried, in order of
+or successfully loaded. This is the last module to be tried, in order of
 platform, Unix (if not on Win32), and then Dummy.
 
 =head2 Unix
