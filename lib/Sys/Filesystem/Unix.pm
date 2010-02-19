@@ -178,7 +178,7 @@ sub readMounts
                 $vfs_type = $self->{ $vals[ $pridx->[1] ] }->{fs_vfstype} = $vals[ $pridx->[2] ];
                 $self->{ $vals[ $pridx->[1] ] }->{special} = 1 if ( defined( $special->{$vfs_type} ) );
             }
-            elsif( !defined( $self->{ $vals[ $pridx->[1] ] }->{special} ) )
+            elsif ( !defined( $self->{ $vals[ $pridx->[1] ] }->{special} ) )
             {
                 $self->{ $vals[ $pridx->[1] ] }->{special} = 0;
             }

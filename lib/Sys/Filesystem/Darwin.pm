@@ -45,8 +45,8 @@ sub version()
 my @dt_keys    = qw(fs_spec fs_file fs_vfstype fs_name);
 my @mount_keys = qw(fs_spec fs_file fs_mntops);
 my %special_fs = qw(
-devfs   => 1, autofs   => 1,
-);
+  devfs   => 1, autofs   => 1,
+  );
 
 my $dt_rx = qr/Disk\sAppeared\s+\('([^']+)',\s*
                Mountpoint\s*=\s*'([^']+)',\s*
