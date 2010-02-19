@@ -38,11 +38,12 @@ SKIP:
             ok( $special == grep( /^$filesystem$/, @special_filesystems ), 'Special' );
             ok( $regular == grep( /^$filesystem$/, @regular_filesystems ), 'Regular' );
 
-            ok( my $device  = $fs->device($filesystem),  "Get device for $filesystem" );
-            ok( my $options = $fs->options($filesystem), "Get options for $filesystem" );
-            ok( my $format  = $fs->format($filesystem),  "Get format for $filesystem" );
-            ok( my $volume = $fs->volume($filesystem) || 1, "Get volume type for $filesystem" );
-            ok( my $label  = $fs->label($filesystem)  || 1, "Get label for $filesystem" );
+            my ( $device, $options, $format, $volume, $label );
+            ok( $device  = $fs->device($filesystem),  "Get device for $filesystem" );
+            ok( defined( $options = $fs->options($filesystem) ), "Get options for $filesystem: $options" );
+            ok( $format  = $fs->format($filesystem),  "Get format for $filesystem" );
+            ok( $volume = $fs->volume($filesystem) || 1, "Get volume type for $filesystem" );
+            ok( $label  = $fs->label($filesystem)  || 1, "Get label for $filesystem" );
         }
 
         my $device = $fs->device( $filesystems[0] );
