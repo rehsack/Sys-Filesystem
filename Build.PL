@@ -16,7 +16,7 @@ eval {
     my $fs = Sys::Filesystem->new();
     @fs = $fs->filesystems();
 };
-if ( $@ )
+if ($@)
 {
     printf( STDERR "Can't be used ($@) - OS not supported or bad maintained?" );
     exit(0);
