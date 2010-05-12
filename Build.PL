@@ -6,6 +6,21 @@ use 5.006;
 use strict;
 use Module::Build;
 use vars qw($build);
+use FindBin;
+use lib $FindBin::Bin . '/lib';
+
+$@ = undef;
+my @fs;
+eval {
+    require Sys::Filesystem;
+    my $fs = Sys::Filesystem->new();
+    @fs = $fs->filesystems();
+};
+if ( $@ )
+{
+    printf( STDERR "Can't be used ($@) - OS not supported or bad maintained?" );
+    exit(0);
+}
 
 $build = Module::Build->new(
     module_name        => 'Sys::Filesystem',
@@ -17,11 +32,12 @@ $build = Module::Build->new(
     sign               => 0,
 
     requires => {
-                  'perl'         => '5.006',
-                  'Carp'         => 0,
-                  'Params::Util' => '1.00',
+                  'perl'              => '5.006',
+                  'Carp'              => 0,
+                  'FindBin'           => 0,
+                  'IO'                => 0,
                   'Module::Pluggable' => '3.9',
-                  'IO'           => 0,
+                  'Params::Util'      => '1.00',
                   ( $^O eq 'MSWin32' ? ( 'Win32::DriveInfo' => 0, ) : () ),
                 },
 
@@ -32,7 +48,7 @@ $build = Module::Build->new(
                   },
 );
 
-$build->create_build_script;
+$build->create_build_script();
 
 # Send perl and module version information home if we've been given
 # permission to do so by a human being - default to not send for automated

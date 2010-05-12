@@ -31,7 +31,7 @@ use Carp qw(croak);
 require IO::File;
 require Sys::Filesystem::Unix;
 
-$VERSION = '1.27';
+$VERSION = '1.28';
 @ISA     = qw(Sys::Filesystem::Unix);
 
 sub version()
@@ -42,15 +42,19 @@ sub version()
 # Default fstab and mtab layout
 my @keys = qw(fs_spec fs_file fs_vfstype fs_mntops fs_freq fs_passno);
 my %special_fs = (
-                   swap       => 1,
-                   proc       => 1,
-                   devpts     => 1,
-                   tmpfs      => 1,
-                   sysfs      => 1,
-                   procbususb => 1,
-                   udev       => 1,
-                   devpts     => 1,
-                   nfsd       => 1,
+                   swap                    => 1,
+                   proc                    => 1,
+                   devpts                  => 1,
+                   tmpfs                   => 1,
+                   sysfs                   => 1,
+                   securityfs              => 1,
+                   debugfs                 => 1,
+                   procbususb              => 1,
+                   udev                    => 1,
+                   nfsd                    => 1,
+                   binfmt_misc             => 1,
+                   fusectl                 => 1,
+                   'fuse.gvfs-fuse-daemon' => 1,
                  );
 
 sub new
@@ -72,7 +76,7 @@ sub new
         while (<$fstab>)
         {
             next if ( /^\s*#/ || /^\s*$/ );
-            my @vals = split( /\s+/, $_ );
+            my @vals = split( ' ', $_ );
             if ( $vals[0] =~ /^\s*LABEL=(.+)\s*$/ )
             {
                 $self->{ $vals[1] }->{label} = $1;
@@ -226,7 +230,7 @@ Jens Rehsack <rehsack@cpan.org> - L<http://www.rehsack.de/>
 
 Copyright 2004,2005,2006 Nicola Worthington.
 
-Copyright 2009 Jens Rehsack.
+Copyright 2009,2010 Jens Rehsack.
 
 This software is licensed under The Apache Software License, Version 2.0.
 

@@ -1,4 +1,9 @@
 1.28
+        Adding more special file systems for Linux (looks in Linux soon
+	everything is a file system), Fixes RT#55059 (Thanks to Reed Loden)
+	Improving documentation about selections in filesystems method,
+	Fixes RT#55058 (Thanks to Reed Loden)
+	Fixes RT#65504 (Thanks to Brett Gersekowski)
         Improve MSWin32 support
 
 1.27

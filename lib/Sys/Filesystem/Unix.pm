@@ -30,7 +30,7 @@ use Fcntl qw(:flock);
 use IO::File;
 
 use vars qw($VERSION);
-$VERSION = '1.27';
+$VERSION = '1.28';
 
 sub version()
 {
@@ -77,7 +77,7 @@ sub readFsTab($\@\@\%)
             # $_ =~ s/#.*$//;
             # next if( /^\s*$/ );
 
-            my @vals = split( /\s+/, $_ );
+            my @vals = split( ' ', $_ );
             $self->{ $vals[ $pridx->[1] ] }->{mount_point} = $vals[ $pridx->[1] ];
             $self->{ $vals[ $pridx->[1] ] }->{device}      = $vals[ $pridx->[0] ];
             $self->{ $vals[ $pridx->[1] ] }->{unmounted}   = 1
@@ -85,9 +85,8 @@ sub readFsTab($\@\@\%)
 
             if ( defined( $pridx->[2] ) )
             {
-                my $vfs_type;
-                $vfs_type = $self->{ $vals[ $pridx->[1] ] }->{fs_vfstype} = $vals[ $pridx->[2] ];
-                $self->{ $vals[ $pridx->[1] ] }->{special} = 1 if ( defined( $special_fs->{vfs_types} ) );
+                my $vfs_type = $self->{ $vals[ $pridx->[1] ] }->{fs_vfstype} = $vals[ $pridx->[2] ];
+                $self->{ $vals[ $pridx->[1] ] }->{special} = 1 if ( defined( $special_fs->{$vfs_type} ) );
             }
             else
             {
@@ -134,9 +133,8 @@ sub readMntTab($\@\@\%)
 
             if ( defined( $pridx->[2] ) )
             {
-                my $vfs_type;
-                $vfs_type = $self->{ $vals[ $pridx->[1] ] }->{fs_vfstype} = $vals[ $pridx->[2] ];
-                $self->{ $vals[ $pridx->[1] ] }->{special} = 1 if ( defined( $special_fs->{vfs_types} ) );
+                my $vfs_type = $self->{ $vals[ $pridx->[1] ] }->{fs_vfstype} = $vals[ $pridx->[2] ];
+                $self->{ $vals[ $pridx->[1] ] }->{special} = 1 if ( defined( $special_fs->{$vfs_type} ) );
             }
             else
             {
@@ -174,8 +172,7 @@ sub readMounts
 
             if ( defined( $pridx->[2] ) )
             {
-                my $vfs_type;
-                $vfs_type = $self->{ $vals[ $pridx->[1] ] }->{fs_vfstype} = $vals[ $pridx->[2] ];
+                my $vfs_type = $self->{ $vals[ $pridx->[1] ] }->{fs_vfstype} = $vals[ $pridx->[2] ];
                 $self->{ $vals[ $pridx->[1] ] }->{special} = 1 if ( defined( $special->{$vfs_type} ) );
             }
             elsif ( !defined( $self->{ $vals[ $pridx->[1] ] }->{special} ) )
@@ -354,7 +351,7 @@ Jens Rehsack <rehsack@cpan.org> - L<http://www.rehsack.de/>
 =head1 COPYRIGHT
 
 Copyright 2004,2005,2006 Nicola Worthington.
-Copyright 2008,2009 Jens Rehsack.
+Copyright 2008-2010 Jens Rehsack.
 
 This software is licensed under The Apache Software License, Version 2.0.
 
