@@ -1,3 +1,6 @@
+1.28
+        Improve MSWin32 support
+
 1.27
 	Fixing RT#54406 (patch from Robert Bohne with some modifications)
 	Fixing RT#54599 (patch from Jonathan Yu)

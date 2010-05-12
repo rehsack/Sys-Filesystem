@@ -37,29 +37,45 @@ sub version()
     return $VERSION;
 }
 
+my @volInfoAttrs = ( 'n/a', 'preserve case', 'case sensitive', 'unicode', 'acl', 'file compression', 'compressed volume' );
+my @typeExplain = ( 'not determined', 'not available', 'removeable', 'fixed', 'network', 'cdrom', 'ram disk' );
+
 sub new
 {
     ref( my $class = shift ) && croak 'Class name required';
     my %args = @_;
     my $self = {};
 
-    my @volumes = Win32::DriveInfo::DrivesInUse();
+    my @drives = Win32::DriveInfo::DrivesInUse();
 
-    for my $volume (@volumes)
+    for my $drvletter (@drives)
     {
-        my $type = Win32::DriveInfo::DriveType($volume);
+        my $type = Win32::DriveInfo::DriveType($drvletter);
         my ( $VolumeName, $VolumeSerialNumber, $MaximumComponentLength, $FileSystemName, @attr ) =
-          Win32::DriveInfo::VolumeInfo($volume);
-        next unless ( defined($VolumeName) );
+          Win32::DriveInfo::VolumeInfo($drvletter);
 
-        $VolumeName = $volume unless ( defined( _STRING($VolumeName) ) );
-        $VolumeName =~ s/\\/\//g;
-        $VolumeName                         = ucfirst($VolumeName);
-        $self->{$VolumeName}->{mount_point} = $VolumeName;
-        $self->{$VolumeName}->{device}      = $FileSystemName;       # XXX Win32::DriveInfo gives no details here ...
-        $self->{$VolumeName}->{format}      = $FileSystemName;       # XXX Win32::DriveInfo gives wrong information here
-        $self->{$VolumeName}->{options} = join( ',', @attr );
-        $self->{$VolumeName}->{mounted} = 1;
+        my $drvRoot = $drvletter . ":/";
+        if ( defined( _STRING($VolumeName) ) )
+        {
+            $VolumeName =~ s/\\/\//g;
+            $VolumeName = ucfirst($VolumeName);
+        }
+        else
+        {
+            $VolumeName = $drvRoot;
+        }
+
+        $FileSystemName ||= 'CDFS' if( $type == 5 );
+
+        $self->{$drvletter}->{mount_point} = $drvRoot;       # XXX Win32::DriveInfo gives no details here ...
+        $self->{$drvletter}->{device}      = $VolumeName;
+        $self->{$drvletter}->{format}      = $FileSystemName;       # XXX Win32::DriveInfo gives sometime wrong information here
+        $self->{$drvletter}->{options} = join( ',', map { $volInfoAttrs[$_] } @attr );
+        $self->{$drvletter}->{mounted} = $type > 1;
+        if( $mounted )
+        {
+            $self->{$drvletter}->{type} = $typeExplain[$type];
+        }
     }
 
     bless( $self, $class );
@@ -120,6 +136,11 @@ $Id$
 Nicola Worthington <nicolaw@cpan.org> - L<http://perlgirl.org.uk>
 
 Jens Rehsack <rehsack@cpan.org> - L<http://www.rehsack.de/>
+
+=head1 BUGS AND LIMITATIONS
+
+As long no better data source as Win32::DriveInfo is available, only mounted
+drives are recognized, no UNC names neither file systems mounted to a path.
 
 =head1 COPYRIGHT
 
