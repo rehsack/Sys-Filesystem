@@ -74,8 +74,16 @@ METHODS
         Returns a list of all filesystem. May accept an optional list of key
         pair values in order to filter/restrict the results which are
         returned. The restrictions are evaluated to match as much as
-        possible, so asking for regular and special file system, you'll get
-        all.
+        possible, so asking for regular and special file system (or mounted
+        and special file systems), you'll get all.
+
+        For better understanding, please imagine the parameters like:
+
+          @fslist = $fs->filesystems( mounted => 1, special => 1 );
+          # results similar as
+          SELECT mountpoint FROM filesystems WHERE mounted = 1 OR special = 1
+
+        If you need other selection choices, please take a look at DBD::Sys.
 
         Valid values are as follows:
 
@@ -107,11 +115,15 @@ METHODS
             system. (Sys::Filesystem::Linux for Linux or
             Sys::Filesystem::Solaris for Solaris etc).
 
+            This parameter is mutually exclusive to `regular'.
+
             The special_filesystems() method is an alias for this syntax.
 
-        regular => undef
+        regular => 1
             Returns only fileystems which are not regarded as special.
             (Normal filesystems).
+
+            This parameter is mutually exclusive to `special'.
 
             The regular_filesystems() method is an alias for this syntax.
 
@@ -235,7 +247,7 @@ SEE ALSO
     perlport, Solaris::DeviceTree, Win32::DriveInfo
 
 VERSION
-    $Id: Filesystem.pm 68 2010-02-19 12:58:40Z trevor $
+    $Id: Filesystem.pm 128 2010-05-12 13:16:44Z trevor $
 
 AUTHOR
     Nicola Worthington <nicolaw@cpan.org> - http://perlgirl.org.uk
@@ -248,7 +260,7 @@ ACKNOWLEDGEMENTS
 COPYRIGHT
     Copyright 2004,2005,2006 Nicola Worthington.
 
-    Copyright 2008,2009 Jens Rehsack.
+    Copyright 2008-2010 Jens Rehsack.
 
     This software is licensed under The Apache Software License, Version
     2.0.
