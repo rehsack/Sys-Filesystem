@@ -1,4 +1,4 @@
-use Test::More qw(no_plan);
+use Test::More;
 use Sys::Filesystem;
 
 my $fs = Sys::Filesystem->new();
@@ -42,3 +42,5 @@ SKIP:
 	}
     }
 }
+
+done_testing();
