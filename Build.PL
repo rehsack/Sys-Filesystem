@@ -32,7 +32,7 @@ $build = Module::Build->new(
     sign               => 0,
 
     requires => {
-                  'perl'              => '5.006',
+                  'perl'              => '5.008',
                   'Carp'              => 0,
                   'FindBin'           => 0,
                   'IO'                => 0,
@@ -41,8 +41,9 @@ $build = Module::Build->new(
                   ( $^O eq 'MSWin32' ? ( 'Win32::DriveInfo' => 0, ) : () ),
                 },
 
-    recommends => {
-                    'Test::More'          => 0,
+    build_requires => { 'Test::More' => 0.90, },
+    recommends     => {
+                    'perl'                => '5.012001',
                     'Test::Pod'           => 0,
                     'Test::Pod::Coverage' => 0,
                   },
