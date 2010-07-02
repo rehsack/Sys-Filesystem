@@ -42,7 +42,7 @@ sub version()
     return $VERSION;
 }
 
-my @dt_keys    = qw(fs_spec fs_file fs_vfstype fs_name);
+my @dt_keys     = qw(fs_spec fs_file fs_vfstype fs_name);
 my @mount_keys1 = qw(fs_spec fs_file fs_vfstype);
 my @mount_keys2 = qw(fs_spec fs_file fs_mntops);
 my %special_fs = (
@@ -55,7 +55,7 @@ my $dt_rx = qr/Disk\sAppeared\s+\('([^']+)',\s*
                fsType\s*=\s*'([^']*)',\s*
                volName\s*=\s*'([^']*)'\)/x;
 my $mount_rx1 = qr/(.*) on (.*) \((\w+),?.*\)/;    # /dev/disk on / (hfs,...)
-my $mount_rx2 = qr/(.*) on (.*) \(([^)]*)\)/;    # /dev/disk on / (hfs,...)
+my $mount_rx2 = qr/(.*) on (.*) \(([^)]*)\)/;      # /dev/disk on / (hfs,...)
 
 sub new
 {
