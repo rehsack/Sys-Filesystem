@@ -31,7 +31,7 @@ use vars qw($VERSION);
 use Carp qw(croak);
 use IO::File;
 
-$VERSION = '1.28';
+$VERSION = '1.29';
 
 sub version()
 {
