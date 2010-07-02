@@ -43,7 +43,8 @@ sub version()
 }
 
 my @dt_keys    = qw(fs_spec fs_file fs_vfstype fs_name);
-my @mount_keys = qw(fs_spec fs_file fs_mntops);
+my @mount_keys1 = qw(fs_spec fs_file fs_vfstype);
+my @mount_keys2 = qw(fs_spec fs_file fs_mntops);
 my %special_fs = (
                    devfs  => 1,
                    autofs => 1,
@@ -53,7 +54,8 @@ my $dt_rx = qr/Disk\sAppeared\s+\('([^']+)',\s*
                Mountpoint\s*=\s*'([^']+)',\s*
                fsType\s*=\s*'([^']*)',\s*
                volName\s*=\s*'([^']*)'\)/x;
-my $mount_rx = qr/(.*) on (.*) \((\w+),?.*\)/;    # /dev/disk on / (hfs,...)
+my $mount_rx1 = qr/(.*) on (.*) \((\w+),?.*\)/;    # /dev/disk on / (hfs,...)
+my $mount_rx2 = qr/(.*) on (.*) \(([^)]*)\)/;    # /dev/disk on / (hfs,...)
 
 sub new
 {
@@ -91,7 +93,8 @@ sub new
     #    $self->{$mount_point}->{label}       = $name;
     #}
 
-    $self->readMounts( $mount_rx, [ 0, 1 ], \@mount_keys, \%special_fs, @mntlist );
+    $self->readMounts( $mount_rx1, [ 0, 1, 2 ], \@mount_keys1, \%special_fs, @mntlist );
+    $self->readMounts( $mount_rx2, [ 0, 1 ], \@mount_keys2, undef, @mntlist );
 
     # set the mount options
     #foreach (@mntlist)
