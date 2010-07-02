@@ -240,14 +240,34 @@ REQUIREMENTS
     Sys::Filesystem requires Perl >= 5.6 to run.
 
 TODO
-    Add support for Windows, FreeBSD, HP-UX and Tru64. Please contact me if
-    you would like to provide code for these operating systems.
+    Add support for Tru64, MidnightBSD, Haiku, Minix, DragonflyBSD and
+    OpenBSD. Please contact me if you would like to provide code for these
+    operating systems.
+
+SUPPORT
+    You can find documentation for this module with the perldoc command.
+
+        perldoc Sys::Filesystem
+
+    You can also look for information at:
+
+    * RT: CPAN's request tracker
+        http://rt.cpan.org/NoAuth/Bugs.html?Dist=Sys-Filesystem
+
+    * AnnoCPAN: Annotated CPAN documentation
+        http://annocpan.org/dist/Sys-Filesystem
+
+    * CPAN Ratings
+        http://cpanratings.perl.org/s/Sys-Filesystem
+
+    * Search CPAN
+        http://search.cpan.org/dist/Sys-Filesystem/
 
 SEE ALSO
     perlport, Solaris::DeviceTree, Win32::DriveInfo
 
 VERSION
-    $Id: Filesystem.pm 128 2010-05-12 13:16:44Z trevor $
+    $Id: Filesystem.pm 141 2010-05-14 16:04:41Z trevor $
 
 AUTHOR
     Nicola Worthington <nicolaw@cpan.org> - http://perlgirl.org.uk
