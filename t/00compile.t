@@ -5,4 +5,4 @@ use Test::More tests => 2;
 require_ok('Sys::Filesystem');
 use_ok('Sys::Filesystem');
 
-diag( "Testing Sys::Filesystem $Sys::Filesystem::VERSION, Perl $], $^X" );
+diag("Testing Sys::Filesystem $Sys::Filesystem::VERSION, Perl $], $^X");

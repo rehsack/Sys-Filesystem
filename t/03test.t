@@ -2,10 +2,8 @@ use Test::More;
 use Sys::Filesystem;
 
 my $fs;
-eval {
-    $fs = Sys::Filesystem->new();
-};
-plan( skip_all => "Cannot initialize Sys::Filesystem" ) if( $@ );
+eval { $fs = Sys::Filesystem->new(); };
+plan( skip_all => "Cannot initialize Sys::Filesystem" ) if ($@);
 ok( ref($fs) eq 'Sys::Filesystem', 'Create new Sys::Filesystem object' );
 
 my @mounted_filesystems = $fs->mounted_filesystems();
@@ -22,7 +20,7 @@ SKIP:
 {
     unless (@filesystems)
     {
-        skip('Badly poor supported OS or no file systems found.',0);
+        skip( 'Badly poor supported OS or no file systems found.', 0 );
     }
     else
     {
@@ -47,7 +45,8 @@ SKIP:
             ok( $format = $fs->format($filesystem), "Get format for $filesystem" );
             ok( $volume = $fs->volume($filesystem) || 1, "Get volume type for $filesystem" );
             ok( $label  = $fs->label($filesystem)  || 1, "Get label for $filesystem" );
-            diag(join( ' - ', $filesystem, $mounted, $special, $device, $options, $format, $volume || '', $label || '') );
+            diag(join( ' - ', $filesystem, $mounted, $special, $device, $options, $format, $volume || '', $label || '' )
+                );
         }
 
         my $device = $fs->device( $filesystems[0] );
