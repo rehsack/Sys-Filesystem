@@ -22,7 +22,7 @@ SKIP:
 {
     unless (@filesystems)
     {
-        skip('Badly poor supported OS or no file systems found.');
+        skip('Badly poor supported OS or no file systems found.',0);
     }
     else
     {

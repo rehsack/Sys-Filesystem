@@ -68,14 +68,13 @@ sub new
 
         $FileSystemName ||= 'CDFS' if ( $type == 5 );
 
-        $self->{$drvletter}->{mount_point} = $drvRoot;      # XXX Win32::DriveInfo gives no details here ...
-        $self->{$drvletter}->{device}      = $VolumeName;
-        $self->{$drvletter}->{format} = $FileSystemName;    # XXX Win32::DriveInfo gives sometime wrong information here
-        $self->{$drvletter}->{options} = join( ',', map { $volInfoAttrs[$_] } @attr );
-        $self->{$drvletter}->{mounted} = $type > 1;
-        if ($mounted)
+        $self->{$drvRoot}->{mount_point} = $drvRoot;      # XXX Win32::DriveInfo gives no details here ...
+        $self->{$drvRoot}->{device}      = $VolumeName;
+        $self->{$drvRoot}->{format} = $FileSystemName;    # XXX Win32::DriveInfo gives sometime wrong information here
+        $self->{$drvRoot}->{options} = join( ',', map { $volInfoAttrs[$_] } @attr );
+        if ($self->{$drvRoot}->{mounted} = $type > 1)
         {
-            $self->{$drvletter}->{type} = $typeExplain[$type];
+            $self->{$drvRoot}->{type} = $typeExplain[$type];
         }
     }
 

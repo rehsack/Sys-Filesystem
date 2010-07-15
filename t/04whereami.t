@@ -4,7 +4,7 @@ use Cwd qw(abs_path);
 use Config;
 
 my $RealTest = abs_path(__FILE__);
-my $RealPerl = $Config{perlpath};
+my $RealPerl = abs_path($Config{perlpath});
 if ( $^O ne 'VMS' )
 {
     $RealPerl .= $Config{_exe}
@@ -30,7 +30,7 @@ SKIP:
         {
             diag("Unexpected empty list of mounted filesystems");
         }
-        skip('Badly poor supported OS or no file systems found.');
+        skip('Badly poor supported OS or no file systems found.',0);
     }
     foreach my $fs (@mounted_filesystems)
     {

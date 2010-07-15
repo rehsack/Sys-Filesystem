@@ -9,12 +9,8 @@ my @regular_filesystems = $fs->regular_filesystems();
 
 SKIP:
 {
-    unless (@regular_filesystems)
-    {
-        skip('Badly poor supported OS or no file systems found.');
-    }
-    else
-    {
+    
+        skip('Badly poor supported OS or no file systems found.',0)unless (@regular_filesystems);
         ok( @regular_filesystems, 'Get list of regular filesystems' );
 
         for my $filesystem (@regular_filesystems)
@@ -22,17 +18,12 @@ SKIP:
 	    my $special = $fs->special($filesystem) || 0;
 	    ok( !$special, "Regular" );
 	}
-    }
 }
 
 SKIP:
 {
-    unless (@special_filesystems)
-    {
-        skip('Badly poor supported OS or no file systems found.');
-    }
-    else
-    {
+    
+        skip('Badly poor supported OS or no file systems found.',0)unless (@special_filesystems);
         ok( @special_filesystems, 'Get list of regular filesystems' );
 
         for my $filesystem (@special_filesystems)
@@ -40,7 +31,6 @@ SKIP:
 	    my $special = $fs->special($filesystem) || 0;
 	    ok( $special, "Special" );
 	}
-    }
 }
 
 done_testing();
