@@ -15,40 +15,40 @@ name: Sys-Filesystem
 provides:
   Sys::Filesystem:
     file: lib/Sys/Filesystem.pm
-    version: 1.29
+    version: 1.30
   Sys::Filesystem::Aix:
     file: lib/Sys/Filesystem/Aix.pm
-    version: 1.29
+    version: 1.30
   Sys::Filesystem::Cygwin:
     file: lib/Sys/Filesystem/Cygwin.pm
-    version: 1.29
+    version: 1.30
   Sys::Filesystem::Darwin:
     file: lib/Sys/Filesystem/Darwin.pm
-    version: 1.29
+    version: 1.30
   Sys::Filesystem::Dummy:
     file: lib/Sys/Filesystem/Dummy.pm
-    version: 1.29
+    version: 1.30
   Sys::Filesystem::Freebsd:
     file: lib/Sys/Filesystem/Freebsd.pm
-    version: 1.29
+    version: 1.30
   Sys::Filesystem::Hpux:
     file: lib/Sys/Filesystem/Hpux.pm
-    version: 1.29
+    version: 1.30
   Sys::Filesystem::Linux:
     file: lib/Sys/Filesystem/Linux.pm
-    version: 1.29
+    version: 1.30
   Sys::Filesystem::Mswin32:
     file: lib/Sys/Filesystem/Mswin32.pm
-    version: 1.29
+    version: 1.30
   Sys::Filesystem::Netbsd:
     file: lib/Sys/Filesystem/Netbsd.pm
-    version: 1.29
+    version: 1.30
   Sys::Filesystem::Solaris:
     file: lib/Sys/Filesystem/Solaris.pm
-    version: 1.29
+    version: 1.30
   Sys::Filesystem::Unix:
     file: lib/Sys/Filesystem/Unix.pm
-    version: 1.29
+    version: 1.30
 recommends:
   Test::Pod: 0
   Test::Pod::Coverage: 0
@@ -62,4 +62,4 @@ requires:
   perl: 5.008
 resources:
   license: http://www.apache.org/licenses/LICENSE-2.0.txt
-version: 1.29
+version: 1.30
