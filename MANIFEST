@@ -27,4 +27,5 @@ t/02pod_coverage.t
 t/03test.t
 t/04whereami.t
 t/05special.t
+t/pod-cm.t
 TODO
