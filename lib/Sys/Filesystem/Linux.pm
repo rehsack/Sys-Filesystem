@@ -31,7 +31,7 @@ use Carp qw(croak);
 require IO::File;
 require Sys::Filesystem::Unix;
 
-$VERSION = '1.30';
+$VERSION = '1.31';
 @ISA     = qw(Sys::Filesystem::Unix);
 
 sub version()
@@ -42,19 +42,20 @@ sub version()
 # Default fstab and mtab layout
 my @keys = qw(fs_spec fs_file fs_vfstype fs_mntops fs_freq fs_passno);
 my %special_fs = (
-                   swap                    => 1,
-                   proc                    => 1,
-                   devpts                  => 1,
-                   tmpfs                   => 1,
-                   sysfs                   => 1,
-                   securityfs              => 1,
-                   debugfs                 => 1,
-                   procbususb              => 1,
-                   udev                    => 1,
-                   nfsd                    => 1,
                    binfmt_misc             => 1,
+                   debugfs                 => 1,
+                   devpts                  => 1,
                    fusectl                 => 1,
                    'fuse.gvfs-fuse-daemon' => 1,
+		   mini_fo                 => 1,
+                   nfsd                    => 1,
+                   proc                    => 1,
+                   procbususb              => 1,
+                   securityfs              => 1,
+                   swap                    => 1,
+                   sysfs                   => 1,
+                   tmpfs                   => 1,
+                   udev                    => 1,
                  );
 
 sub new
