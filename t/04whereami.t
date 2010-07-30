@@ -1,4 +1,4 @@
-use Test::More tests => 3;
+use Test::More;
 use Sys::Filesystem;
 use Cwd qw(abs_path);
 use Config;
@@ -28,7 +28,7 @@ SKIP:
         {
             diag("Unexpected empty list of mounted filesystems");
         }
-        skip( 'Badly poor supported OS or no file systems found.', 0 );
+        skip( 'Badly poor supported OS or no file systems found.', 2 );
     }
     foreach my $fs (@mounted_filesystems)
     {
@@ -52,3 +52,5 @@ SKIP:
             sprintf( q{Found mountpoint for perl executable '%s' at '%s'}, $RealPerl, $binmount || '<n/a>' ) );
     }
 }
+
+done_testing();
