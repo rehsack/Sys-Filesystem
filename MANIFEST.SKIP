@@ -6,6 +6,7 @@
 \..*swp
 ^Makefile$
 ^Build$
+^Build\.bat$
 CVS/.*
 \.svn/.*
 \.cvsignore$
