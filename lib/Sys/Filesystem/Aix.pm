@@ -48,6 +48,9 @@ my %special_fs = (
                    autofs => 1,
                  );
 
+# see AIX commands at
+# http://publib.boulder.ibm.com/infocenter/pseries/v5r3/topic/com.ibm.aix.doc/doc/base/alphabeticallistofcommands.htm
+
 sub new
 {
     ref( my $class = shift ) && croak 'Class name required';
@@ -92,7 +95,9 @@ sub new
         $self->{$current_filesystem}->{$state} = 1;
     }
 
-    %fs_info = map {
+    my @active_vgs = qx(/usr/sbin/lsvg -Lo);
+    scalar @active_vgs
+      and %fs_info = map {
         my ( $lvname, $type, $lps, $pps, $pvs, $lvstate, $path ) = split( m/\s+/, $_ );
 
         ( $path => [ $lvname, $type, $lps, $pps, $pvs, $lvstate ] )
