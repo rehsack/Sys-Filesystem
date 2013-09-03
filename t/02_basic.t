@@ -31,13 +31,13 @@ SKIP:
         {
             my $mounted = $fs->mounted($filesystem) || 0;
             my $unmounted = !$mounted;
-            ok( $mounted == grep( /^$filesystem$/, @mounted_filesystems ), 'Mounted' );
-            ok( $unmounted == grep( /^$filesystem$/, @unmounted_filesystems ), 'Unmounted' );
+            ok( $mounted == grep( /^\Q$filesystem\E$/, @mounted_filesystems ), 'Mounted' );
+            ok( $unmounted == grep( /^\Q$filesystem\E$/, @unmounted_filesystems ), 'Unmounted' );
 
             my $special = $fs->special($filesystem) || 0;
             my $regular = !$special;
-            ok( $special == grep( /^$filesystem$/, @special_filesystems ), 'Special' );
-            ok( $regular == grep( /^$filesystem$/, @regular_filesystems ), 'Regular' );
+            ok( $special == grep( /^\Q$filesystem\E$/, @special_filesystems ), 'Special' );
+            ok( $regular == grep( /^\Q$filesystem\E$/, @regular_filesystems ), 'Regular' );
 
             my ( $device, $options, $format, $volume, $label );
             ok( $device = $fs->device($filesystem), "Get device for $filesystem" );
