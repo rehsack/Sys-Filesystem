@@ -30,7 +30,7 @@ require Sys::Filesystem::Unix;
 
 use Carp qw(croak);
 
-$VERSION = '1.400';
+$VERSION = '1.401';
 @ISA     = qw(Sys::Filesystem::Unix);
 
 sub version()
@@ -110,7 +110,7 @@ H.Merijn Brand, PROCURA B.V.
 
 Copyright 2009 H.Merijn Brand PROCURA B.V.
 
-Copyright 2009,2010 Jens Rehsack.
+Copyright 2009,2013 Jens Rehsack.
 
 This software is licensed under The Apache Software License, Version 2.0.
 

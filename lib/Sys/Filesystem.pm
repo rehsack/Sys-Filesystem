@@ -45,7 +45,7 @@ use constant DEBUG => $ENV{SYS_FILESYSTEM_DEBUG} ? 1 : 0;
 use constant SPECIAL => ( 'darwin' eq $^O ) ? 0 : undef;
 #use constant SPECIAL => undef;
 
-$VERSION = '1.400';
+$VERSION = '1.401';
 
 my ( $FsPlugin, $Supported );
 
@@ -619,7 +619,7 @@ See CREDITS in the distribution tarball.
 
 Copyright 2004,2005,2006 Nicola Worthington.
 
-Copyright 2008-2010 Jens Rehsack.
+Copyright 2008-2013 Jens Rehsack.
 
 This software is licensed under The Apache Software License, Version 2.0.
 

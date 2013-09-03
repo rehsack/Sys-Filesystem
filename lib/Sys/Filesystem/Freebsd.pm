@@ -31,7 +31,7 @@ use vars qw(@ISA $VERSION);
 require Sys::Filesystem::Unix;
 use Carp qw(croak);
 
-$VERSION = '1.400';
+$VERSION = '1.401';
 @ISA     = qw(Sys::Filesystem::Unix);
 
 sub version()
@@ -170,7 +170,7 @@ Jens Rehsack <rehsack@cpan.org> - L<http://www.rehsack.de>
 
 Copyright 2004,2005,2006 Nicola Worthington.
 
-Copyright 2009,2010 Jens Rehsack.
+Copyright 2009,2013 Jens Rehsack.
 
 This software is licensed under The Apache Software License, Version 2.0.
 

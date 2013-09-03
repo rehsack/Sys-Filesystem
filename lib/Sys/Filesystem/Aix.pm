@@ -31,7 +31,7 @@ use vars qw($VERSION);
 use Carp qw(croak);
 use IO::File;
 
-$VERSION = '1.400';
+$VERSION = '1.401';
 
 sub version()
 {
@@ -344,7 +344,7 @@ Jens Rehsack <rehsack@cpan.org> - L<http://www.rehsack.de/>
 
 Copyright 2004,2005,2006 Nicola Worthington.
 
-Copyright 2008-2010 Jens Rehsack.
+Copyright 2008-2013 Jens Rehsack.
 
 This software is licensed under The Apache Software License, Version 2.0.
 

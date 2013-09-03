@@ -27,7 +27,7 @@ use strict;
 use Carp qw(croak);
 
 use vars qw($VERSION);
-$VERSION = '1.400';
+$VERSION = '1.401';
 
 sub version()
 {
@@ -84,7 +84,7 @@ Jens Rehsack <rehsack@cpan.org> - L<http://www.rehsack.de/>
 
 Copyright 2004,2005,2006 Nicola Worthington.
 
-Copyright 2009,2010 Jens Rehsack.
+Copyright 2009,2013 Jens Rehsack.
 
 This software is licensed under The Apache Software License, Version 2.0.
 
