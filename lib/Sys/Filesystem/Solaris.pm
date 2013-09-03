@@ -71,13 +71,11 @@ sub new
     {
         croak "Unable to open fstab file ($args{fstab})\n";
     }
-    print( STDERR Dumper( \$self ) );
 
     unless ( $self->readMntTab( $args{mtab}, \@mtab_keys, [ 0, 1, 2 ], \%special_fs ) )
     {
         croak "Unable to open mtab file ($args{mtab})\n";
     }
-    print( STDERR Dumper( \$self ) );
 
     $self;
 }
