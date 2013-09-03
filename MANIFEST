@@ -21,8 +21,8 @@ MANIFEST.SKIP
 META.yml
 NOTICE
 README
-t/00compile.t
-t/03test.t
-t/04whereami.t
-t/05special.t
+t/01_load.t
+t/02_basic.t
+t/03_whereami.t
+t/04_special.t
 TODO
