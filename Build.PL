@@ -23,15 +23,15 @@ if ($@)
 }
 
 my %prereqs = (
-                   'perl'              => '5.008',
-                   'Carp'              => 0,
-                   'FindBin'           => 0,
-                   'IO'                => 0,
-                   'IPC::Cmd'          => '0.80',
-                   'Module::Pluggable' => '4.5',
-                   'Params::Util'      => '1.00',
-                   ( $^O eq 'MSWin32' ? ( 'Win32::DriveInfo' => 0, ) : () ),
-);
+                'perl'              => '5.008',
+                'Carp'              => 0,
+                'FindBin'           => 0,
+                'IO'                => 0,
+                'IPC::Cmd'          => '0.80',
+                'Module::Pluggable' => '4.5',
+                'Params::Util'      => '1.00',
+                ( $^O eq 'MSWin32' ? ( 'Win32::DriveInfo' => 0, ) : () ),
+              );
 
 $build = Module::Build->new(
      module_name        => 'Sys::Filesystem',
@@ -41,8 +41,11 @@ $build = Module::Build->new(
      create_readme      => 1,
      create_packlist    => 1,
      sign               => 0,
-     configure_requires => \%prereqs,
-     requires           => \%prereqs,
+     configure_requires => {
+                             'Module::Build' => '0.2800',
+                             %prereqs,
+                           },
+     requires       => \%prereqs,
      build_requires => { 'Test::More' => 0.90, },
      recommends     => {
                      'perl'                => '5.018001',
