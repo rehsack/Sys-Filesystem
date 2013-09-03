@@ -22,15 +22,7 @@ if ($@)
     exit(0);
 }
 
-$build = Module::Build->new(
-     module_name        => 'Sys::Filesystem',
-     license            => 'apache',
-     dist_author        => 'Jens Rehsack <rehsack@cpan.org>',
-     create_makefile_pl => 'passthrough',
-     create_readme      => 1,
-     create_packlist    => 1,
-     sign               => 0,
-     requires           => {
+my %prereqs = (
                    'perl'              => '5.008',
                    'Carp'              => 0,
                    'FindBin'           => 0,
@@ -39,7 +31,18 @@ $build = Module::Build->new(
                    'Module::Pluggable' => '4.5',
                    'Params::Util'      => '1.00',
                    ( $^O eq 'MSWin32' ? ( 'Win32::DriveInfo' => 0, ) : () ),
-                 },
+);
+
+$build = Module::Build->new(
+     module_name        => 'Sys::Filesystem',
+     license            => 'apache',
+     dist_author        => 'Jens Rehsack <rehsack@cpan.org>',
+     create_makefile_pl => 'passthrough',
+     create_readme      => 1,
+     create_packlist    => 1,
+     sign               => 0,
+     configure_requires => \%prereqs,
+     requires           => \%prereqs,
      build_requires => { 'Test::More' => 0.90, },
      recommends     => {
                      'perl'                => '5.018001',
