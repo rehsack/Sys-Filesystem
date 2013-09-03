@@ -1,4 +1,5 @@
 \B\.svn\b
+\B\.git
 \.[Bb][Aa][Kk]$
 \.orig$
 \.old$
@@ -23,5 +24,6 @@ _Inline/.*
 ^pm_to_blib$
 ^_build/.*
 ~$
-^MYMETA.yml$
 Sys-Filesystem-.*
+^MYMETA\..*$
+\bxt
