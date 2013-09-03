@@ -31,6 +31,7 @@ use warnings;
 use vars qw(@ISA $VERSION);
 
 require Sys::Filesystem::Unix;
+use IPC::Cmd ();
 
 use Carp qw(croak);
 
@@ -62,16 +63,21 @@ sub new
     my ( $class, %args ) = @_;
     my $self = bless( {}, $class );
 
-    $args{disktool} ||= '/usr/sbin/disktool';
-    $args{mount}    ||= '/sbin/mount';
+    $args{diskutil} ||= IPC::Cmd::can_run("diskutil");
+    $args{disktool} ||= IPC::Cmd::can_run("disktool");
+    $args{mount}    ||= IPC::Cmd::can_run("mount");
+
+    my @list_fs_cmd;
+    defined $args{diskutil} and $args{diskutil} and @list_fs_cmd = ($args{diskutil}, "list");
+    scalar @list_fs_cmd or @list_fs_cmd = ($args{disktool}, "-l");
 
     # don't use backticks, don't use the shell
     my @fslist  = ();
     my @mntlist = ();
-    open( my $dt_fh, '-|' ) or exec( $args{disktool}, '-l' ) or croak("Cannot execute $args{disktool}: $!\n");
+    open( my $dt_fh, '-|' ) or exec( @list_fs_cmd ) or croak("Cannot execute " . join(" ", @list_fs_cmd) . ": $!");
     @fslist = <$dt_fh>;
     close($dt_fh);
-    open( my $m_fh, '-|' ) or exec( $args{mount} ) or croak("Cannot execute $args{mount}: $!\n");
+    open( my $m_fh, '-|' ) or exec( $args{mount} ) or croak("Cannot execute $args{mount}: $!");
     @mntlist = <$m_fh>;
     close($m_fh);
 
