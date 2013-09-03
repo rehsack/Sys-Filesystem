@@ -23,34 +23,32 @@ if ($@)
 }
 
 $build = Module::Build->new(
-    module_name        => 'Sys::Filesystem',
-    license            => 'apache',
-    dist_author        => 'Jens Rehsack <rehsack@cpan.org>',
-    create_makefile_pl => 'passthrough',
-    create_readme      => 1,
-    create_packlist    => 1,
-    sign               => 0,
-    requires => {
-                  'perl'              => '5.008',
-                  'Carp'              => 0,
-                  'FindBin'           => 0,
-                  'IO'                => 0,
-                  'Module::Pluggable' => '4.5',
-                  'Params::Util'      => '1.00',
-                  ( $^O eq 'MSWin32' ? ( 'Win32::DriveInfo' => 0, ) : () ),
-                },
-    build_requires => { 'Test::More' => 0.90, },
-    recommends     => {
-                    'perl'                => '5.018001',
-		    'Module::Pluggable' => '4.8',
-                    'Test::Pod'           => 0,
-                    'Test::Pod::Coverage' => 0,
-                  },
-    meta_merge => {
-	resources => {
-	    repository => "https://github.com/rehsack/Sys-Filesystem",
-	},
-    },
+     module_name        => 'Sys::Filesystem',
+     license            => 'apache',
+     dist_author        => 'Jens Rehsack <rehsack@cpan.org>',
+     create_makefile_pl => 'passthrough',
+     create_readme      => 1,
+     create_packlist    => 1,
+     sign               => 0,
+     requires           => {
+                   'perl'              => '5.008',
+                   'Carp'              => 0,
+                   'FindBin'           => 0,
+                   'IO'                => 0,
+                   'IPC::Cmd'          => '0.80',
+                   'Module::Pluggable' => '4.5',
+                   'Params::Util'      => '1.00',
+                   ( $^O eq 'MSWin32' ? ( 'Win32::DriveInfo' => 0, ) : () ),
+                 },
+     build_requires => { 'Test::More' => 0.90, },
+     recommends     => {
+                     'perl'                => '5.018001',
+                     'Module::Pluggable'   => '4.8',
+                     'Test::Pod'           => 0,
+                     'Test::Pod::Coverage' => 0,
+                   },
+     meta_merge => { resources => { repository => "https://github.com/rehsack/Sys-Filesystem", }, },
+     test_files => join( ' ' => 't/*.t xt/*.t' ),
 );
 
 $build->create_build_script();
