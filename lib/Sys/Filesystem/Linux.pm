@@ -144,25 +144,25 @@ be queried as methods through the parent L<Sys::Filesystem> object.
 
 =item fs_spec
 
-Dscribes the block special device or remote filesystem to be mounted.
+Describes the block special device or remote filesystem to be mounted.
 
 For  ordinary  mounts  it  will hold (a link to) a block special device
-node (as created by L<mknod(8)>)  for  the  device  to  be  mounted,  like
-/dev/cdrom’   or   ‘/dev/sdb7’.    For   NFS   mounts  one  will  have
-<host>:<dir>, e.g., ‘knuth.aeb.nl:/’.  For procfs, use ‘proc’.
+node (as created by L<mknod(8)>) for  the  device  to  be  mounted, like
+'/dev/cdrom' or '/dev/sdb7'.  For NFS mounts one will  have <host>:<dir>,
+e.g., 'knuth.aeb.nl:/'.  For procfs, use 'proc'.
 
 Instead of giving the device explicitly, one may indicate the (ext2  or
 xfs)  filesystem that is to be mounted by its UUID or volume label (cf.
 L<e2label(8)> or  L<xfs_admin(8)>),  writing  LABEL=<label>  or  UUID=<uuid>,
-e.g.,   ‘LABEL=Boot’   or  ‘UUID=3e6be9de-8139-11d1-9106-a43f08d823a6’.
+e.g., 'LABEL=Boot' or 'UUID=3e6be9de-8139-11d1-9106-a43f08d823a6'.
 This will make the system more robust: adding or removing a  SCSI  disk
 changes the disk device name but not the filesystem volume label.
 
 =item fs_file
 
 Describes the mount point for the filesystem. For swap partitions,
-this field should be specified as‘none. If the name of the mount
-point contains spaces these can be escaped as‘\040.
+this field should be specified as 'none'. If the name of the mount
+point contains spaces these can be escaped as '\040'.
 
 =item fs_vfstype
 
@@ -186,10 +186,10 @@ least  the type of mount plus any additional options appropriate to the
 filesystem type.  For documentation on the available options  for  non-
 nfs  file systems, see L<mount(8)>.  For documentation on all nfs-specific
 options have a look at L<nfs(5)>.  Common for all types of file system are
-the options ‘‘noauto’’ (do not mount when 'mount -a' is given, e.g., at
-boot time), ‘‘user’’ (allow a user  to  mount),  and  ‘‘owner’’  (allow
-device  owner to mount), and ‘‘_netdev’’ (device requires network to be
-available).  The ‘‘owner’’ and ‘‘_netdev’’ options are  Linux-specific.
+the options 'noauto' (do not mount when 'mount -a' is given, e.g., at
+boot time), 'user' (allow a user  to  mount),  and  'owner'  (allow
+device  owner to mount), and '_netdev' (device requires network to be
+available).  The 'owner' and '_netdev' options are  Linux-specific.
 For more details, see L<mount(8)>.
 
 =item fs_freq
