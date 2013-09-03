@@ -30,7 +30,7 @@ use Win32::DriveInfo;
 use Carp qw(croak);
 
 use vars qw($VERSION);
-$VERSION = '1.31';
+$VERSION = '1.400';
 
 sub version()
 {
