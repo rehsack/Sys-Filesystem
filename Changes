@@ -1,3 +1,14 @@
+1.400 - 2013-09-03
+	Moving to GitHub for easier contributing
+	Pod typo / encoding fixes (rt#85898, rt#77699), thanks to Slaven
+	  Rezić, Andreas J. König and Gregor Herrmann
+	Fix MacOS X 10.8 (diskutil vs. disktool)
+	Update requirements / recommendations
+	Fix AIX (rt#79188) - thanks to David Lee
+	Fix Solaris debug leftover (rt#72717) - thanks to Kenneth Ölwing
+	Fix Tests (rt#62248) - thanks to Daphne Pfister
+	Fix configure_requires (rt#62249) - thanks to Daphne Pfister
+
 1.30 - 2010-07-15
 	Fixing MSWin32
 
