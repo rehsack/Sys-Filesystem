@@ -26,3 +26,4 @@ t/02_basic.t
 t/03_whereami.t
 t/04_special.t
 TODO
+META.json
