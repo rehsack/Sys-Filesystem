@@ -1,11 +1,15 @@
-use 5.006;
+#! perl
+
+use 5.008;
+use strict;
+use warnings;
 
 use Test::More;
-eval "use Test::Pod::Coverage 1.00";
-plan skip_all => "Test::Pod::Coverage 1.00 required for testing POD Coverage" if $@;
+use Test::Pod::Coverage;
+
 all_pod_coverage_ok(
                      {
                        also_private => [qr/^[A-Z_]+$/],
                        trustme      => [qr/^new$/]
                      }
-                   );    #Ignore all caps
+                   );
