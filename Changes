@@ -1,3 +1,6 @@
+1.402
+ - remove Makefile.PL passthrough
+
 1.401 2013-09-08
  - Fix MacOS X / Darwin without diskutil
  - Changes reformatted as per CPAN::Changes::Spec

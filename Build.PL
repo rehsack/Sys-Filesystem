@@ -39,7 +39,6 @@ $build = Module::Build->new(
      dist_author        => 'Jens Rehsack <rehsack@cpan.org>',
      create_makefile_pl => 'passthrough',
      create_readme      => 1,
-     create_packlist    => 1,
      sign               => 0,
      configure_requires => {
                              'Module::Build' => '0.2800',
