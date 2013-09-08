@@ -31,7 +31,7 @@ use vars qw(@ISA $VERSION);
 require Sys::Filesystem::Unix;
 use Carp qw(croak);
 
-$VERSION = '1.401';
+$VERSION = '1.402';
 @ISA     = qw(Sys::Filesystem::Unix);
 
 sub version()
