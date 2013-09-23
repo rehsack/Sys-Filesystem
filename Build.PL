@@ -11,7 +11,7 @@ use lib $FindBin::Bin . '/lib';
 
 $@ = undef;
 my @fs;
-eval {
+$^O eq 'MSWin32' or eval {
     require Sys::Filesystem;
     my $fs = Sys::Filesystem->new();
     @fs = $fs->filesystems();
