@@ -24,7 +24,7 @@ package Sys::Filesystem::Darwin;
 
 # vim:ts=4:sw=4:tw=78
 
-use 5.006;
+use 5.008003;
 
 use strict;
 use warnings;

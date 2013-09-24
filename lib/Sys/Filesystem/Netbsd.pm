@@ -23,7 +23,10 @@ package Sys::Filesystem::Netbsd;
 
 # vim:ts=4:sw=4:tw=78
 
+use 5.008003;
+
 use strict;
+use warnings;
 use vars qw(@ISA $VERSION);
 
 require Sys::Filesystem::Unix;

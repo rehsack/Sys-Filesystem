@@ -24,12 +24,16 @@ package Sys::Filesystem::Unix;
 
 # vim:ts=4:sw=4:tw=78
 
+use 5.008003;
+
 use strict;
+use warnings;
+use vars qw($VERSION);
+
 use Carp qw(croak);
 use Fcntl qw(:flock);
 use IO::File;
 
-use vars qw($VERSION);
 $VERSION = '1.402';
 
 sub version()

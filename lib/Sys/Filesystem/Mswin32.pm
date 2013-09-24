@@ -23,13 +23,16 @@ package Sys::Filesystem::Mswin32;
 
 # vim:ts=4:sw=4:tw=78
 
+use 5.008003;
+
 use strict;
 use warnings;
+use vars qw($VERSION);
+
 use Params::Util qw(_STRING);
 use Win32::DriveInfo;
 use Carp qw(croak);
 
-use vars qw($VERSION);
 $VERSION = '1.402';
 
 sub version()
