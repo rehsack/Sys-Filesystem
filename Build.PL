@@ -41,7 +41,6 @@ $build = Module::Build->new(
                              module_name        => 'Sys::Filesystem',
                              license            => 'apache',
                              dist_author        => 'Jens Rehsack <rehsack@cpan.org>',
-                             create_makefile_pl => 'passthrough',
                              create_readme      => 1,
                              sign               => 0,
                              configure_requires => {
