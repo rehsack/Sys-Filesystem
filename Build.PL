@@ -1,7 +1,7 @@
 # vim:ts=4:sw=4:tw=78
 # $Id$
 
-use 5.006;
+use 5.008003;
 
 use strict;
 use Module::Build;
@@ -13,48 +13,66 @@ $@ = undef;
 my @fs;
 $^O eq 'MSWin32' or eval {
     require Sys::Filesystem;
-    my $fs = Sys::Filesystem->new();
-    @fs = $fs->filesystems();
+    unless ( Sys::Filesystem->supported )
+    {
+        printf( STDERR "Can't be used ($@) - OS not supported or bad maintained?" );
+        exit(0);
+    }
 };
-if ($@)
-{
-    printf( STDERR "Can't be used ($@) - OS not supported or bad maintained?" );
-    exit(0);
-}
 
 my %prereqs = (
-                'perl'              => '5.008',
+                'perl'              => '5.008003',
                 'Carp'              => 0,
                 'FindBin'           => 0,
                 'IO'                => 0,
                 'IPC::Cmd'          => '0.80',
                 'Module::Pluggable' => '4.5',
                 'Params::Util'      => '1.00',
-                ( $^O eq 'MSWin32' ? ( 'Win32::DriveInfo' => 0, ) : () ),
+                (
+                  $^O eq 'MSWin32'
+                  ? (
+                      'Win32::DriveInfo' => 0,
+                    )
+                  : ()
+                ),
               );
 
 $build = Module::Build->new(
-     module_name        => 'Sys::Filesystem',
-     license            => 'apache',
-     dist_author        => 'Jens Rehsack <rehsack@cpan.org>',
-     create_makefile_pl => 'passthrough',
-     create_readme      => 1,
-     sign               => 0,
-     configure_requires => {
-                             'Module::Build' => '0.2800',
-                             %prereqs,
-                           },
-     requires       => \%prereqs,
-     build_requires => { 'Test::More' => 0.90, },
-     recommends     => {
-                     'perl'                => '5.018001',
-                     'Module::Pluggable'   => '4.8',
-                     'Test::Pod'           => 0,
-                     'Test::Pod::Coverage' => 0,
-                   },
-     meta_merge => { resources => { repository => "https://github.com/rehsack/Sys-Filesystem", }, },
-     test_files => join( ' ' => 't/*.t xt/*.t' ),
-);
+                             module_name        => 'Sys::Filesystem',
+                             license            => 'apache',
+                             dist_author        => 'Jens Rehsack <rehsack@cpan.org>',
+                             create_makefile_pl => 'passthrough',
+                             create_readme      => 1,
+                             sign               => 0,
+                             configure_requires => {
+                                                     'Module::Build' => '0.2800',
+                                                     %prereqs,
+                                                   },
+                             requires       => \%prereqs,
+                             build_requires => {
+                                                 'Test::More' => 0.90,
+                                               },
+                             recommends => {
+                                             'perl'                => '5.018001',
+                                             'Module::Pluggable'   => '4.8',
+                                             'Test::Pod'           => 0,
+                                             'Test::Pod::Coverage' => 0,
+                                           },
+                             auto_features => {
+                                                win32_support => {
+                                                               description => "Support for Windows",
+                                                               configure_requires => {
+                                                                            'Win32::DriveInfo' => 0,
+                                                               },
+                                                },
+                                              },
+                             meta_merge => {
+                                      resources => {
+                                          repository => "https://github.com/rehsack/Sys-Filesystem",
+                                      },
+                             },
+                             test_files => join( ' ' => 't/*.t xt/*.t' ),
+                           );
 
 $build->create_build_script();
 
