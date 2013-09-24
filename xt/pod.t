@@ -4,9 +4,6 @@ use strict;
 use warnings;
 
 use Test::More;
-
-use Test::Pod::Spelling::CommonMistakes qw(all_pod_files_ok);
+use Test::Pod;
 
 all_pod_files_ok();
-
-1;
