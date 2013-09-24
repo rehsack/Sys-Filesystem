@@ -1,5 +1,10 @@
-1.402
+1.402 2013-09-24
  - remove Makefile.PL passthrough
+ - don't prove whether Win32 is supported - we know it (should fix
+   RT#88901 - thanks Michiel Beijen)
+ - try to improve supported control
+ - put Win32::DriveInfo into feature "Win32" (I'd like to get feedback
+   whether it helps)
 
 1.401 2013-09-08
  - Fix MacOS X / Darwin without diskutil
