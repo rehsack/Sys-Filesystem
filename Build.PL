@@ -54,8 +54,6 @@ $build = Module::Build->new(
                              recommends => {
                                              'perl'                => '5.018001',
                                              'Module::Pluggable'   => '4.8',
-                                             'Test::Pod'           => 0,
-                                             'Test::Pod::Coverage' => 0,
                                            },
                              auto_features => {
                                                 win32_support => {
