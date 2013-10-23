@@ -60,7 +60,7 @@ sub new
     my $self = bless( {}, $class );
 
     # Defaults
-    $args{fstab} ||= '/etc/fstab';
+    $args{fstab} ||= $ENV{PATH_FSTAB} || '/etc/fstab';
 
     my @mounts = qx( /sbin/mount );
     $self->readMounts( $mount_rx, [ 0, 1, 2 ], [qw(fs_spec fs_file fs_vfstype fs_mntops)], \%special_fs, @mounts );
