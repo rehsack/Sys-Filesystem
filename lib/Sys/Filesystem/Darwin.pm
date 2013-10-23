@@ -63,13 +63,15 @@ sub new
     my ( $class, %args ) = @_;
     my $self = bless( {}, $class );
 
-    $args{diskutil} ||= IPC::Cmd::can_run("diskutil");
-    $args{disktool} ||= IPC::Cmd::can_run("disktool");
-    $args{mount}    ||= IPC::Cmd::can_run("mount");
+    foreach my $prog (qw(diskutil disktool mount))
+    {
+	defined $args{$prog} or $args{$prog} = IPC::Cmd::can_run($prog);
+    }
 
     my @list_fs_cmd;
     defined $args{diskutil} and $args{diskutil} and @list_fs_cmd = ($args{diskutil}, "list");
     @list_fs_cmd or @list_fs_cmd = ($args{disktool}, "-l");
+    @list_fs_cmd or croak("No command to list file systems ...");
 
     # don't use backticks, don't use the shell
     my @fslist  = ();
