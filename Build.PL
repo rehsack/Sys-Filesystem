@@ -26,7 +26,7 @@ my %prereqs = (
                 'FindBin'           => 0,
                 'IO'                => 0,
                 'IPC::Cmd'          => '0.80',
-                'Module::Pluggable' => '4.5',
+                'Module::Pluggable' => '4.8',
                 'Params::Util'      => '1.00',
                 (
                   $^O eq 'MSWin32'
@@ -53,7 +53,6 @@ $build = Module::Build->new(
                                                },
                              recommends => {
                                              'perl'              => '5.018001',
-                                             'Module::Pluggable' => '4.8',
                                            },
                              auto_features => {
                                                 win32_support => {
