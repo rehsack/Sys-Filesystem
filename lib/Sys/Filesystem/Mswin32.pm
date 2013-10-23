@@ -33,7 +33,7 @@ use Params::Util qw(_STRING);
 use Win32::DriveInfo;
 use Carp qw(croak);
 
-$VERSION = '1.402';
+$VERSION = '1.403';
 
 sub version()
 {

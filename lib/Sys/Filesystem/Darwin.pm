@@ -35,7 +35,7 @@ use IPC::Cmd ();
 
 use Carp qw(croak);
 
-$VERSION = '1.402';
+$VERSION = '1.403';
 @ISA     = qw(Sys::Filesystem::Unix);
 
 sub version()
