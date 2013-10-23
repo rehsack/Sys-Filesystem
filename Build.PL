@@ -52,8 +52,8 @@ $build = Module::Build->new(
                                                  'Test::More' => 0.90,
                                                },
                              recommends => {
-                                             'perl'                => '5.018001',
-                                             'Module::Pluggable'   => '4.8',
+                                             'perl'              => '5.018001',
+                                             'Module::Pluggable' => '4.8',
                                            },
                              auto_features => {
                                                 win32_support => {
@@ -66,6 +66,18 @@ $build = Module::Build->new(
                              meta_merge => {
                                       resources => {
                                           repository => "https://github.com/rehsack/Sys-Filesystem",
+                                          prereqs    => {
+                                                 develop => {
+                                                     requires => {
+                                                         'Test::CPAN::Changes'                 => 0,
+                                                         'Test::CheckManifest'                 => 0,
+                                                         'Test::Pod'                           => 0,
+                                                         'Test::Pod::Coverage'                 => 0,
+                                                         'Test::Pod::Spelling::CommonMistakes' => 0,
+                                                     },
+                                                     recommends => {},
+                                                 },
+                                          },
                                       },
                              },
                              test_files => join( ' ' => 't/*.t xt/*.t' ),
