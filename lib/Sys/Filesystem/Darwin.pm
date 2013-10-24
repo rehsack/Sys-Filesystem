@@ -70,7 +70,7 @@ sub new
 
     my @list_fs_cmd;
     defined $args{diskutil} and $args{diskutil} and @list_fs_cmd = ($args{diskutil}, "list");
-    @list_fs_cmd or @list_fs_cmd = ($args{disktool}, "-l");
+    (0 == scalar @list_fs_cmd) and defined $args{disktool} and $args{disktool} and @list_fs_cmd = ($args{disktool}, "-l");
     @list_fs_cmd or croak("No command to list file systems ...");
 
     # don't use backticks, don't use the shell
