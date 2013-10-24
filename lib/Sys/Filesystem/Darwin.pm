@@ -65,7 +65,7 @@ sub new
 
     foreach my $prog (qw(diskutil disktool mount))
     {
-	defined $args{$prog} or $args{$prog} = (grep { defined $_ and -x $_ } (IPC::Cmd::can_run($prog), "/usr/sbin/$prog", "/sbin/$prog"))[0];
+	defined $args{$prog} or $args{$prog} = (grep { defined $_ and -x $_ } ("/usr/sbin/$prog", "/sbin/$prog"))[0];
     }
 
     my @list_fs_cmd;
