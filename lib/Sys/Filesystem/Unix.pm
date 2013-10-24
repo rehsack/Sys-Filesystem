@@ -90,7 +90,8 @@ sub readFsTab($\@\@\%)
             if ( defined( $pridx->[2] ) )
             {
                 my $vfs_type = $self->{ $vals[ $pridx->[1] ] }->{fs_vfstype} = $vals[ $pridx->[2] ];
-                $self->{ $vals[ $pridx->[1] ] }->{special} = 1 if ( defined( $special_fs->{$vfs_type} ) );
+                $self->{ $vals[ $pridx->[1] ] }->{special} = 1
+                  if ( defined( $special_fs->{$vfs_type} ) );
             }
             else
             {
@@ -100,7 +101,8 @@ sub readFsTab($\@\@\%)
 
             for ( my $i = 0; $i < @{$fstabKeys}; ++$i )
             {
-                $self->{ $vals[ $pridx->[1] ] }->{ $fstabKeys->[$i] } = defined( $vals[$i] ) ? $vals[$i] : '';
+                $self->{ $vals[ $pridx->[1] ] }->{ $fstabKeys->[$i] } =
+                  defined( $vals[$i] ) ? $vals[$i] : '';
             }
         }
         $fstab->close();
@@ -138,7 +140,8 @@ sub readMntTab($\@\@\%)
             if ( defined( $pridx->[2] ) )
             {
                 my $vfs_type = $self->{ $vals[ $pridx->[1] ] }->{fs_vfstype} = $vals[ $pridx->[2] ];
-                $self->{ $vals[ $pridx->[1] ] }->{special} = 1 if ( defined( $special_fs->{$vfs_type} ) );
+                $self->{ $vals[ $pridx->[1] ] }->{special} = 1
+                  if ( defined( $special_fs->{$vfs_type} ) );
             }
             else
             {
@@ -148,7 +151,8 @@ sub readMntTab($\@\@\%)
 
             for ( my $i = 0; $i < @{$mnttabKeys}; ++$i )
             {
-                $self->{ $vals[ $pridx->[1] ] }->{ $mnttabKeys->[$i] } = defined( $vals[$i] ) ? $vals[$i] : '';
+                $self->{ $vals[ $pridx->[1] ] }->{ $mnttabKeys->[$i] } =
+                  defined( $vals[$i] ) ? $vals[$i] : '';
             }
         }
         $mtab->close();
@@ -177,7 +181,8 @@ sub readMounts
             if ( defined( $pridx->[2] ) )
             {
                 my $vfs_type = $self->{ $vals[ $pridx->[1] ] }->{fs_vfstype} = $vals[ $pridx->[2] ];
-                $self->{ $vals[ $pridx->[1] ] }->{special} = 1 if ( defined( $special->{$vfs_type} ) );
+                $self->{ $vals[ $pridx->[1] ] }->{special} = 1
+                  if ( defined( $special->{$vfs_type} ) );
             }
             elsif ( !defined( $self->{ $vals[ $pridx->[1] ] }->{special} ) )
             {
@@ -186,7 +191,8 @@ sub readMounts
 
             for ( my $i = 0; $i < @{$keys}; ++$i )
             {
-                $self->{ $vals[ $pridx->[1] ] }->{ $keys->[$i] } = defined( $vals[$i] ) ? $vals[$i] : '';
+                $self->{ $vals[ $pridx->[1] ] }->{ $keys->[$i] } =
+                  defined( $vals[$i] ) ? $vals[$i] : '';
             }
         }
     }

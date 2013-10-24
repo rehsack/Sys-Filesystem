@@ -34,15 +34,17 @@ use vars qw($VERSION $AUTOLOAD);
 use Carp qw(croak cluck confess);
 use Module::Pluggable
   require => 1,
-  only =>
-  [ @query_order = map { __PACKAGE__ . '::' . $_ } ucfirst( lc($^O) ), $^O =~ m/Win32/i ? 'Win32' : 'Unix', 'Dummy' ],
+  only    => [
+            @query_order = map { __PACKAGE__ . '::' . $_ } ucfirst( lc($^O) ),
+            $^O =~ m/Win32/i ? 'Win32' : 'Unix', 'Dummy'
+          ],
   inner       => 0,
   search_path => ['Sys::Filesystem'];
 use Params::Util qw(_INSTANCE);
 use Scalar::Util qw(blessed);
 
-use constant DEBUG => $ENV{SYS_FILESYSTEM_DEBUG} ? 1 : 0;
-use constant SPECIAL => ( 'darwin' eq $^O ) ? 0 : undef;
+use constant DEBUG   => $ENV{SYS_FILESYSTEM_DEBUG} ? 1 : 0;
+use constant SPECIAL => ( 'darwin' eq $^O )        ? 0 : undef;
 #use constant SPECIAL => undef;
 
 $VERSION = '1.404';
@@ -60,7 +62,7 @@ BEGIN
         last;
     }
 
-    $Supported = ( $FsPlugin ne 'Sys::Filesystem::Unix' ) && ( $FsPlugin ne 'Sys::Filesystem::Dummy' );
+    $Supported = $FsPlugin ne 'Sys::Filesystem::Unix' and $FsPlugin ne 'Sys::Filesystem::Dummy';
 }
 
 sub new
@@ -133,10 +135,8 @@ sub filesystems
     if ( exists $params->{regular} )
     {
         delete $params->{regular};
-        if ( exists( $params->{special} ) )
-        {
-            carp("Both parameters specified, 'special' and 'regular', which are mutually exclusive");
-        }
+        exists( $params->{special} )
+          and carp("Mutual exclusive parameters 'special' and 'regular' specified together");
         $params->{special} = SPECIAL;
     }
 
@@ -170,10 +170,14 @@ sub filesystems
                 }
                 if (
                      (
-                          ( defined( $params->{$requirement} ) && exists( $self->{filesystems}->{$fs}->{$fsreqname} ) )
+                       (
+                          defined( $params->{$requirement} )
+                          && exists( $self->{filesystems}->{$fs}->{$fsreqname} )
+                       )
                        && ( $self->{filesystems}->{$fs}->{$fsreqname} eq $params->{$requirement} )
                      )
-                     || ( !defined( $params->{$requirement} ) && !exists( $self->{filesystems}->{$fs}->{$fsreqname} ) )
+                     || (    !defined( $params->{$requirement} )
+                          && !exists( $self->{filesystems}->{$fs}->{$fsreqname} ) )
                    )
                 {
                     push( @filesystems, $fs );

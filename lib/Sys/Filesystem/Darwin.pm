@@ -65,18 +65,25 @@ sub new
 
     foreach my $prog (qw(diskutil disktool mount))
     {
-	defined $args{$prog} or $args{$prog} = (grep { defined $_ and -x $_ } ("/usr/sbin/$prog", "/sbin/$prog"))[0];
+        defined $args{$prog}
+          or $args{$prog} =
+          ( grep { defined $_ and -x $_ } ( "/usr/sbin/$prog", "/sbin/$prog" ) )[0];
     }
 
     my @list_fs_cmd;
-    defined $args{diskutil} and $args{diskutil} and @list_fs_cmd = ($args{diskutil}, "list");
-    (0 == scalar @list_fs_cmd) and defined $args{disktool} and $args{disktool} and @list_fs_cmd = ($args{disktool}, "-l");
+    defined $args{diskutil} and $args{diskutil} and @list_fs_cmd = ( $args{diskutil}, "list" );
+    ( 0 == scalar @list_fs_cmd )
+      and defined $args{disktool}
+      and $args{disktool}
+      and @list_fs_cmd = ( $args{disktool}, "-l" );
     @list_fs_cmd or croak("No command to list file systems ...");
 
     # don't use backticks, don't use the shell
     my @fslist  = ();
     my @mntlist = ();
-    open( my $dt_fh, '-|' ) or exec( @list_fs_cmd ) or croak("Cannot execute " . join(" ", @list_fs_cmd) . ": $!");
+    open( my $dt_fh, '-|' )
+      or exec(@list_fs_cmd)
+      or croak( "Cannot execute " . join( " ", @list_fs_cmd ) . ": $!" );
     @fslist = <$dt_fh>;
     close($dt_fh);
     open( my $m_fh, '-|' ) or exec( $args{mount} ) or croak("Cannot execute $args{mount}: $!");

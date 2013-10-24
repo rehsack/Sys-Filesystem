@@ -40,9 +40,17 @@ sub version()
     return $VERSION;
 }
 
-my @volInfoAttrs =
-  ( 'n/a', 'preserve case', 'case sensitive', 'unicode', 'acl', 'file compression', 'compressed volume' );
-my @typeExplain = ( 'not determined', 'not available', 'removeable', 'fixed', 'network', 'cdrom', 'ram disk' );
+my @volInfoAttrs = (
+                     'n/a',
+                     'preserve case',
+                     'case sensitive',
+                     'unicode',
+                     'acl',
+                     'file compression',
+                     'compressed volume'
+                   );
+my @typeExplain =
+  ( 'not determined', 'not available', 'removeable', 'fixed', 'network', 'cdrom', 'ram disk' );
 
 sub new
 {
@@ -71,9 +79,11 @@ sub new
 
         $FileSystemName ||= 'CDFS' if ( $type == 5 );
 
-        $self->{$drvRoot}->{mount_point} = $drvRoot;        # XXX Win32::DriveInfo gives no details here ...
-        $self->{$drvRoot}->{device}      = $VolumeName;
-        $self->{$drvRoot}->{format}      = $FileSystemName; # XXX Win32::DriveInfo gives sometime wrong information here
+        $self->{$drvRoot}->{mount_point} =
+          $drvRoot;    # XXX Win32::DriveInfo gives no details here ...
+        $self->{$drvRoot}->{device} = $VolumeName;
+        $self->{$drvRoot}->{format} =
+          $FileSystemName;    # XXX Win32::DriveInfo gives sometime wrong information here
         $self->{$drvRoot}->{options} = join( ',', map { $volInfoAttrs[$_] } @attr );
         if ( $self->{$drvRoot}->{mounted} = $type > 1 )
         {

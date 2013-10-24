@@ -68,7 +68,8 @@ sub new
     } qx( /usr/sbin/mount );
 
     my %fs_info = map {
-        my ( $path, $device, $vfs, $nodename, $type, $size, $options, $mount, $account ) = split( m/:/, $_ );
+        my ( $path, $device, $vfs, $nodename, $type, $size, $options, $mount, $account ) =
+          split( m/:/, $_ );
 
         ( $path => [ $device, $vfs, $nodename, $type, $size, $options, $mount, $account ] )
       }
@@ -78,7 +79,8 @@ sub new
     {
         $self->{$current_filesystem}->{filesystem} = $current_filesystem;
 
-        my ( $device, $vfs, $nodename, $type, $size, $options, $mount, $account ) = @{ $fs_info{$current_filesystem} };
+        my ( $device, $vfs, $nodename, $type, $size, $options, $mount, $account ) =
+          @{ $fs_info{$current_filesystem} };
 
         $self->{$current_filesystem}->{dev}      = $device;
         $self->{$current_filesystem}->{vfs}      = $vfs;
@@ -88,7 +90,8 @@ sub new
         $self->{$current_filesystem}->{size}     = $size;
         $self->{$current_filesystem}->{mount}    = $mount;
         $self->{$current_filesystem}->{account}  = $account;
-        $self->{$current_filesystem}->{special}  = 1 if ( defined($vfs) && defined( $special_fs{$vfs} ) );
+        $self->{$current_filesystem}->{special}  = 1
+          if ( defined($vfs) && defined( $special_fs{$vfs} ) );
 
         # the filesystem is either currently mounted or is not,
         # this does not need to be checked for each individual
@@ -120,7 +123,8 @@ sub new
         $self->{$current_filesystem}->{PPs}     = $pps;
         $self->{$current_filesystem}->{PVs}     = $pvs;
         $self->{$current_filesystem}->{lvstate} = $lvstate;
-        $self->{$current_filesystem}->{special} = 1 if ( defined($type) && defined( $special_fs{$type} ) );
+        $self->{$current_filesystem}->{special} = 1
+          if ( defined($type) && defined( $special_fs{$type} ) );
 
         # the filesystem is either currently mounted or is not,
         # this does not need to be checked for each individual
