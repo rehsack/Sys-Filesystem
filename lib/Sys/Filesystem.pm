@@ -187,7 +187,7 @@ sub filesystems
     return @filesystems;
 }
 
-sub supported()
+sub supported
 {
     return $Supported;
 }
