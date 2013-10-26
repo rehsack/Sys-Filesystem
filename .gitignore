@@ -11,7 +11,9 @@ Makefile
 Makefile.old
 META.*
 MYMETA.*
+MANIFEST
 nytprof.out
 pm_to_blib
 *.bak
 *.swp
+Sys-Filesystem-*
