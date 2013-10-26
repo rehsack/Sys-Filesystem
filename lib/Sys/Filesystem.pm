@@ -48,7 +48,7 @@ use constant DEBUG   => $ENV{SYS_FILESYSTEM_DEBUG} ? 1 : 0;
 use constant SPECIAL => ( 'darwin' eq $^O )        ? 0 : undef;
 #use constant SPECIAL => undef;
 
-$VERSION = '1.404';
+$VERSION = '1.405';
 
 my ( $FsPlugin, $Supported );
 

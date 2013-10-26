@@ -29,7 +29,7 @@ use strict;
 use Carp qw(croak);
 
 use vars qw($VERSION);
-$VERSION = '1.404';
+$VERSION = '1.405';
 
 sub version()
 {
