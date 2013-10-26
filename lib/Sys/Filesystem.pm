@@ -42,6 +42,7 @@ use Module::Pluggable
   search_path => ['Sys::Filesystem'];
 use Params::Util qw(_INSTANCE);
 use Scalar::Util qw(blessed);
+use List::Util qw(first);
 
 use constant DEBUG   => $ENV{SYS_FILESYSTEM_DEBUG} ? 1 : 0;
 use constant SPECIAL => ( 'darwin' eq $^O )        ? 0 : undef;
@@ -123,7 +124,8 @@ sub filesystems
     }
 
     # Check we've got something sane passed
-    croak 'Odd number of elements passed when even number was expected' if ( @_ % 2 );
+    @_ % 2 and croak 'Odd number of elements passed when even number was expected';
+
     my $params = {@_};
     for my $param ( keys %{$params} )
     {
@@ -143,47 +145,26 @@ sub filesystems
     my @filesystems = ();
 
     # Return list of all filesystems
-    unless ( keys %{$params} )
-    {
-        @filesystems = sort( keys( %{ $self->{filesystems} } ) );
+    keys %{$params} or return sort( keys( %{ $self->{filesystems} } ) );
 
-        # Return list of specific filesystems
-    }
-    else
+    for my $fsname ( sort( keys( %{ $self->{filesystems} } ) ) )
     {
-        for my $fs ( sort( keys( %{ $self->{filesystems} } ) ) )
+        for my $requirement ( keys( %{$params} ) )
         {
-            for my $requirement ( keys( %{$params} ) )
-            {
-                my $fsreqname = $requirement;
-                if (   !exists( $self->{filesystems}->{$fs}->{$requirement} )
-                     && exists( $self->{aliases}->{$requirement} ) )
-                {
-                    foreach my $fsreqdef ( @{ $self->{aliases}->{$requirement} } )
-                    {
-                        if ( exists( $self->{filesystems}->{$fs}->{$fsreqdef} ) )
-                        {
-                            $fsreqname = $fsreqdef;
-                            last;
-                        }
-                    }
-                }
-                if (
-                     (
-                       (
-                          defined( $params->{$requirement} )
-                          && exists( $self->{filesystems}->{$fs}->{$fsreqname} )
-                       )
-                       && ( $self->{filesystems}->{$fs}->{$fsreqname} eq $params->{$requirement} )
-                     )
-                     || (    !defined( $params->{$requirement} )
-                          && !exists( $self->{filesystems}->{$fs}->{$fsreqname} ) )
-                   )
-                {
-                    push( @filesystems, $fs );
-                    last;
-                }
-            }
+            my $fs = $self->{filesystems}->{$fsname};
+            my $fsreqname =
+              ( !exists $fs->{$requirement} and exists $self->{aliases}->{$requirement} )
+              ? first { exists $fs->{$_} } @{ $self->{aliases}->{$requirement} }
+              : $requirement;
+
+            defined $params->{$requirement}
+              and exists $fs->{$fsreqname}
+              and $fs->{$fsreqname} eq $params->{$requirement}
+              and push( @filesystems, $fsname )
+              and last;
+            push( @filesystems, $fsname ) and last
+              unless defined( $params->{$requirement} )
+              or exists( $fs->{$fsreqname} );
         }
     }
 
@@ -220,38 +201,27 @@ sub DESTROY { }
 
 sub AUTOLOAD
 {
-    my ( $self, $fs ) = @_;
+    my ( $self, $fsname ) = @_;
 
     croak "$self is not an object" unless ( blessed($self) );
-    croak "No filesystem passed where expected" unless ($fs);
+    croak "No filesystem passed where expected" unless ($fsname);
 
     ( my $name = $AUTOLOAD ) =~ s/.*://;
 
     # No such filesystem
-    unless ( exists $self->{filesystems}->{$fs} )
-    {
-        croak "No such filesystem";
-    }
-    else
-    {
-        # Found the property
-        if ( exists $self->{filesystems}->{$fs}->{$name} )
-        {
-            return $self->{filesystems}->{$fs}->{$name};
-        }
-        elsif ( exists $self->{aliases}->{$name} )
-        {    # Didn't find the property, but check any aliases
-            for my $alias ( @{ $self->{aliases}->{$name} } )
-            {
-                if ( exists $self->{filesystems}->{$fs}->{$alias} )
-                {    # Found the Alias
-                    return $self->{filesystems}->{$fs}->{$alias};
-                }
-            }
-        }
-    }
+    exists $self->{filesystems}->{$fsname} or croak "No such filesystem";
 
-    return undef;
+    # Found the property
+    my $fs = $self->{filesystems}->{$fsname};
+
+    exists $fs->{$name} and return $fs->{$name};
+
+    # Didn't find the property, but check any aliases
+    exists $self->{aliases}->{$name}
+      and $name = first { exists $fs->{$_} } @{ $self->{aliases}->{$name} }
+      and return $fs->{$name};
+
+    return;
 }
 
 sub TRACE
