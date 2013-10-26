@@ -24,7 +24,7 @@ package Sys::Filesystem;
 
 # vim:ts=4:sw=4:tw=78
 
-use 5.008003;
+use 5.008001;
 
 my @query_order;
 

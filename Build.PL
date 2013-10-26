@@ -1,7 +1,7 @@
 # vim:ts=4:sw=4:tw=78
 # $Id$
 
-use 5.008003;
+use 5.008001;
 
 use strict;
 use Module::Build;
@@ -21,7 +21,7 @@ $^O eq 'MSWin32' or eval {
 };
 
 my %prereqs = (
-                'perl'              => '5.008003',
+                'perl'              => '5.008001',
                 'Carp'              => 0,
                 'FindBin'           => 0,
                 'IO'                => 0,
