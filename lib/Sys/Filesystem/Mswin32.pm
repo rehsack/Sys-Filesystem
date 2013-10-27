@@ -67,28 +67,20 @@ sub new
           Win32::DriveInfo::VolumeInfo($drvletter);
 
         my $drvRoot = $drvletter . ":/";
-        if ( defined( _STRING($VolumeName) ) )
-        {
-            $VolumeName =~ s/\\/\//g;
-            $VolumeName = ucfirst($VolumeName);
-        }
-        else
-        {
-            $VolumeName = $drvRoot;
-        }
+	defined(_STRING($VolumeName)) and $VolumeName =~ s/\\/\//g;
+	defined(_STRING($VolumeName)) or $VolumeName = $drvRoot;
+	$VolumeName = ucfirst($VolumeName);
 
         $FileSystemName ||= 'CDFS' if ( $type == 5 );
 
-        $self->{$drvRoot}->{mount_point} =
-          $drvRoot;    # XXX Win32::DriveInfo gives no details here ...
+        # XXX Win32::DriveInfo gives no details here ...
+	$self->{$drvRoot}->{mount_point} = $drvRoot;    
         $self->{$drvRoot}->{device} = $VolumeName;
-        $self->{$drvRoot}->{format} =
-          $FileSystemName;    # XXX Win32::DriveInfo gives sometime wrong information here
+	# XXX Win32::DriveInfo gives sometime wrong information here
+        $self->{$drvRoot}->{format} = $FileSystemName;
         $self->{$drvRoot}->{options} = join( ',', map { $volInfoAttrs[$_] } @attr );
-        if ( $self->{$drvRoot}->{mounted} = $type > 1 )
-        {
-            $self->{$drvRoot}->{type} = $typeExplain[$type];
-        }
+	$self->{$drvRoot}->{mounted} = $type > 1;
+        $type > 1 and $self->{$drvRoot}->{type} = $typeExplain[$type];
     }
 
     bless( $self, $class );
