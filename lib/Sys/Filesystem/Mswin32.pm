@@ -49,8 +49,12 @@ my @volInfoAttrs = (
                      'file compression',
                      'compressed volume'
                    );
-my @typeExplain =
-  ( 'unable to determine', 'no root directory', 'removeable', 'fixed', 'network', 'cdrom', 'ram disk' );
+my @typeExplain = (
+                    'unable to determine', 'no root directory',
+                    'removeable',          'fixed',
+                    'network',             'cdrom',
+                    'ram disk'
+                  );
 
 sub new
 {
@@ -77,12 +81,14 @@ sub new
         $self->{$drvRoot}->{mount_point} = $drvRoot;
         $self->{$drvRoot}->{device}      = $VolumeName;
         # XXX Win32::DriveInfo gives sometime wrong information here
-        $self->{$drvRoot}->{format}  = $FileSystemName;
+        $self->{$drvRoot}->{format} = $FileSystemName;
         $self->{$drvRoot}->{options} = join( ',', map { $volInfoAttrs[$_] } @attr );
-        $self->{$drvRoot}->{mounted} = ((defined $FileSystemName) and $type > 1);
-        $self->{$drvRoot}->{mounted}
+        my $mntstate = ( ( defined $FileSystemName ) and $type > 1 );
+        $mntstate
           and 2 == $type
-          and $self->{$drvRoot}->{mounted} = Win32::DriveInfo::IsReady($drvletter);
+          and $mntstate = Win32::DriveInfo::IsReady($drvletter);
+        $mntstate = $mntstate ? "mounted" : "unmounted";
+        $self->{$drvRoot}->{$mntstate} = 1;
         $type > 0 and $self->{$drvRoot}->{type} = $typeExplain[$type];
     }
 
