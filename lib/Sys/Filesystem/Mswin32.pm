@@ -50,7 +50,7 @@ my @volInfoAttrs = (
                      'compressed volume'
                    );
 my @typeExplain =
-  ( 'not determined', 'not available', 'removeable', 'fixed', 'network', 'cdrom', 'ram disk' );
+  ( 'unable to determine', 'no root directory', 'removeable', 'fixed', 'network', 'cdrom', 'ram disk' );
 
 sub new
 {
@@ -67,20 +67,23 @@ sub new
           Win32::DriveInfo::VolumeInfo($drvletter);
 
         my $drvRoot = $drvletter . ":/";
-	defined(_STRING($VolumeName)) and $VolumeName =~ s/\\/\//g;
-	defined(_STRING($VolumeName)) or $VolumeName = $drvRoot;
-	$VolumeName = ucfirst($VolumeName);
+        defined( _STRING($VolumeName) ) and $VolumeName =~ s/\\/\//g;
+        defined( _STRING($VolumeName) ) or $VolumeName = $drvRoot;
+        $VolumeName = ucfirst($VolumeName);
 
         $FileSystemName ||= 'CDFS' if ( $type == 5 );
 
         # XXX Win32::DriveInfo gives no details here ...
-	$self->{$drvRoot}->{mount_point} = $drvRoot;    
-        $self->{$drvRoot}->{device} = $VolumeName;
-	# XXX Win32::DriveInfo gives sometime wrong information here
-        $self->{$drvRoot}->{format} = $FileSystemName;
+        $self->{$drvRoot}->{mount_point} = $drvRoot;
+        $self->{$drvRoot}->{device}      = $VolumeName;
+        # XXX Win32::DriveInfo gives sometime wrong information here
+        $self->{$drvRoot}->{format}  = $FileSystemName;
         $self->{$drvRoot}->{options} = join( ',', map { $volInfoAttrs[$_] } @attr );
-	$self->{$drvRoot}->{mounted} = $type > 1;
-        $type > 1 and $self->{$drvRoot}->{type} = $typeExplain[$type];
+        $self->{$drvRoot}->{mounted} = defined $FileSystemName and $type > 1;
+        $self->{$drvRoot}->{mounted}
+          and 2 == $type
+          and $self->{$drvRoot}->{mounted} = Win32::DriveInfo::IsReady($drvletter);
+        $type > 0 and $self->{$drvRoot}->{type} = $typeExplain[$type];
     }
 
     bless( $self, $class );
