@@ -1,5 +1,21 @@
 Revision history for CPAN distribution Sys-Filesystem
 
+1.405 2013-10-28
+    - Fix Mswin32 mounted/unmounted support (thanks to Christian "Mithaldu"
+      Walde for remote testing support
+    - skip format test in case of unmounted device (unmounted devices might
+      or might not know in before the fstype)
+    - clean up basic tests and BAIL_OUT when unsupported environment
+      encountered
+
+1.404 2013-10-26
+    - move to Makefile.PL in favour of developer reqs
+    - change required perl version to 5.8.1
+    - rewrite core routines of Sys::Filesystem
+    - don't search for Darwin tools in path, rely on some
+      well known paths
+    - general, minor code cleanup
+
 1.403 2013-10-23
     - Honor PATH_FSTAB in the environment on a NetBSD system if present
       (Thanks to dholland@NetBSD.org)
