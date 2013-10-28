@@ -79,7 +79,7 @@ sub new
         # XXX Win32::DriveInfo gives sometime wrong information here
         $self->{$drvRoot}->{format}  = $FileSystemName;
         $self->{$drvRoot}->{options} = join( ',', map { $volInfoAttrs[$_] } @attr );
-        $self->{$drvRoot}->{mounted} = (defined $FileSystemName) and $type > 1;
+        $self->{$drvRoot}->{mounted} = ((defined $FileSystemName) and $type > 1);
         $self->{$drvRoot}->{mounted}
           and 2 == $type
           and $self->{$drvRoot}->{mounted} = Win32::DriveInfo::IsReady($drvletter);
