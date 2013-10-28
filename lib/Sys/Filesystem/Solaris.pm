@@ -34,7 +34,7 @@ use Carp qw(croak);
 use Data::Dumper;
 require Sys::Filesystem::Unix;
 
-$VERSION = '1.405';
+$VERSION = '1.406';
 @ISA     = qw(Sys::Filesystem::Unix);
 
 sub version()

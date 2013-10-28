@@ -34,7 +34,7 @@ use Carp qw(croak);
 use Fcntl qw(:flock);
 use IO::File;
 
-$VERSION = '1.405';
+$VERSION = '1.406';
 
 sub version()
 {
