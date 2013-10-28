@@ -39,6 +39,7 @@ for my $filesystem (@filesystems)
     ok( defined( $options = $fs->options($filesystem) ), "Get options for $filesystem: $options" );
   SKIP:
     {
+	$mounted or skip("Format might be unavailable unless mounted",1);
         ok( $format = $fs->format($filesystem), "Get format for $filesystem" );
     }
     ok( $volume = $fs->volume($filesystem) || 1, "Get volume type for $filesystem" );
