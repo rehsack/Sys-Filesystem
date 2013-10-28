@@ -76,7 +76,6 @@ WriteMakefile1(
                                                                       },
                                                         requires => {
                                                                       %RUN_DEPS,
-                                                                      perl => '5.8.1',
                                                                     },
                                                       },
                                          },
