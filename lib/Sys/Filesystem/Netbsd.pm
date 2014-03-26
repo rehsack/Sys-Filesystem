@@ -151,7 +151,7 @@ Jens Rehsack <rehsack@cpan.org> - L<http://www.rehsack.de/>
 
 =head1 COPYRIGHT
 
-Copyright 2009,2013 Jens Rehsack.
+Copyright 2009-2014 Jens Rehsack.
 
 This software is licensed under The Apache Software License, Version 2.0.
 

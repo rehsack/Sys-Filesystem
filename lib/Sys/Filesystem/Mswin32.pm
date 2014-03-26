@@ -160,7 +160,7 @@ drives are recognized, no UNC names neither file systems mounted to a path.
 
 Copyright 2004,2005,2006 Nicola Worthington.
 
-Copyright 2009,2013 Jens Rehsack.
+Copyright 2009-2014 Jens Rehsack.
 
 This software is licensed under The Apache Software License, Version 2.0.
 
