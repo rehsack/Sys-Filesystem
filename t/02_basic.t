@@ -5,7 +5,7 @@ my ( $fs, @filesystems );
 eval { $fs = Sys::Filesystem->new(); @filesystems = $fs->filesystems(); };
 
 $@ and BAIL_OUT("Cannot initialize Sys::Filesystem: $@");
-@filesystems or BAILOUT("Badly poor supported OS or no file systems found.");
+@filesystems or BAIL_OUT("Badly poor supported OS or no file systems found.");
 
 ok( ref($fs) eq 'Sys::Filesystem', 'Create new Sys::Filesystem object' );
 
