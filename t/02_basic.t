@@ -39,8 +39,9 @@ for my $filesystem (@filesystems)
     ok( defined( $options = $fs->options($filesystem) ), "Get options for $filesystem: $options" );
   SKIP:
     {
+	$format = $fs->format($filesystem);
 	$mounted or skip("Format might be unavailable unless mounted",1);
-        ok( $format = $fs->format($filesystem), "Get format for $filesystem" );
+        ok( $format, "Get format for $filesystem" );
     }
     ok( $volume = $fs->volume($filesystem) || 1, "Get volume type for $filesystem" );
     ok( $label  = $fs->label($filesystem)  || 1, "Get label for $filesystem" );
@@ -49,7 +50,7 @@ for my $filesystem (@filesystems)
     diag(
           join( ' - ',
                 $filesystem, $mounted, $special,
-                $device,     $options, $format,
+                $device,     $options, $format || 'n/a',
                 $volume || 'n/a', $label || 'n/a', $type || 'n/a' )
         );
 }
