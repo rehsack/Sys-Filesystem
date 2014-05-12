@@ -80,18 +80,14 @@ sub new
         {
             next if ( /^\s*#/ || /^\s*$/ );
             my @vals = split( ' ', $_ );
-            if ( $vals[0] =~ /^\s*LABEL=(.+)\s*$/ )
-            {
-                $self->{ $vals[1] }->{label} = $1;
-            }
+            $vals[0] =~ /^\s*LABEL=(.+)\s*$/
+              and $self->{ $vals[1] }->{label} = $1;
             $self->{ $vals[1] }->{mount_point} = $vals[1];
             $self->{ $vals[1] }->{device}      = $vals[0];
             $self->{ $vals[1] }->{unmounted}   = 1;
-            $self->{ $vals[1] }->{special}     = 1 if ( defined( $special_fs{ $vals[2] } ) );
-            for ( my $i = 0; $i < @keys; ++$i )
-            {
-                $self->{ $vals[1] }->{ $keys[$i] } = $vals[$i];
-            }
+            defined $special_fs{ $vals[2] }
+              and $self->{ $vals[1] }->{special} = 1;
+	    @{$self->{ $vals[1] }}{ @keys } = @vals;
         }
         $fstab->close();
     }
