@@ -68,7 +68,7 @@ sub new
 
     # Defaults
     $args{fstab} ||= '/etc/fstab';
-    $args{mtab} ||= -r '/proc/self/mounts' ? '/proc/self/mounts' : '/etc/mtab';
+    $args{mtab} ||= -r '/proc/mounts' ? '/proc/mounts' : '/etc/mtab';
     #$args{xtab}  ||= '/etc/lib/nfs/xtab';
 
     local $/ = "\n";
