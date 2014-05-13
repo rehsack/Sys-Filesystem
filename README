@@ -41,27 +41,49 @@ INHERITANCE
       ISA UNIVERSAL
 
 METHODS
-    new Creates a new Sys::Filesystem object. new() accepts 3 optional key
-        pair values to help or force where mount information is gathered
-        from. These values are not otherwise defaulted by the main
+    new Creates a new Sys::Filesystem object. "new" accepts following
+        optional key value pairs to help or force where mount information is
+        gathered from. These values are not otherwise defaulted by the main
         Sys::Filesystem object, but left to the platform specific helper
         modules to determine as an exercise of common sense.
 
+        canondev
+            Specify whether device path's shall be resolved when they're a
+            symbolic link.
+
+            $Sys::Filesystem::CANONDEV is used when no key "canondev" is
+            passed.
+
         fstab
             Specify the full path and filename of the filesystem table (or
-            fstab for short).
+            fstab for short). Not all platforms have such a file and so this
+            option may be ignored on some systems.
+
+            $Sys::Filesystem::FSTAB is used when no key "fstab" is passed.
 
         mtab
             Specify the full path and filename of the mounted filesystem
             table (or mtab for short). Not all platforms have such a file
             and so this option may be ignored on some systems.
 
+            $Sys::Filesystem::MTAB is used when no key "mtab" is passed.
+
         xtab
-            Specify the full path and filename of the mounted NFS filesystem
-            table (or xtab for short). This is usually only pertinant to
-            Unix bases systems. Not all helper modules will query NFS mounts
-            as a separate exercise, and therefore this option may be ignored
-            on some systems.
+            DEPRECIATED Specify the full path and filename of the mounted
+            NFS filesystem table (or xtab for short). This is usually only
+            pertinant to Unix bases systems. Not all helper modules will
+            query NFS mounts as a separate exercise, and therefore this
+            option may be ignored on some systems.
+
+            None of the OS plugins use that tunable (anymore?), so it now a
+            warning is raised when it's used. The entire support will be
+            removed not before 2015. Once that happened, using "xtab" will
+            raise an exception.
+
+        aliases
+            Overrides internal aliasing table used to match queries against
+            OS plugin. This should be used only when dealing with closed
+            source platform helper module(s).
 
     supported
         Returns true if the operating system is supported by
@@ -284,7 +306,7 @@ ACKNOWLEDGEMENTS
 COPYRIGHT
     Copyright 2004,2005,2006 Nicola Worthington.
 
-    Copyright 2008-2013 Jens Rehsack.
+    Copyright 2008-2014 Jens Rehsack.
 
     This software is licensed under The Apache Software License, Version
     2.0.
