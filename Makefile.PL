@@ -6,7 +6,8 @@ use 5.008001;
 use strict;
 use vars qw($build);
 use FindBin;
-use lib $FindBin::Bin . '/lib';
+use File::Spec;
+use lib File::Spec->catdir( $FindBin::Bin, 'lib' );
 
 use ExtUtils::MakeMaker;
 
@@ -22,74 +23,81 @@ $^O eq 'MSWin32' or eval {
 };
 
 my %RUN_DEPS = (
-                 'perl'              => '5.008001',
-                 'Carp'              => 0,
-                 'FindBin'           => 0,
-                 'IO'                => 0,
-                 'IPC::Cmd'          => '0.80',
-                 'Module::Pluggable' => '4.8',
-                 'Params::Util'      => '1.00',
-                 (
-                   $^O eq 'MSWin32'
-                   ? (
-                       'Win32::DriveInfo' => 0,
-                     )
-                   : ()
-                 ),
-               );
+    'Carp'              => 0,
+    'Cwd'               => 0,
+    'File::Spec'        => 0,
+    'FindBin'           => 0,
+    'IO'                => 0,
+    'IPC::Cmd'          => '0.80',
+    'Module::Pluggable' => '4.8',
+    'Params::Util'      => '1.00',
+    (
+        $^O eq 'MSWin32'
+        ? (
+            'Win32::DriveInfo' => 0,
+          )
+        : ()
+    ),
+);
 my %CONFIGURE_DEPS = (
-                       'ExtUtils::MakeMaker' => 0,
-                       %RUN_DEPS
-                     );
+    'ExtUtils::MakeMaker' => 0,
+    %RUN_DEPS
+);
 my %BUILD_DEPS = ();
 
 my %TEST_DEPS = (
-                  'Test::More' => 0.90,
-                );
+    'Test::More' => 0.90,
+);
 
 WriteMakefile1(
-                MIN_PERL_VERSION => '5.008001',
-                META_ADD         => {
-                              'meta-spec' => { version => 2 },
-                              resources   => {
-                                          repository => "https://github.com/rehsack/Sys-Filesystem",
-                                          license    => 'http://www.apache.org/licenses/LICENSE-2.0.html',
-                              },
-                              prereqs => {
-                                           develop => {
-                                                     requires => {
-                                                         'Test::CPAN::Changes'                 => 0,
-                                                         'Test::CheckManifest'                 => 0,
-                                                         'Test::Pod'                           => 0,
-                                                         'Test::Pod::Coverage'                 => 0,
-                                                         'Test::Pod::Spelling::CommonMistakes' => 0,
-                                                     },
-                                           },
-                                           configure => {
-                                                          requires => {%CONFIGURE_DEPS},
-                                                        },
-                                           build   => { requires => {%BUILD_DEPS} },
-                                           test    => { requires => {%TEST_DEPS} },
-                                           runtime => {
-                                                        recommends => {
-                                                                        'perl' => '5.018001',
-                                                                      },
-                                                        requires => {
-                                                                      %RUN_DEPS,
-                                                                    },
-                                                      },
-                                         },
-                            },
-                NAME           => 'Sys::Filesystem',
-                VERSION_FROM   => 'lib/Sys/Filesystem.pm',
-                ABSTRACT_FROM  => 'lib/Sys/Filesystem.pm',
-                LICENSE        => 'Apache',
-                AUTHOR         => [q{Nicola Worthington <nicolaw@cpan.org>}, q{Jens Rehsack <rehsack@cpan.org>}],
-                PREREQ_PM      => \%RUN_DEPS,
-                BUILD_REQUIRES => \%BUILD_DEPS,
-                TEST_REQUIRES  => \%TEST_DEPS,
-                test           => { TESTS => 't/*.t xt/*.t' },
-              );
+    MIN_PERL_VERSION => '5.008001',
+    META_ADD         => {
+        'meta-spec' => { version => 2 },
+        resources   => {
+            homepage   => 'https://metacpan.org/release/Sys-Filesystem',
+            repository => {
+                url  => 'git@github.com:rehsack/Sys-Filesystem.git',
+                web  => 'https://github.com/rehsack/Sys-Filesystem',
+                type => 'git',
+            },
+            bugtracker => {
+                web    => 'http://rt.cpan.org/Public/Dist/Display.html?Name=Sys-Filesystem',
+                mailto => 'fsys-filesystem@rt.cpan.org',
+            },
+        },
+        prereqs => {
+            develop => {
+                requires => {
+                    'Test::CPAN::Changes'                 => 0,
+                    'Test::CheckManifest'                 => 0,
+                    'Test::Pod'                           => 0,
+                    'Test::Pod::Coverage'                 => 0,
+                    'Test::Pod::Spelling::CommonMistakes' => 0,
+                },
+            },
+            configure => {
+                requires => {%CONFIGURE_DEPS},
+            },
+            build   => { requires => {%BUILD_DEPS} },
+            test    => { requires => {%TEST_DEPS} },
+            runtime => {
+                recommends => {
+                    'perl' => '5.018001',
+                },
+                requires => { %RUN_DEPS, },
+            },
+        },
+    },
+    NAME           => 'Sys::Filesystem',
+    VERSION_FROM   => 'lib/Sys/Filesystem.pm',
+    ABSTRACT_FROM  => 'lib/Sys/Filesystem.pm',
+    LICENSE        => 'Apache',
+    AUTHOR         => [ q{Nicola Worthington <nicolaw@cpan.org>}, q{Jens Rehsack <rehsack@cpan.org>} ],
+    PREREQ_PM      => \%RUN_DEPS,
+    BUILD_REQUIRES => \%BUILD_DEPS,
+    TEST_REQUIRES  => \%TEST_DEPS,
+    test           => { TESTS => 't/*.t xt/*.t' },
+);
 
 sub WriteMakefile1
 {    # originally written by Alexandr Ciornii, version 0.21. Added by eumm-upgrade.
@@ -132,7 +140,7 @@ sub WriteMakefile1
         my $ok = CheckConflicts(%params);
         exit(0) if ( $params{PREREQ_FATAL} and not $ok );
         my $cpan_smoker = grep { $_ =~ m/(?:CR_SMOKER|CPAN_REPORTER|AUTOMATED_TESTING)/ } keys %ENV;
-        unless ( $cpan_smoker || $ENV{PERL_MM_USE_DEFAULT} || $ENV{SQL_STATEMENT_WARN_UPDATE} )
+        unless ( $cpan_smoker || $ENV{PERL_MM_USE_DEFAULT} )
         {
             sleep 4 unless ($ok);
         }
