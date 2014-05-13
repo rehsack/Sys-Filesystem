@@ -35,7 +35,7 @@ use Cwd 'abs_path';
 use Fcntl qw(:flock);
 use IO::File;
 
-$VERSION = '1.406';
+$VERSION = '1.407';
 
 sub version()
 {

@@ -34,7 +34,7 @@ use Cwd 'abs_path';
 use IO::File              ();
 use Sys::Filesystem::Unix ();
 
-$VERSION = '1.406';
+$VERSION = '1.407';
 @ISA     = qw(Sys::Filesystem::Unix);
 
 sub version()
