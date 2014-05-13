@@ -65,6 +65,7 @@ sub new
     ref( my $class = shift ) && croak 'Class name required';
     my %args = @_;
     my $self = bless( {}, $class );
+    $args{canondev} and $self->{canondev} = 1;
 
     $args{fstab} ||= '/etc/vfstab';
     $args{mtab}  ||= '/etc/mnttab';
@@ -78,6 +79,8 @@ sub new
     {
         croak "Unable to open mtab file ($args{mtab})\n";
     }
+
+    delete $self->{canondev};
 
     $self;
 }

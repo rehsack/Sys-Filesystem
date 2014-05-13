@@ -31,6 +31,7 @@ use warnings;
 use vars qw($VERSION);
 
 use Carp qw(croak);
+use Cwd 'abs_path';
 use IO::File;
 
 $VERSION = '1.406';
@@ -82,6 +83,7 @@ sub new
         my ( $device, $vfs, $nodename, $type, $size, $options, $mount, $account ) =
           @{ $fs_info{$current_filesystem} };
 
+	$args{canondev} and -l $device and $device = abs_path($device);
         $self->{$current_filesystem}->{dev}      = $device;
         $self->{$current_filesystem}->{vfs}      = $vfs;
         $self->{$current_filesystem}->{options}  = $options;
@@ -117,6 +119,7 @@ sub new
 
         my ( $lvname, $type, $lps, $pps, $pvs, $lvstate ) = @{ $fs_info{$current_filesystem} };
 
+	$args{canondev} and -l $lvname and $lvname = abs_path($lvname);
         $self->{$current_filesystem}->{dev}     = $lvname;
         $self->{$current_filesystem}->{vfs}     = $type;
         $self->{$current_filesystem}->{LPs}     = $lps;
@@ -139,7 +142,6 @@ sub new
         my $current_filesystem = '*UNDEFINED*';
         while (<$fstab>)
         {
-
             # skip comments and blank lines.
             next if m{^ [*] }x || m{^ \s* $}x;
 
@@ -159,16 +161,16 @@ sub new
             }
             elsif ( my ( $key, $value ) = $_ =~ /^\s*([a-z]{3,8})\s+=\s+"?(.+)"?\s*$/ )
             {
-                unless ( defined( $self->{$current_filesystem}->{$key} ) )
-                {
+		# do not overwrite already known data
+		defined $self->{$current_filesystem}->{$key} and next;
 
-                    # do not overwrite already known data
-                    $self->{$current_filesystem}->{$key} = $value;
-                    if ( ( $key eq 'vfs' ) && defined( $special_fs{$value} ) )
-                    {
-                        $self->{$current_filesystem}->{special} = 1;
-                    }
-                }
+		$key eq "dev" and $args{canondev} and -l $value and $value = abs_path($value);
+
+		$self->{$current_filesystem}->{$key} = $value;
+		if ( ( $key eq 'vfs' ) && defined( $special_fs{$value} ) )
+		{
+		    $self->{$current_filesystem}->{special} = 1;
+		}
             }
         }
         $fstab->close();

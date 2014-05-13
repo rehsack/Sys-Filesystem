@@ -30,8 +30,9 @@ use warnings;
 use vars qw($VERSION @ISA);
 
 use Carp qw(croak);
-require IO::File;
-require Sys::Filesystem::Unix;
+use Cwd 'abs_path';
+use IO::File ();
+use Sys::Filesystem::Unix ();
 
 $VERSION = '1.406';
 @ISA     = qw(Sys::Filesystem::Unix);
@@ -70,6 +71,7 @@ sub new
     $args{fstab} ||= '/etc/fstab';
     $args{mtab} ||= -r '/proc/mounts' ? '/proc/mounts' : '/etc/mtab';
     #$args{xtab}  ||= '/etc/lib/nfs/xtab';
+    $args{canondev} and $self->{canondev} = 1;
 
     local $/ = "\n";
 
@@ -82,6 +84,7 @@ sub new
             my @vals = split( ' ', $_ );
             $vals[0] =~ /^\s*LABEL=(.+)\s*$/
               and $self->{ $vals[1] }->{label} = $1;
+	    $args{canondev} and -l $vals[0] and $vals[0] = abs_path($vals[0]);
             $self->{ $vals[1] }->{mount_point} = $vals[1];
             $self->{ $vals[1] }->{device}      = $vals[0];
             $self->{ $vals[1] }->{unmounted}   = 1;
@@ -101,6 +104,8 @@ sub new
     {
         croak "Unable to open fstab file ($args{mtab})\n";
     }
+
+    delete $self->{canondev};
 
     $self;
 }

@@ -62,6 +62,7 @@ sub new
 {
     my ( $class, %args ) = @_;
     my $self = bless( {}, $class );
+    $args{canondev} and $self->{canondev} = 1;
 
     foreach my $prog (qw(diskutil disktool mount))
     {
@@ -121,6 +122,8 @@ sub new
     #        $self->{$mount_point}->{fs_mntops} = $mntopts;
     #    }
     #}
+
+    delete $self->{canondev};
 
     $self;
 }

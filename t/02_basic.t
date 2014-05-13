@@ -1,10 +1,15 @@
+#!perl
+
+use strict;
+use warnings;
+
 use Test::More;
 use Sys::Filesystem;
 
 my ( $fs, @filesystems );
 eval { $fs = Sys::Filesystem->new(); @filesystems = $fs->filesystems(); };
 
-$@ and BAIL_OUT("Cannot initialize Sys::Filesystem: $@");
+$@ and plan skip_all => "Cannot initialize Sys::Filesystem: $@";
 @filesystems or BAIL_OUT("Badly poor supported OS or no file systems found.");
 
 ok( ref($fs) eq 'Sys::Filesystem', 'Create new Sys::Filesystem object' );
@@ -34,7 +39,7 @@ for my $filesystem (@filesystems)
     ok( $special == grep( /^\Q$filesystem\E$/, @special_filesystems ), 'Special' );
     ok( $regular == grep( /^\Q$filesystem\E$/, @regular_filesystems ), 'Regular' );
 
-    my ( $device, $options, $format, $volume, $label );
+    my ( $device, $options, $format, $volume, $label, $type );
     ok( $device = $fs->device($filesystem), "Get device for $filesystem" );
     ok( defined( $options = $fs->options($filesystem) ), "Get options for $filesystem: $options" );
   SKIP:

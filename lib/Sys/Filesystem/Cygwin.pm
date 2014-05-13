@@ -54,10 +54,13 @@ sub new
     ref( my $class = shift ) && croak 'Class name required';
     my %args = @_;
     my $self = bless( {}, $class );
+    $args{canondev} and $self->{canondev} = 1;
 
     local $/ = "\n";
     my @mounts = qx( mount );
     $self->readMounts( $mount_rx, [ 0, 1, 2 ], \@keys, \%special_fs, @mounts );
+
+    delete $self->{canondev};
 
     $self;
 }

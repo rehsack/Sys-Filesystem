@@ -58,6 +58,7 @@ sub new
     ref( my $class = shift ) && croak 'Class name required';
     my %args = @_;
     my $self = bless( {}, $class );
+    $args{canondev} and $self->{canondev} = 1;
 
     # Defaults
     $args{fstab} ||= $ENV{PATH_FSTAB} || '/etc/fstab';
@@ -72,6 +73,8 @@ sub new
     {
         croak "Unable to open fstab file ($args{fstab})\n";
     }
+
+    delete $self->{canondev};
 
     return $self;
 }

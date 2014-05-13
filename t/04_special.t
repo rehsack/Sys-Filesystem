@@ -1,7 +1,16 @@
+#!perl
+
+use strict;
+use warnings;
+
 use Test::More;
 use Sys::Filesystem;
 
-my $fs = Sys::Filesystem->new();
+my $fs;
+eval { $fs = Sys::Filesystem->new(); };
+
+$@ and plan skip_all => "Cannot initialize Sys::Filesystem: $@";
+
 ok( ref($fs) eq 'Sys::Filesystem', 'Create new Sys::Filesystem object' );
 
 my @special_filesystems = $fs->special_filesystems();

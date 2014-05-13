@@ -52,6 +52,7 @@ sub new
     my $class = ref($proto) || $proto or croak 'Class name required';
     my %args  = @_;
     my $self  = bless( {}, $class );
+    $args{canondev} and $self->{canondev} = 1;
 
     # Defaults
     $args{fstab} ||= '/etc/fstab';
@@ -66,6 +67,8 @@ sub new
     {
         croak "Unable to open fstab file ($args{mtab})\n";
     }
+
+    delete $self->{canondev};
 
     $self;
 }

@@ -1,3 +1,8 @@
+#!perl
+
+use strict;
+use warnings;
+
 use Test::More;
 use Sys::Filesystem;
 use Cwd qw(abs_path);
@@ -14,7 +19,8 @@ $RealTest = ucfirst($RealTest) if ( $^O =~ m/Win32/ );
 
 my $sfs;
 eval { $sfs = Sys::Filesystem->new(); };
-plan( skip_all => "Cannot initialize Sys::Filesystem" ) if ($@);
+$@ and plan skip_all => "Cannot initialize Sys::Filesystem: $@";
+
 ok( ref($sfs) eq 'Sys::Filesystem', 'Create new Sys::Filesystem object' );
 
 my ( $binmount, $mymount );

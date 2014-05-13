@@ -30,23 +30,22 @@ my @query_order;
 
 use strict;
 use warnings;
-use vars qw($VERSION $AUTOLOAD);
+use vars qw($VERSION $AUTOLOAD $CANONDEV $FSTAB $MTAB);
 use Carp qw(croak cluck confess);
 use Module::Pluggable
   require => 1,
   only    => [
-            @query_order = map { __PACKAGE__ . '::' . $_ } ucfirst( lc($^O) ),
-            $^O =~ m/Win32/i ? 'Win32' : 'Unix', 'Dummy'
+            @query_order = map { __PACKAGE__ . '::' . $_ } (ucfirst( lc $^O ), $^O =~ m/Win32/i ? 'Win32' : 'Unix', 'Dummy')
           ],
   inner       => 0,
-  search_path => ['Sys::Filesystem'];
+  search_path => ['Sys::Filesystem'],
+  sub_name => '_plugins';
 use Params::Util qw(_INSTANCE);
 use Scalar::Util qw(blessed);
 use List::Util qw(first);
 
 use constant DEBUG   => $ENV{SYS_FILESYSTEM_DEBUG} ? 1 : 0;
 use constant SPECIAL => ( 'darwin' eq $^O )        ? 0 : undef;
-#use constant SPECIAL => undef;
 
 $VERSION = '1.406';
 
@@ -54,7 +53,7 @@ my ( $FsPlugin, $Supported );
 
 BEGIN
 {
-    Sys::Filesystem->plugins();
+    Sys::Filesystem->_plugins();
 
     foreach my $qo (@query_order)
     {
@@ -69,25 +68,29 @@ BEGIN
 sub new
 {
     # Check we're being called correctly with a class name
-    ref( my $class = shift ) && croak 'Class name required';
+    ref( my $class = shift ) and croak 'Class name required';
 
     # Check we've got something sane passed
     croak 'Odd number of elements passed when even number was expected' if ( @_ % 2 );
     my %args = @_;
 
+    exists $args{xtab} and carp("Using xtab is depreciated") and delete $args{xtab};
+
     # Double check the key pairs for stuff we recognise
-    while ( my ( $k, $v ) = each(%args) )
-    {
-        unless ( grep( /^$k$/i, qw(fstab mtab xtab) ) )
-        {
-            croak("Unrecognised paramater '$k' passed to module $class");
-        }
-    }
+    my @sane_keys = qw(aliases canondev fstab mtab);
+    my %sane_args;
+    @sane_args{@sane_keys} = delete @args{@sane_keys};
+    scalar keys %args and croak("Unrecognised parameter(s) '" . join("', '", sort keys %args) . "' passed to module $class");
 
-    my $self = {%args};
+    defined $FSTAB and not exists $sane_args{fstab} and $sane_args{fstab} = $FSTAB;
+    defined $MTAB and not exists $sane_args{mtab} and $sane_args{mtab} = $MTAB;
+    defined $CANONDEV and not exists $sane_args{canondev} and $sane_args{canondev} = $CANONDEV;
 
-    # Filesystem property aliases
-    $self->{aliases} = {
+    my $self = {%sane_args};
+
+    # Filesystem property aliases - unless caller knows better ...
+    defined $self->{aliases}
+      or $self->{aliases} = {
                          device          => [qw(fs_spec dev)],
                          filesystem      => [qw(fs_file mount_point)],
                          mount_point     => [qw(fs_file filesystem)],
@@ -104,7 +107,7 @@ sub new
     # Debug
     DUMP( '$self', $self ) if (DEBUG);
 
-    $self->{filesystems} = $FsPlugin->new(%args);
+    $self->{filesystems} = $FsPlugin->new(%sane_args);
 
     # Maybe upchuck a little
     croak "Unable to create object for OS type '$self->{osname}'" unless ( $self->{filesystems} );

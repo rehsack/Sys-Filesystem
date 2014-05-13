@@ -1,4 +1,7 @@
-# $Id: 00compile.t,v 1.1 2005/12/29 19:49:25 nicolaw Exp $
+#!perl
+
+use strict;
+use warnings;
 
 use Test::More tests => 2;
 
