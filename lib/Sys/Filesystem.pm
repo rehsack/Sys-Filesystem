@@ -75,16 +75,16 @@ sub new
     my %args = @_;
 
     exists $args{xtab} and carp("Using xtab is depreciated") and delete $args{xtab};
+    defined $FSTAB and not exists $args{fstab} and $args{fstab} = $FSTAB;
+    defined $MTAB and not exists $args{mtab} and $args{mtab} = $MTAB;
+    defined $CANONDEV and not exists $args{canondev} and $args{canondev} = $CANONDEV;
+
 
     # Double check the key pairs for stuff we recognise
     my @sane_keys = qw(aliases canondev fstab mtab);
     my %sane_args;
     @sane_args{@sane_keys} = delete @args{@sane_keys};
     scalar keys %args and croak("Unrecognised parameter(s) '" . join("', '", sort keys %args) . "' passed to module $class");
-
-    defined $FSTAB and not exists $sane_args{fstab} and $sane_args{fstab} = $FSTAB;
-    defined $MTAB and not exists $sane_args{mtab} and $sane_args{mtab} = $MTAB;
-    defined $CANONDEV and not exists $sane_args{canondev} and $sane_args{canondev} = $CANONDEV;
 
     my $self = {%sane_args};
 
