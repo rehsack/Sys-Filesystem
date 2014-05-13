@@ -27,3 +27,4 @@ _Inline/.*
 Sys-Filesystem-.*
 ^MYMETA\..*$
 \bxt
+\.travis.yml
