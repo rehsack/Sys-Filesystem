@@ -1,8 +1,15 @@
 Revision history for CPAN distribution Sys-Filesystem
 
+1.406 2014-05-13
+    - always use global kernel mount table (/proc/mounts), not the process
+      mirror
+    - add support for getting canonical device path
+    - add support for package wide settings to tune Sys::Filesystem even
+      when used indirectly
+
 1.405 2013-10-28
     - Fix Mswin32 mounted/unmounted support (thanks to Christian "Mithaldu"
-      Walde for remote testing support
+      Walde for remote testing support)
     - skip format test in case of unmounted device (unmounted devices might
       or might not know in before the fstype)
     - clean up basic tests and BAIL_OUT when unsupported environment
