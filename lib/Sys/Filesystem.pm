@@ -298,17 +298,28 @@ with common aliases wherever possible.
 
 =item new
 
-Creates a new Sys::Filesystem object. new() accepts 3 optional key pair values
-to help or force where mount information is gathered from. These values are
-not otherwise defaulted by the main Sys::Filesystem object, but left to the
-platform specific helper modules to determine as an exercise of common sense.
+Creates a new Sys::Filesystem object. C<new> accepts following optional key
+value pairs to help or force where mount information is gathered from. These
+values are not otherwise defaulted by the main Sys::Filesystem object, but
+left to the platform specific helper modules to determine as an exercise of
+common sense.
 
 =over 4
+
+=item canondev
+
+Specify whether device path's shall be resolved when they're a symbolic
+link.
+
+C<$Sys::Filesystem::CANONDEV> is used when no key C<canondev> is passed.
 
 =item fstab
 
 Specify the full path and filename of the filesystem table (or fstab for
-short).
+short). Not all platforms have such a file and so this option may be
+ignored on some systems.
+
+C<$Sys::Filesystem::FSTAB> is used when no key C<fstab> is passed.
 
 =item mtab
 
@@ -316,12 +327,25 @@ Specify the full path and filename of the mounted filesystem table (or mtab
 for short). Not all platforms have such a file and so this option may be
 ignored on some systems.
 
+C<$Sys::Filesystem::MTAB> is used when no key C<mtab> is passed.
+
 =item xtab
 
-Specify the full path and filename of the mounted NFS filesystem table
-(or xtab for short). This is usually only pertinant to Unix bases systems.
-Not all helper modules will query NFS mounts as a separate exercise, and
-therefore this option may be ignored on some systems.
+B<DEPRECIATED> Specify the full path and filename of the mounted NFS
+filesystem table (or xtab for short). This is usually only pertinant
+to Unix bases systems.  Not all helper modules will query NFS mounts
+as a separate exercise, and therefore this option may be ignored on
+some systems.
+
+B<None> of the OS plugins use that tunable (anymore?), so it now a warning
+is raised when it's used. The entire support will be removed not before
+2015. Once that happened, using C<xtab> will raise an exception.
+
+=item aliases
+
+Overrides internal aliasing table used to match queries against OS
+plugin. This should be used only when dealing with closed source platform
+helper module(s).
 
 =back
 
