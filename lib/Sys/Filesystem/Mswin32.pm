@@ -40,21 +40,8 @@ sub version()
     return $VERSION;
 }
 
-my @volInfoAttrs = (
-                     'n/a',
-                     'preserve case',
-                     'case sensitive',
-                     'unicode',
-                     'acl',
-                     'file compression',
-                     'compressed volume'
-                   );
-my @typeExplain = (
-                    'unable to determine', 'no root directory',
-                    'removeable',          'fixed',
-                    'network',             'cdrom',
-                    'ram disk'
-                  );
+my @volInfoAttrs = ( 'n/a', 'preserve case', 'case sensitive', 'unicode', 'acl', 'file compression', 'compressed volume' );
+my @typeExplain = ( 'unable to determine', 'no root directory', 'removeable', 'fixed', 'network', 'cdrom', 'ram disk' );
 
 sub new
 {

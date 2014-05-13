@@ -43,13 +43,13 @@ sub version()
 
 my @fstab_keys = qw(account boot check dev mount nodename size type vfs vol log);
 my %special_fs = (
-                   swap   => 1,
-                   procfs => 1,
-                   proc   => 1,
-                   tmpfs  => 1,
-                   mntfs  => 1,
-                   autofs => 1,
-                 );
+    swap   => 1,
+    procfs => 1,
+    proc   => 1,
+    tmpfs  => 1,
+    mntfs  => 1,
+    autofs => 1,
+);
 
 # see AIX commands at
 # http://publib.boulder.ibm.com/infocenter/pseries/v5r3/topic/com.ibm.aix.doc/doc/base/alphabeticallistofcommands.htm
@@ -83,7 +83,7 @@ sub new
         my ( $device, $vfs, $nodename, $type, $size, $options, $mount, $account ) =
           @{ $fs_info{$current_filesystem} };
 
-	$args{canondev} and -l $device and $device = abs_path($device);
+        $args{canondev} and -l $device and $device = abs_path($device);
         $self->{$current_filesystem}->{dev}      = $device;
         $self->{$current_filesystem}->{vfs}      = $vfs;
         $self->{$current_filesystem}->{options}  = $options;
@@ -119,7 +119,7 @@ sub new
 
         my ( $lvname, $type, $lps, $pps, $pvs, $lvstate ) = @{ $fs_info{$current_filesystem} };
 
-	$args{canondev} and -l $lvname and $lvname = abs_path($lvname);
+        $args{canondev} and -l $lvname and $lvname = abs_path($lvname);
         $self->{$current_filesystem}->{dev}     = $lvname;
         $self->{$current_filesystem}->{vfs}     = $type;
         $self->{$current_filesystem}->{LPs}     = $lps;
@@ -161,16 +161,16 @@ sub new
             }
             elsif ( my ( $key, $value ) = $_ =~ /^\s*([a-z]{3,8})\s+=\s+"?(.+)"?\s*$/ )
             {
-		# do not overwrite already known data
-		defined $self->{$current_filesystem}->{$key} and next;
+                # do not overwrite already known data
+                defined $self->{$current_filesystem}->{$key} and next;
 
-		$key eq "dev" and $args{canondev} and -l $value and $value = abs_path($value);
+                $key eq "dev" and $args{canondev} and -l $value and $value = abs_path($value);
 
-		$self->{$current_filesystem}->{$key} = $value;
-		if ( ( $key eq 'vfs' ) && defined( $special_fs{$value} ) )
-		{
-		    $self->{$current_filesystem}->{special} = 1;
-		}
+                $self->{$current_filesystem}->{$key} = $value;
+                if ( ( $key eq 'vfs' ) && defined( $special_fs{$value} ) )
+                {
+                    $self->{$current_filesystem}->{special} = 1;
+                }
             }
         }
         $fstab->close();

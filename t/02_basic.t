@@ -44,8 +44,8 @@ for my $filesystem (@filesystems)
     ok( defined( $options = $fs->options($filesystem) ), "Get options for $filesystem: $options" );
   SKIP:
     {
-	$format = $fs->format($filesystem);
-	$mounted or skip("Format might be unavailable unless mounted",1);
+        $format = $fs->format($filesystem);
+        $mounted or skip( "Format might be unavailable unless mounted", 1 );
         ok( $format, "Get format for $filesystem" );
     }
     ok( $volume = $fs->volume($filesystem) || 1, "Get volume type for $filesystem" );
@@ -53,15 +53,13 @@ for my $filesystem (@filesystems)
 
     $type = $fs->type($filesystem);
     diag(
-          join( ' - ',
-                $filesystem, $mounted, $special,
-                $device,     $options, $format || 'n/a',
-                $volume || 'n/a', $label || 'n/a', $type || 'n/a' )
-        );
+        join( ' - ',
+            $filesystem, $mounted, $special, $device, $options,
+            $format || 'n/a', $volume || 'n/a', $label || 'n/a', $type || 'n/a' )
+    );
 }
 
 my $device = $fs->device( $filesystems[0] );
-ok( my $foo_filesystem = Sys::Filesystem::filesystems( device => $device ),
-    "Get filesystem attached to $device" );
+ok( my $foo_filesystem = Sys::Filesystem::filesystems( device => $device ), "Get filesystem attached to $device" );
 
 done_testing();

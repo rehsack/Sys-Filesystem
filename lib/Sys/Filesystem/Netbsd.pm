@@ -41,14 +41,14 @@ sub version()
 }
 
 # Default fstab and mtab layout
-my @keys = qw(fs_spec fs_file fs_vfstype fs_mntops fs_freq fs_passno);
+my @keys       = qw(fs_spec fs_file fs_vfstype fs_mntops fs_freq fs_passno);
 my %special_fs = (
-                   swap   => 1,
-                   procfs => 1,
-                   kernfs => 1,
-                   ptyfs  => 1,
-                   tmpfs  => 1,
-                 );
+    swap   => 1,
+    procfs => 1,
+    kernfs => 1,
+    ptyfs  => 1,
+    tmpfs  => 1,
+);
 
 my $mount_rx = qr|^([/:\w]+)\s+on\s+([/\w]+)\s+type\s+(\w+)|;
 my $swap_rx  = qr|^(/[/\w]+)\s+|;
@@ -64,10 +64,7 @@ sub new
     $args{fstab} ||= $ENV{PATH_FSTAB} || '/etc/fstab';
 
     my @mounts = qx( /sbin/mount );
-    $self->readMounts( $mount_rx,
-                       [ 0, 1, 2 ],
-                       [qw(fs_spec fs_file fs_vfstype fs_mntops)],
-                       \%special_fs, @mounts );
+    $self->readMounts( $mount_rx, [ 0, 1, 2 ], [qw(fs_spec fs_file fs_vfstype fs_mntops)], \%special_fs, @mounts );
     $self->readSwap( $swap_rx, qx( /sbin/swapctl -l ) );
     unless ( $self->readFsTab( $args{fstab}, \@keys, [ 0, 1, 2 ], \%special_fs ) )
     {

@@ -42,9 +42,9 @@ sub version()
 my @fstabkeys  = qw(fs_spec fs_file fs_vfstype fs_mntops fs_freq fs_passno);
 my @mnttabkeys = qw(fs_spec fs_file fs_vfstype fs_mntops fs_freq fs_passno mount_time);
 my %special_fs = (
-                   swap => 1,
-                   proc => 1
-                 );
+    swap => 1,
+    proc => 1
+);
 
 sub new
 {

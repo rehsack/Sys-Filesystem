@@ -34,12 +34,10 @@ use vars qw($VERSION $AUTOLOAD $CANONDEV $FSTAB $MTAB);
 use Carp qw(croak cluck confess);
 use Module::Pluggable
   require => 1,
-  only    => [
-            @query_order = map { __PACKAGE__ . '::' . $_ } (ucfirst( lc $^O ), $^O =~ m/Win32/i ? 'Win32' : 'Unix', 'Dummy')
-          ],
-  inner       => 0,
+  only  => [ @query_order = map { __PACKAGE__ . '::' . $_ } ( ucfirst( lc $^O ), $^O =~ m/Win32/i ? 'Win32' : 'Unix', 'Dummy' ) ],
+  inner => 0,
   search_path => ['Sys::Filesystem'],
-  sub_name => '_plugins';
+  sub_name    => '_plugins';
 use Params::Util qw(_INSTANCE);
 use Scalar::Util qw(blessed);
 use List::Util qw(first);
@@ -75,34 +73,33 @@ sub new
     my %args = @_;
 
     exists $args{xtab} and carp("Using xtab is depreciated") and delete $args{xtab};
-    defined $FSTAB and not exists $args{fstab} and $args{fstab} = $FSTAB;
-    defined $MTAB and not exists $args{mtab} and $args{mtab} = $MTAB;
+    defined $FSTAB    and not exists $args{fstab}    and $args{fstab}    = $FSTAB;
+    defined $MTAB     and not exists $args{mtab}     and $args{mtab}     = $MTAB;
     defined $CANONDEV and not exists $args{canondev} and $args{canondev} = $CANONDEV;
-
 
     # Double check the key pairs for stuff we recognise
     my @sane_keys = qw(aliases canondev fstab mtab);
     my %sane_args;
     @sane_args{@sane_keys} = delete @args{@sane_keys};
-    scalar keys %args and croak("Unrecognised parameter(s) '" . join("', '", sort keys %args) . "' passed to module $class");
+    scalar keys %args and croak( "Unrecognised parameter(s) '" . join( "', '", sort keys %args ) . "' passed to module $class" );
 
     my $self = {%sane_args};
 
     # Filesystem property aliases - unless caller knows better ...
     defined $self->{aliases}
       or $self->{aliases} = {
-                         device          => [qw(fs_spec dev)],
-                         filesystem      => [qw(fs_file mount_point)],
-                         mount_point     => [qw(fs_file filesystem)],
-                         type            => [qw(fs_vfstype vfs)],
-                         format          => [qw(fs_vfstype vfs vfstype)],
-                         options         => [qw(fs_mntops)],
-                         check_frequency => [qw(fs_freq)],
-                         check_order     => [qw(fs_passno)],
-                         boot_order      => [qw(fs_mntno)],
-                         volume          => [qw(fs_volume fs_vol vol)],
-                         label           => [qw(fs_label)],
-                       };
+        device          => [qw(fs_spec dev)],
+        filesystem      => [qw(fs_file mount_point)],
+        mount_point     => [qw(fs_file filesystem)],
+        type            => [qw(fs_vfstype vfs)],
+        format          => [qw(fs_vfstype vfs vfstype)],
+        options         => [qw(fs_mntops)],
+        check_frequency => [qw(fs_freq)],
+        check_order     => [qw(fs_passno)],
+        boot_order      => [qw(fs_mntno)],
+        volume          => [qw(fs_volume fs_vol vol)],
+        label           => [qw(fs_label)],
+      };
 
     # Debug
     DUMP( '$self', $self ) if (DEBUG);

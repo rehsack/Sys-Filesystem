@@ -53,9 +53,8 @@ SKIP:
   TODO:
     {
         local $TODO = "Known fail for MSWin32, cygwin & Co. - let's make it not so important ...";
-        ok( $mymount, sprintf( q{Found mountpoint for test file '%s' at '%s'}, $RealTest, $mymount || '<n/a>' ) );
-        ok( $binmount,
-            sprintf( q{Found mountpoint for perl executable '%s' at '%s'}, $RealPerl, $binmount || '<n/a>' ) );
+        ok( $mymount,  sprintf( q{Found mountpoint for test file '%s' at '%s'},       $RealTest, $mymount  || '<n/a>' ) );
+        ok( $binmount, sprintf( q{Found mountpoint for perl executable '%s' at '%s'}, $RealPerl, $binmount || '<n/a>' ) );
     }
 }
 

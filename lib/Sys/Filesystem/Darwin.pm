@@ -46,10 +46,10 @@ sub version()
 my @dt_keys     = qw(fs_spec fs_file fs_vfstype fs_name);
 my @mount_keys1 = qw(fs_spec fs_file fs_vfstype);
 my @mount_keys2 = qw(fs_spec fs_file fs_mntops);
-my %special_fs = (
-                   devfs  => 1,
-                   autofs => 1,
-                 );
+my %special_fs  = (
+    devfs  => 1,
+    autofs => 1,
+);
 
 my $dt_rx = qr/Disk\sAppeared\s+\('([^']+)',\s*
                Mountpoint\s*=\s*'([^']+)',\s*
@@ -67,8 +67,7 @@ sub new
     foreach my $prog (qw(diskutil disktool mount))
     {
         defined $args{$prog}
-          or $args{$prog} =
-          ( grep { defined $_ and -x $_ } ( "/usr/sbin/$prog", "/sbin/$prog" ) )[0];
+          or $args{$prog} = ( grep { defined $_ and -x $_ } ( "/usr/sbin/$prog", "/sbin/$prog" ) )[0];
     }
 
     my @list_fs_cmd;

@@ -40,13 +40,13 @@ sub version()
     return $VERSION;
 }
 
-my @keys = qw(fs_spec fs_file fs_vfstype fs_mntops);
+my @keys       = qw(fs_spec fs_file fs_vfstype fs_mntops);
 my %special_fs = (
-                   swap   => 1,
-                   proc   => 1,
-                   devpts => 1,
-                   tmpfs  => 1,
-                 );
+    swap   => 1,
+    proc   => 1,
+    devpts => 1,
+    tmpfs  => 1,
+);
 my $mount_rx = qr/^\s*(.+?)\s+on\s+(\/.+?)\s+type\s+(\S+)\s+\((\S+)\)\s*$/;
 
 sub new
