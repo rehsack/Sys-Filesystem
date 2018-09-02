@@ -329,12 +329,12 @@ C<$Sys::Filesystem::MTAB> is used when no key C<mtab> is passed.
 =item xtab
 
 B<DEPRECIATED> Specify the full path and filename of the mounted NFS
-filesystem table (or xtab for short). This is usually only pertinant
+filesystem table (or xtab for short). This is usually only pertinent
 to Unix bases systems.  Not all helper modules will query NFS mounts
 as a separate exercise, and therefore this option may be ignored on
 some systems.
 
-B<None> of the OS plugins use that tunable (anymore?), so it now a warning
+B<None> of the OS plugins use that tunable (anymore?), so now a warning
 is raised when it's used. The entire support will be removed not before
 2015. Once that happened, using C<xtab> will raise an exception.
 
@@ -350,7 +350,7 @@ helper module(s).
 
 Returns true if the operating system is supported by Sys::Filesystem.
 Unsupported operating systems may get less information, e.g. the mount
-state couldn't determined or which file system type is special ins't
+state couldn't determined or which file system type is special isn't
 known.
 
 =back
