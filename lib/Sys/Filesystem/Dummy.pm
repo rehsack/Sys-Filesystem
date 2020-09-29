@@ -26,6 +26,7 @@ package Sys::Filesystem::Dummy;
 use 5.008001;
 
 use strict;
+use warnings;
 use Carp qw(croak);
 
 use vars qw($VERSION);
@@ -36,13 +37,14 @@ sub version()
     return $VERSION;
 }
 
+## no critic (Subroutines::RequireArgUnpacking)
 sub new
 {
-    ref( my $class = shift ) && croak 'Class name required';
+    ref(my $class = shift) && croak 'Class name required';
     my %args = @_;
-    my $self = bless( {}, $class );
+    my $self = bless({}, $class);
 
-    $self;
+    return $self;
 }
 
 1;
@@ -71,10 +73,6 @@ See L<Sys::Filesystem>.
 Return the version of the (sub)module.
 
 =back
-
-=head1 VERSION
-
-$Id$
 
 =head1 AUTHOR
 

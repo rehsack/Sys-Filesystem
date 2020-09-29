@@ -25,14 +25,12 @@ use 5.008001;
 
 use strict;
 use warnings;
-use vars qw($VERSION @ISA);
-
-require Sys::Filesystem::Unix;
+use vars qw($VERSION);
+use parent qw(Sys::Filesystem::Unix);
 
 use Carp qw(croak);
 
 $VERSION = '1.407';
-@ISA     = qw(Sys::Filesystem::Unix);
 
 sub version()
 {
@@ -47,31 +45,32 @@ my %special_fs = (
     proc => 1
 );
 
+## no critic (Subroutines::RequireArgUnpacking)
 sub new
 {
     my $proto = shift;
     my $class = ref($proto) || $proto or croak 'Class name required';
     my %args  = @_;
-    my $self  = bless( {}, $class );
+    my $self  = bless({}, $class);
     $args{canondev} and $self->{canondev} = 1;
 
     # Defaults
     $args{fstab} ||= '/etc/fstab';
     $args{mtab}  ||= '/etc/mnttab';
 
-    unless ( $self->readFsTab( $args{fstab}, \@fstabkeys, [ 0, 1, 2 ], \%special_fs ) )
+    unless ($self->readFsTab($args{fstab}, \@fstabkeys, [0, 1, 2], \%special_fs))
     {
         croak "Unable to open fstab file ($args{fstab})\n";
     }
 
-    unless ( $self->readMntTab( $args{mtab}, \@mnttabkeys, [ 0, 1, 2 ], \%special_fs ) )
+    unless ($self->readMntTab($args{mtab}, \@mnttabkeys, [0, 1, 2], \%special_fs))
     {
         croak "Unable to open fstab file ($args{mtab})\n";
     }
 
     delete $self->{canondev};
 
-    $self;
+    return $self;
 }
 
 1;
@@ -101,10 +100,6 @@ See L<Sys::Filesystem>.
 Return the version of the (sub)module.
 
 =back
-
-=head1 VERSION
-
-$Id$
 
 =head1 AUTHOR
 

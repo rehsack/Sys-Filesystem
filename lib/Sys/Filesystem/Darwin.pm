@@ -27,15 +27,14 @@ use 5.008001;
 
 use strict;
 use warnings;
-use vars qw(@ISA $VERSION);
+use vars qw($VERSION);
+use parent qw(Sys::Filesystem::Unix);
 
-require Sys::Filesystem::Unix;
 use IPC::Cmd ();
 
 use Carp qw(croak);
 
 $VERSION = '1.407';
-@ISA     = qw(Sys::Filesystem::Unix);
 
 sub version()
 {
@@ -50,6 +49,7 @@ my %special_fs  = (
     autofs => 1,
 );
 
+## no critic (RegularExpressions::ProhibitComplexRegexes)
 my $dt_rx = qr/Disk\sAppeared\s+\('([^']+)',\s*
                Mountpoint\s*=\s*'([^']+)',\s*
                fsType\s*=\s*'([^']*)',\s*
@@ -59,37 +59,37 @@ my $mount_rx2 = qr/(.*) on (.*) \(([^)]*)\)/;      # /dev/disk on / (hfs,...)
 
 sub new
 {
-    my ( $class, %args ) = @_;
-    my $self = bless( {}, $class );
+    my ($class, %args) = @_;
+    my $self = bless({}, $class);
     $args{canondev} and $self->{canondev} = 1;
 
     foreach my $prog (qw(diskutil disktool mount))
     {
         defined $args{$prog}
-          or $args{$prog} = ( grep { defined $_ and -x $_ } ( "/usr/sbin/$prog", "/sbin/$prog" ) )[0];
+          or $args{$prog} = (grep { defined $_ and -x $_ } ("/usr/sbin/$prog", "/sbin/$prog"))[0];
     }
 
     my @list_fs_cmd;
-    defined $args{diskutil} and $args{diskutil} and @list_fs_cmd = ( $args{diskutil}, "list" );
-    ( 0 == scalar @list_fs_cmd )
+    defined $args{diskutil} and $args{diskutil} and @list_fs_cmd = ($args{diskutil}, "list");
+    (0 == scalar @list_fs_cmd)
       and defined $args{disktool}
       and $args{disktool}
-      and @list_fs_cmd = ( $args{disktool}, "-l" );
+      and @list_fs_cmd = ($args{disktool}, "-l");
     @list_fs_cmd or croak("No command to list file systems ...");
 
     # don't use backticks, don't use the shell
     my @fslist  = ();
     my @mntlist = ();
-    open( my $dt_fh, '-|' )
+    open(my $dt_fh, '-|')
       or exec(@list_fs_cmd)
-      or croak( "Cannot execute " . join( " ", @list_fs_cmd ) . ": $!" );
+      or croak("Cannot execute " . join(" ", @list_fs_cmd) . ": $!");
     @fslist = <$dt_fh>;
     close($dt_fh);
-    open( my $m_fh, '-|' ) or exec( $args{mount} ) or croak("Cannot execute $args{mount}: $!");
+    open(my $m_fh, '-|') or exec($args{mount}) or croak("Cannot execute $args{mount}: $!");
     @mntlist = <$m_fh>;
     close($m_fh);
 
-    $self->readMounts( $dt_rx, [ 0, 1, 2 ], \@dt_keys, \%special_fs, @fslist );
+    $self->readMounts($dt_rx, [0, 1, 2], \@dt_keys, \%special_fs, @fslist);
 
     #foreach (@fslist)
     #{
@@ -107,8 +107,8 @@ sub new
     #    $self->{$mount_point}->{label}       = $name;
     #}
 
-    $self->readMounts( $mount_rx1, [ 0, 1, 2 ], \@mount_keys1, \%special_fs, @mntlist );
-    $self->readMounts( $mount_rx2, [ 0, 1 ], \@mount_keys2, undef, @mntlist );
+    $self->readMounts($mount_rx1, [0, 1, 2], \@mount_keys1, \%special_fs, @mntlist);
+    $self->readMounts($mount_rx2, [0, 1], \@mount_keys2, undef, @mntlist);
 
     # set the mount options
     #foreach (@mntlist)
@@ -123,7 +123,7 @@ sub new
 
     delete $self->{canondev};
 
-    $self;
+    return $self;
 }
 
 1;
@@ -218,10 +218,6 @@ normally not used. Contact the author if you need this.
 =head1 SEE ALSO
 
 L<Sys::Filesystem>, L<diskutil>
-
-=head1 VERSION
-
-$Id$
 
 =head1 AUTHOR
 

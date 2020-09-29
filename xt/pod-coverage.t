@@ -14,8 +14,8 @@ EOLIE
 $^O ne 'MSWin32' and $INC{"Win32/DriveInfo.pm"} = "mocked";
 
 all_pod_coverage_ok(
-                     {
-                       also_private => [qr/^[A-Z_]+$/],
-                       trustme => [qr/^new$/]
-                     }
-                   );
+    {
+        also_private => [qr/^[A-Z_]+$/],
+        trustme      => [qr/^new$/]
+    }
+);

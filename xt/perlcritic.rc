@@ -1,0 +1,15 @@
+severity        = 3
+verbose         = 6
+top             = 50
+theme           = pbp || core || bugs || security || maintenance
+criticism-fatal = 1
+color           = 1
+allow-unsafe    = 1
+
+[-BuiltinFunctions::ProhibitComplexMappings]
+[-RegularExpressions::RequireExtendedFormatting]
+[-Subroutines::ProhibitExplicitReturnUndef]
+[-ValuesAndExpressions::ProhibitConstantPragma]
+[InputOutput::ProhibitBacktickOperators]
+only_in_void_context = 1
+[-Subroutines::ProhibitExcessComplexity]
