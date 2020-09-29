@@ -1,10 +1,9 @@
 ############################################################
 #
-#   $Id$
 #   Sys::Filesystem - Retrieve list of filesystems and their properties
 #
 #   Copyright 2004,2005,2006 Nicola Worthington
-#   Copyright 2008,2009 Jens Rehsack
+#   Copyright 2008-2020 Jens Rehsack
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -617,11 +616,10 @@ See CREDITS in the distribution tarball.
 
 Copyright 2004,2005,2006 Nicola Worthington.
 
-Copyright 2008-2014 Jens Rehsack.
+Copyright 2008-2020 Jens Rehsack.
 
 This software is licensed under The Apache Software License, Version 2.0.
 
 L<http://www.apache.org/licenses/LICENSE-2.0>
 
 =cut
-

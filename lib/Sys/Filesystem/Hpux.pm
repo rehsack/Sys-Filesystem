@@ -1,8 +1,9 @@
+############################################################
+#
 #   Sys::Filesystem - Retrieve list of filesystems and their properties
-#   $Id$
 #
 #   Copyright (c) 2009 H.Merijn Brand,  All rights reserved.
-#   Copyright (c) 2009 Jens Rehsack,  All rights reserved.
+#   Copyright (c) 2009-2020 Jens Rehsack,  All rights reserved.
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -113,11 +114,10 @@ H.Merijn Brand, PROCURA B.V.
 
 Copyright 2009 H.Merijn Brand PROCURA B.V.
 
-Copyright 2009-2014 Jens Rehsack.
+Copyright 2009-2020 Jens Rehsack.
 
 This software is licensed under The Apache Software License, Version 2.0.
 
 L<http://www.apache.org/licenses/LICENSE-2.0>
 
 =cut
-
