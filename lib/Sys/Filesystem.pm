@@ -603,7 +603,7 @@ L<http://search.cpan.org/dist/Sys-Filesystem/>
 
 =head1 SEE ALSO
 
-L<perlport>, L<Solaris::DeviceTree>, L<Win32::DriveInfo>
+L<perlport>, L<Solaris::DeviceTree>, L<Win32::DriveInfo>, L<Sys::Filesystem::MountPoint>
 
 =head1 AUTHOR
 
