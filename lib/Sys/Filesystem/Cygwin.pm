@@ -47,7 +47,7 @@ my %special_fs = (
     devpts => 1,
     tmpfs  => 1,
 );
-my $mount_rx = qr/^\s*(.+?)\s+on\s+(\/.+?)\s+type\s+(\S+)\s+\((\S+)\)\s*$/;
+my $mount_rx = qr/^\s*(.+?)\s+on\s+(\/.*)\s+type\s+(\S+)\s+\((\S+)\)\s*$/;
 
 sub new
 {
