@@ -45,7 +45,7 @@ use List::Util qw(first);
 use constant DEBUG   => $ENV{SYS_FILESYSTEM_DEBUG} ? 1 : 0;
 use constant SPECIAL => ('darwin' eq $^O)          ? 0 : undef;
 
-$VERSION = '1.407';
+$VERSION = '1.407_001';
 
 my ($FsPlugin, $Supported);
 

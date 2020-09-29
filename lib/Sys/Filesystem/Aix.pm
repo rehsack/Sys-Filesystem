@@ -33,7 +33,7 @@ use Carp qw(croak);
 use Cwd 'abs_path';
 use IO::File;
 
-$VERSION = '1.407';
+$VERSION = '1.407_001';
 
 sub version()
 {
