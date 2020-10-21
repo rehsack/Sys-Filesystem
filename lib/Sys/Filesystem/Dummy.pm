@@ -30,7 +30,7 @@ use warnings;
 use Carp qw(croak);
 
 use vars qw($VERSION);
-$VERSION = '1.407_001';
+$VERSION = '1.408';
 
 sub version()
 {

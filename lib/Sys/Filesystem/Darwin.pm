@@ -34,7 +34,7 @@ use IPC::Cmd ();
 
 use Carp qw(croak);
 
-$VERSION = '1.407_001';
+$VERSION = '1.408';
 
 sub version()
 {

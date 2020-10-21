@@ -1,5 +1,8 @@
 Revision history for CPAN distribution Sys-Filesystem
 
+1.408	2020-10-30
+    - re-release 1.407_001 without further changes
+
 1.407_001	2020-09-29
     - improve distribution quality with new author tests
     - Cygwin: ensure "/" is returned (Fixes RT#102669), thanks to Christian
