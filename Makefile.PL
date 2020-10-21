@@ -64,6 +64,7 @@ WriteMakefile1(
                 web    => 'http://rt.cpan.org/Public/Dist/Display.html?Name=Sys-Filesystem',
                 mailto => 'fsys-filesystem@rt.cpan.org',
             },
+            license => 'apache_2_0',
         },
         prereqs => {
             develop => {
